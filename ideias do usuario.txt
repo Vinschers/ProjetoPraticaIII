@@ -1,0 +1,11 @@
+Atributos (Escolha inicialmente de 3):
+- Tranquilidade
+- Felicidade
+- Sanidade mental
+- Finanças
+- Inteligência
+- Carisma / Persuasão
+- Força
+
+- Vetor de nível de amizade
+
