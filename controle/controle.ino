@@ -22,10 +22,23 @@ void setup() {
 }
 
 void loop() {
-  atual = digitalRead(btnOk) + "" + digitalRead(btnPot) + "" + digitalRead(btnCima) + "" + digitalRead(btnMenu) + "" + digitalRead(btnBaixo) + "" + digitalRead(btnDireita) + "" + digitalRead(btnEsquerda);
+  atual = lerBtns();
   if (!anterior || atual != anterior) {
     Serial.println(atual);
     anterior = atual;
   }
   delay(del);
 }
+
+String lerBtns() {
+  String ret = "";
+  ret += digitalRead(btnOk) + " ";
+  ret += digitalRead(btnPot) + " ";
+  ret += digitalRead(btnCima) + " ";
+  ret += digitalRead(btnMenu) + " ";
+  ret += digitalRead(btnBaixo) + " ";
+  ret += digitalRead(btnDireita) + " ";
+  ret += digitalRead(btnEsquerda);
+  return ret;
+}
+
