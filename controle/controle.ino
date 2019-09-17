@@ -43,7 +43,7 @@ void setup() {
   status = WiFi.beginAP(ssid, 10, pass, ENC_TYPE_WPA2_PSK);
 
   Serial.println("Access point started");
-  printWifiStatus();
+  //printWifiStatus();
 
   // start the web server on port 80
   server.begin();
@@ -62,7 +62,6 @@ void loop() {
   if (client) {
     Serial.println("Novo cliente");
     buf.init();
-
     while (client.connected()) {
       if (client.available()) {
         char c = client.read();
@@ -77,13 +76,14 @@ void loop() {
         if (!anterior || atual != anterior) {
           Serial.println(atual);
           anterior = atual;
-          client.write(atual);
+          client.println(atual);
         }
         delay(del);
       }
     } // while
     client.stop();
     Serial.println("Desconectado");
+  }
 }
 
 String lerBtns() {
@@ -97,4 +97,3 @@ String lerBtns() {
   ret += digitalRead(btnEsquerda);
   return ret;
 }
-
