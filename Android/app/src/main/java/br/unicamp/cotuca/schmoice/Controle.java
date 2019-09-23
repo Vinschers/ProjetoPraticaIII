@@ -1,5 +1,7 @@
 package br.unicamp.cotuca.schmoice;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -16,7 +18,36 @@ public class Controle {
     private Socket socket = null;
     private static int serverPort = 80;
     private static String serverIp = "192.168.0.92";
-    boolean  isRunning = false;
+    Leitor leitor;
+    Escrevedor escrevedor;
+
+    public Controle() {
+        conectar();
+    }
+    public Controle(String ip, int port) {
+        setServerIp(ip);
+        setServerPort(port);
+        conectar();
+    }
+
+
+    public String ler() {
+        if (leitor == null && !conectar()) {
+            return null;
+        }
+        else {
+            return leitor.getMensagem();
+        }
+    }
+
+    public void escrever(String msg) {
+        if (escrevedor == null && !conectar()) {
+            escrever(msg);
+        }
+        else {
+            escrevedor.escrever(msg);
+        }
+    }
 
     private class ClientThread implements Runnable {
 
@@ -27,7 +58,6 @@ public class Controle {
                 InetAddress serverAddr = InetAddress.getByName(serverIp);
 
                 socket = new Socket(serverAddr, serverPort);
-                isRunning = true;
                 output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
                 input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 output.write("ok");
@@ -45,36 +75,65 @@ public class Controle {
     }
 
     private class Leitor implements Runnable {
+        String msg = null;
         @Override
         public void run() {
             while (true) {
                 try {
-                    final String message = input.readLine();
-                    if (message != null) {
-                        //message
+                    String atual = input.readLine();
+                    if (atual != null) {
+                        msg = atual;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
-    }
-    public void conectar(String ip) {
-        if (ip != null && ip != "")
-            serverIp = ip;
-        if (socket == null)
-        {
-            new Thread(new ClientThread()).start();
+        public String getMensagem() {
+            return msg;
         }
-        else {
-            if (!socket.isClosed()) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+    }
+
+    private class Escrevedor implements  Runnable {
+        @Override
+        public void run() {
+            while(socket != null) {}
+        }
+        public void escrever(String msg) {
+            output.write(msg);
+            output.flush();
+        }
+    }
+    public boolean conectar() {
+        try {
+            if (socket != null) {
+                if (!socket.isClosed()) {
+                    try {
+                        socket.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             new Thread(new ClientThread()).start();
-        }
+            leitor = new Leitor();
+            Thread t = new Thread(leitor);
+            t.start();
+            t.join();
+            return true;
+        } catch (InterruptedException ex) {return false;}
+    }
+
+    public void setServerIp(String ip) {
+        serverIp = ip;
+    }
+    public void setServerPort(int port) {
+        serverPort = port;
+    }
+    public String gerServerIp() {
+        return serverIp;
+    }
+    public int getServerPort() {
+        return serverPort;
     }
 }
