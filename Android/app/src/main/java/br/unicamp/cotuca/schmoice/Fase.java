@@ -4,12 +4,17 @@ import java.util.ArrayList;
 
 public class Fase implements Comparable<Fase>, Cloneable {
     private int id;
-    ArrayList<Escolha> escolhas;
+    ArrayList<Nivel> niveis;
+    private String titulo;
+    private String descricao;
     public Fase() {
-        escolhas = new ArrayList<Escolha>();
+        niveis = new ArrayList<Nivel>();
     }
     public Fase(Fase fase) {
-        this.escolhas = fase.escolhas;
+        this.id = fase.id;
+        this.niveis = fase.niveis;
+        this.titulo = fase.titulo;
+        this.descricao = fase.descricao;
     }
     public int compareTo(Fase fase) {
         return this.id - fase.id;
@@ -31,20 +36,27 @@ public class Fase implements Comparable<Fase>, Cloneable {
         Fase fase = (Fase) outro;
         if (fase.id != this.id)
             return false;
-        if (!fase.escolhas.equals(this.escolhas))
+        if (!fase.niveis.equals(this.niveis))
+            return false;
+        if (!fase.titulo.equals(this.titulo))
+            return false;
+        if (!fase.descricao.equals(this.descricao))
             return false;
         return true;
     }
     public String toString() {
         String s = "";
-        s += id + ": ";
-        s += escolhas.toString();
+        s += id + ": " + titulo + "\t" + descricao;
+        s += "\nNíveis: ";
+        s += niveis.toString();
         return s;
     }
     public int hashCode() {
         int ret = 3;
         ret = ret * 7 + new Integer(id).hashCode();
-        ret = ret * 11 + escolhas.hashCode();
+        ret = ret * 11 + niveis.hashCode();
+        ret = ret * 17 + titulo.hashCode();
+        ret = ret * 23 + descricao.hashCode();
         return ret;
     }
 }
