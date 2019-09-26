@@ -1,6 +1,7 @@
 package br.unicamp.cotuca.schmoice;
 
-import java.awt.Image;
+import android.media.Image;
+
 import java.util.ArrayList;
 
 import br.unicamp.cotuca.schmoice.Escolha;
@@ -21,7 +22,7 @@ public class Nivel {
     public ArrayList<Escolha> getEscolhas() {
         return escolhas;
     }
-    public void setEscolhas(ArrayList<Escolhas> escolhas) {
+    public void setEscolhas(ArrayList<Escolha> escolhas) {
         this.escolhas = escolhas;
     }
 
