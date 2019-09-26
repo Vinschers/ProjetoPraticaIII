@@ -2,17 +2,25 @@ package br.unicamp.cotuca.schmoice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 public class ConfigActivity extends AppCompatActivity {
-
+    Controle controle;
+    EditText edtIP;
     Button btnConectar, btnDesconectar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config);
+        Intent intent = getIntent();
+        Bundle params = intent.getExtras();
+        controle = (Controle)params.getSerializable("controle");
+        edtIP = (EditText)findViewById(R.id.edtIP);
+        edtIP.setText(controle.getServerIp());
         btnConectar = (Button)findViewById(R.id.btnConectar);
         btnDesconectar = (Button)findViewById(R.id.btnDesconectar);
         btnConectar.setOnClickListener(new View.OnClickListener() {

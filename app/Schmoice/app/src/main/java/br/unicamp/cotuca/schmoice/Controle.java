@@ -6,11 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Controle {
+public class Controle implements Serializable {
     private PrintWriter output;
     private BufferedReader input;
     private Socket socket = null;
@@ -20,12 +21,11 @@ public class Controle {
     Escrevedor escrevedor;
 
     public Controle() {
-        conectar();
+
     }
     public Controle(String ip, int port) {
         setServerIp(ip);
         setServerPort(port);
-        conectar();
     }
 
 
@@ -128,7 +128,7 @@ public class Controle {
     public void setServerPort(int port) {
         serverPort = port;
     }
-    public String gerServerIp() {
+    public String getServerIp() {
         return serverIp;
     }
     public int getServerPort() {

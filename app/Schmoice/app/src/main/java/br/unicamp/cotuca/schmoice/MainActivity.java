@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -47,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        btnConfig.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Configuracoes();
+            }
+        });
         SpannableString content = new SpannableString("Schmoice");
         content.setSpan(new UnderlineSpan(), 0, 8, 0);
         tvTitulo.setText(content);
@@ -56,6 +63,13 @@ public class MainActivity extends AppCompatActivity {
         //
     }
     private void Configuracoes() {
-        //
+
+        Intent intent = new Intent(MainActivity.this, ConfigActivity.class);
+        Bundle params = new Bundle();
+        controle = new Controle();
+        controle.setServerIp("43");
+        params.putSerializable("controle", controle);
+        intent.putExtras(params);
+        startActivity(intent);
     }
 }
