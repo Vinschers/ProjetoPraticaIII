@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.concurrent.Callable;
 
 public class Controle implements Serializable {
     private PrintWriter output;
@@ -19,7 +20,11 @@ public class Controle implements Serializable {
     private static String serverIp = "192.168.0.92";
     Leitor leitor;
     Escrevedor escrevedor;
+    Eventos eventos;
 
+    public Controle(Eventos ev) {
+        eventos = ev;
+    }
     public Controle() {
 
     }
@@ -47,7 +52,7 @@ public class Controle implements Serializable {
         }
     }
 
-    private class ClientThread implements Runnable {
+    private class ClientThread implements Runnable, Serializable {
 
         @Override
         public void run() {
@@ -69,10 +74,9 @@ public class Controle implements Serializable {
             }
 
         }
-
     }
 
-    private class Leitor implements Runnable {
+    private class Leitor implements Runnable, Serializable {
         String msg = null;
         @Override
         public void run() {
@@ -81,6 +85,28 @@ public class Controle implements Serializable {
                     String atual = input.readLine();
                     if (atual != null) {
                         msg = atual;
+                        String[] btns = msg.split(" ");
+                        if (btns[0].equals("1")) {
+                            eventos.onOK();
+                        }
+                        if (btns[1].equals("1")) {
+                            eventos.onPraCima();
+                        }
+                        if (btns[2].equals("1")) {
+                            eventos.onMenu();
+                        }
+                        if (btns[3].equals("1")) {
+                            eventos.onPraBaixo();
+                        }
+                        if (btns[4].equals("1")) {
+                            eventos.onPraDireita();
+                        }
+                        if (btns[5].equals("1")) {
+                            eventos.onCancelar();
+                        }
+                        if (btns[6].equals("1")) {
+                            eventos.onPraEsquerda();
+                        }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -92,7 +118,7 @@ public class Controle implements Serializable {
         }
     }
 
-    private class Escrevedor implements  Runnable {
+    private class Escrevedor implements  Runnable, Serializable {
         @Override
         public void run() {
             while(socket != null) {}
@@ -103,7 +129,8 @@ public class Controle implements Serializable {
         }
     }
     public boolean conectar() {
-        try {
+        return true;
+        /*try {
             if (socket != null) {
                 if (!socket.isClosed()) {
                     try {
@@ -119,7 +146,10 @@ public class Controle implements Serializable {
             t.start();
             t.join();
             return true;
-        } catch (InterruptedException ex) {return false;}
+        } catch (InterruptedException ex) {return false;}*/
+    }
+    public void desconectar() {
+        escrever("\r\n\r\n");
     }
 
     public void setServerIp(String ip) {
@@ -133,5 +163,8 @@ public class Controle implements Serializable {
     }
     public int getServerPort() {
         return serverPort;
+    }
+    public void setEventos(Eventos e) {
+        this.eventos = e;
     }
 }

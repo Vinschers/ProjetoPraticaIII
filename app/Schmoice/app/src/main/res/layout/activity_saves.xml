@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SavesActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.4"
+        android:orientation="vertical"></LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.6"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/btnJogo1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="45dp"
+            android:layout_marginHorizontal="30dp"
+            android:text="Save 1" />
+        <Button
+            android:id="@+id/btnJogo2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="45dp"
+            android:layout_marginHorizontal="30dp"
+            android:text="Save 2" />
+        <Button
+            android:id="@+id/btnJogo3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="45dp"
+            android:layout_marginHorizontal="30dp"
+            android:text="Save 3" />
+    </LinearLayout>
+</LinearLayout>

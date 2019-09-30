@@ -13,6 +13,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.Serializable;
+import java.util.concurrent.Callable;
+
 public class MainActivity extends AppCompatActivity {
     TextView tvTitulo;
     Button btnJogar, btnConfig;
@@ -24,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent intent = getIntent();
+        Bundle params = intent.getExtras();
+        try{
+            controle = (Controle)params.getSerializable("controle");
+        } catch (Exception e) {}
         tvTitulo = (TextView)findViewById(R.id.tvTitulo);
         btnJogar = (Button)findViewById(R.id.btnJogar);
         btnConfig = (Button)findViewById(R.id.btnConfig);
@@ -60,14 +68,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void Jogar() {
-        //
+        Intent intent = new Intent(MainActivity.this, SavesActivity.class);
+        Bundle params = new Bundle();
+        params.putSerializable("controle", controle);
+        intent.putExtras(params);
+        startActivity(intent);
     }
     private void Configuracoes() {
-
         Intent intent = new Intent(MainActivity.this, ConfigActivity.class);
         Bundle params = new Bundle();
         controle = new Controle();
-        controle.setServerIp("43");
         params.putSerializable("controle", controle);
         intent.putExtras(params);
         startActivity(intent);

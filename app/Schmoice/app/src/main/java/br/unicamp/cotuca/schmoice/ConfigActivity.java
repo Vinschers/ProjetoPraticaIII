@@ -10,7 +10,7 @@ import android.widget.EditText;
 
 public class ConfigActivity extends AppCompatActivity {
     Controle controle;
-    EditText edtIP;
+    EditText edtIP, edtPorta;
     Button btnConectar, btnDesconectar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,18 +21,26 @@ public class ConfigActivity extends AppCompatActivity {
         controle = (Controle)params.getSerializable("controle");
         edtIP = (EditText)findViewById(R.id.edtIP);
         edtIP.setText(controle.getServerIp());
+        edtPorta = (EditText)findViewById(R.id.edtPorta);
+        edtPorta.setText(controle.getServerPort() + "");
         btnConectar = (Button)findViewById(R.id.btnConectar);
         btnDesconectar = (Button)findViewById(R.id.btnDesconectar);
         btnConectar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //
+                if (controle.conectar()) {
+                    Intent intent = new Intent(ConfigActivity.this, MainActivity.class);
+                    Bundle params = new Bundle();
+                    params.putSerializable("controle", controle);
+                    intent.putExtras(params);
+                    startActivity(intent);
+                }
             }
         });
         btnDesconectar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //
+                controle.desconectar();
             }
         });
     }
