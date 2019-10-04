@@ -149,7 +149,8 @@ public class Controle implements Serializable {
         } catch (InterruptedException ex) {return false;}*/
     }
     public void desconectar() {
-        escrever("\r\n\r\n");
+        return;
+        //escrever("\r\n\r\n");
     }
 
     public void setServerIp(String ip) {

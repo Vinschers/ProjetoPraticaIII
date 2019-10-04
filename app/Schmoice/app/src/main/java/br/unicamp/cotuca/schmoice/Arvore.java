@@ -48,6 +48,13 @@ public class Arvore {
         return ret;
     }
     public Fase getFaseAtual() {
+        if (faseAtual.getFase().isTerminada()) {
+            long s = Math.round(faseAtual.getFase().getStatus());
+            if (s == 1)
+                faseAtual = faseAtual.getDireita();
+            else
+                faseAtual = faseAtual.getEsquerda();
+        }
         return faseAtual.getFase();
     }
     public Fase getFase(Fase fase) throws Exception {
@@ -105,19 +112,19 @@ public class Arvore {
         remover(fase);
         adicionar(fase);
     }
-    /*public String getCaminho() {
-        String s = "";
-        for(int c : caminho) {
-            s += c + "";
-        }
-        return s;
-    }*/
     public ArrayList<Integer> getCaminho() {
         return caminho;
     }
 
     public void setCaminho(ArrayList<Integer> c) {
         caminho = c;
+        faseAtual = raiz;
+        for(int i : caminho) {
+            if (i == 0)
+                faseAtual = faseAtual.getEsquerda();
+            else
+                faseAtual = faseAtual.getDireita();
+        }
     }
     public void setCaminho(String s) {
         caminho = new ArrayList<Integer>();
@@ -127,5 +134,9 @@ public class Arvore {
     }
     public void adicionarAoCaminho(int s) {
         caminho.add(s);
+        if (s == 0)
+            faseAtual = faseAtual.getEsquerda();
+        else
+            faseAtual = faseAtual.getDireita();
     }
 }
