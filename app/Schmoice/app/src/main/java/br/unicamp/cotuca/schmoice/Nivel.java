@@ -10,18 +10,20 @@ import java.util.ArrayList;
 import br.unicamp.cotuca.schmoice.Escolha;
 
 public class Nivel {
-    private int id;
     private ArrayList<Escolha> escolhas;
     private String descricao;
     private Bitmap background;
     private boolean terminado;
     private Fase parentFase;
+    private Escolha escolhaFeita;
 
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
+    public Nivel(ArrayList<Escolha> escolhas, String descricao, Bitmap background, boolean terminado, Fase parentFase, Escolha escolhaFeita) {
+        this.escolhas = escolhas;
+        this.descricao = descricao;
+        this.background = background;
+        this.terminado = terminado;
+        this.parentFase = parentFase;
+        this.escolhaFeita = escolhaFeita;
     }
 
     public ArrayList<Escolha> getEscolhas() {
@@ -61,7 +63,6 @@ public class Nivel {
 
     public Nivel() {
         escolhas = new ArrayList<Escolha>();
-        id = -1;
         descricao = null;
         background = null;
         terminado = false;
@@ -70,17 +71,16 @@ public class Nivel {
 
     public Nivel(Nivel nivel) {
         this.escolhas = nivel.escolhas;
-        this.id = nivel.id;
         this.descricao = nivel.descricao;
         this.background = nivel.background;
         this.terminado = nivel.terminado;
         this.parentFase = nivel.parentFase;
+        this.escolhaFeita = nivel.escolhaFeita;
     }
 
     public int hashCode() {
         int ret = 1;
         ret = ret * 2 + escolhas.hashCode();
-        ret = ret * 3 + new Integer(id).hashCode();
         ret = ret * 5 + descricao.hashCode();
         ret = ret * 7 + background.hashCode();
         ret = ret * 11 + new Boolean(terminado).hashCode();
@@ -96,8 +96,6 @@ public class Nivel {
             return false;
         Nivel n = (Nivel)obj;
         if (!escolhas.equals(n.escolhas))
-            return false;
-        if (id != n.id)
             return false;
         if (!descricao.equals(n.descricao))
             return false;
@@ -117,7 +115,7 @@ public class Nivel {
     }
 
     public String toString() {
-        String s = id + ": " + descricao + "\n";
+        String s = "";
         s += "Escolhas: " + escolhas.toString() + "\n";
         s += "Imagem: " + background.toString();
         s += padLeft((terminado?"Terminado":""), 10);
@@ -139,7 +137,11 @@ public class Nivel {
 
     public void efetuarEscolha(Escolha e) {
         //fazer as coisas
+        escolhaFeita = e;
         setTerminado(true);
         parentFase.atualizarNivelAtual();
+    }
+    public Escolha getEscolhaFeita() {
+        return escolhaFeita;
     }
 }

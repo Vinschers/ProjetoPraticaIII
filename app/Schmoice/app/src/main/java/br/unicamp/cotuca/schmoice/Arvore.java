@@ -7,6 +7,8 @@ public class Arvore implements Serializable {
     private No raiz;
     private No faseAtual;
     private ArrayList<Integer> caminho;
+    private Jogo jogo;
+
     public Arvore() {
         raiz = null;
         faseAtual = raiz;
@@ -148,5 +150,11 @@ public class Arvore implements Serializable {
             faseAtual = faseAtual.getEsquerda();
         else
             faseAtual = faseAtual.getDireita();
+    }
+    public void setJogo(Jogo j) {
+        jogo = j;
+    }
+    public Jogo getJogo() {
+        return jogo;
     }
 }

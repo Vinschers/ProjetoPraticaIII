@@ -8,10 +8,14 @@ import java.util.ArrayList;
 public class Jogo implements Serializable {
     private Arvore arvore;
     private Player player;
+    private Personagem[] amigos;
+    private boolean acabouDeComecar;
 
     public Jogo() {
         arvore = new Arvore();
+        arvore.setJogo(this);
         player = new Player();
+        acabouDeComecar = true;
     }
     public Jogo(Jogo jogo) {
         arvore = jogo.getArvore();
@@ -23,5 +27,12 @@ public class Jogo implements Serializable {
     }
     public Player getPlayer() {
         return this.player;
+    }
+    public Personagem[] getPersonagens() {return amigos;}
+    public boolean getAcabouDeComecar() {
+        return acabouDeComecar;
+    }
+    public void setAcabouDeComecar(boolean v) {
+        acabouDeComecar = v;
     }
 }

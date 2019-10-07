@@ -1,28 +1,28 @@
 package br.unicamp.cotuca.schmoice;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
+import android.annotation.TargetApi;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 
-import java.io.File;
-import java.util.ArrayList;
-
-public class JogoActivity extends AppCompatActivity {
+/**
+ * An example full-screen activity that shows and hides the system UI (i.e.
+ * status bar and navigation/system bar) with user interaction.
+ */
+public class InicioJogoActivity extends AppCompatActivity {
     //region Comandos gerados automaticamente para controle de fullscreen
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -93,7 +93,6 @@ public class JogoActivity extends AppCompatActivity {
             return false;
         }
     };
-
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -161,49 +160,44 @@ public class JogoActivity extends AppCompatActivity {
         });
     }
     //endregion
-
-    ImageView imgCenario;
-    Jogo jogo;
+    LinearLayout llEscurecer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_jogo);
+        setContentView(R.layout.activity_inicio_jogo);
         iniciarFullscreen();
-        Intent intent = getIntent();
-        Bundle params = intent.getExtras();
-        jogo = (Jogo)params.getSerializable("jogo");
-        if (jogo.getAcabouDeComecar()) {
-            Intent intentInicio = new Intent(JogoActivity.this, InicioJogoActivity.class);
-            startActivity(intentInicio);
-        }
-        imgCenario = (ImageView)findViewById(R.id.imgCenario);
-
-        /*File sd = Environment.getExternalStorageDirectory();
-        File image = new File(sd+filePath, imageName);
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
-        bitmap = Bitmap.createScaledBitmap(bitmap, imgCenario.getWidth(), imgCenario.getHeight(),true);*/
-        Bitmap bg = getImageByName("oi");
-        Arvore a = jogo.getArvore();
-        try {
-            Fase f = new Fase();
-            f.setId(0);
-            f.setTitulo("teste");
-            a.adicionar(f);
-        } catch (Exception e) {}
-        Fase f = a.getFaseAtual();
-        ArrayList<ArrayList<Nivel>> ni = new ArrayList<ArrayList<Nivel>>();
-        ArrayList<Nivel> aux = new ArrayList<Nivel>();
-        aux.add(new Nivel());
-        ni.add(aux);
-        f.setNiveis(ni);
-        Nivel n = f.getNivelAtual();
-        n.setBackground(bg);
-
-        imgCenario.setImageBitmap(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground());
+        llEscurecer = (LinearLayout)findViewById(R.id.llEscurecer);
+        escurecerFundo();
     }
-    public Bitmap getImageByName(String imageName){
-        int id = getResources().getIdentifier(imageName, "drawable", getPackageName());
-        return BitmapFactory.decodeResource(getResources(), id);
+
+    private void escurecerFundo() {
+        int colorFrom = Color.argb(0, 0, 0,0);
+        int colorTo = Color.argb(220, 0, 0,0);
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.setDuration(750); // milliseconds
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                llEscurecer.setBackgroundColor((int) animator.getAnimatedValue());
+            }
+
+        });
+        colorAnimation.start();
+    }
+    private void clarearFundo() {
+        int colorFrom = Color.argb(220, 0, 0,0);
+        int colorTo = Color.argb(0, 0, 0,0);
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.setDuration(750); // milliseconds
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                llEscurecer.setBackgroundColor((int) animator.getAnimatedValue());
+            }
+
+        });
+        colorAnimation.start();
     }
 }

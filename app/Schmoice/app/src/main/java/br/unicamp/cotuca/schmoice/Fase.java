@@ -4,19 +4,22 @@ import java.util.ArrayList;
 
 public class Fase implements Comparable<Fase>, Cloneable {
     private int id;
-    ArrayList<Nivel> niveis;
+    private ArrayList<ArrayList<Nivel>> niveis;
     private String titulo;
     private String descricao;
     private Nivel nivelAtual;
     private boolean terminada;
     private double status;
+    private int parteAtual;
+
     private Arvore arvore;
     public Fase() {
         nivelAtual = null;
-        niveis = new ArrayList<Nivel>();
+        niveis = new ArrayList<ArrayList<Nivel>>();
         terminada = false;
         status = 0.5;
         arvore = null;
+        parteAtual = 0;
     }
     public Fase(Fase fase) {
         this.id = fase.id;
@@ -27,6 +30,7 @@ public class Fase implements Comparable<Fase>, Cloneable {
         this.terminada = fase.terminada;
         this.status = fase.status;
         this.arvore = fase.arvore;
+        this.parteAtual = fase.parteAtual;
     }
     public int compareTo(Fase fase) {
         return this.id - fase.id;
@@ -61,6 +65,8 @@ public class Fase implements Comparable<Fase>, Cloneable {
         if (status != fase.status)
             return false;
         if (!arvore.equals(fase.arvore))
+            return false;
+        if (parteAtual != fase.parteAtual)
             return false;
         return true;
     }
@@ -98,31 +104,55 @@ public class Fase implements Comparable<Fase>, Cloneable {
     }
     public void atualizarNivelAtual() {
         if (nivelAtual == null)
-            nivelAtual = niveis.get(0);
+            nivelAtual = niveis.get(0).get(0);
         if (nivelAtual.isTerminado()) {
-            int index = niveis.indexOf(nivelAtual);
-            if (index >= niveis.size()) {
+            atualizarStatusPlayer();
+            atualizarAmizadesPlayer();
+            int result = nivelAtual.getEscolhaFeita().getParaOndeIr();
+            parteAtual++;
+            if (parteAtual >= niveis.size()) {
                 arvore.atualizarFaseAtual();
             }
             else
-                nivelAtual = niveis.get(index + 1);
+                nivelAtual = niveis.get(parteAtual).get(result);
         }
     }
     public Nivel getNivelAtual() {
+        atualizarNivelAtual();
         return nivelAtual;
     }
     public void setNivelAtual(Nivel n) {
         nivelAtual = n;
     }
-    public void setNivelAtual(int i) {
-        nivelAtual = niveis.get(i);
+    public void setNivelAtual(int i, int j) {
+        nivelAtual = niveis.get(i).get(j);
     }
     public void avancarNivel() {
-        int index = niveis.indexOf(nivelAtual);
-        if (index >= niveis.size()) {
+        if (parteAtual >= niveis.size()) {
             terminada = true;
         } else {
-            nivelAtual = niveis.get(++index);
+            atualizarStatusPlayer();
+            atualizarAmizadesPlayer();
+            int result = nivelAtual.getEscolhaFeita().getParaOndeIr();
+            nivelAtual = niveis.get(++parteAtual).get(result);
+        }
+    }
+    public void atualizarStatusPlayer() {
+        Player player = arvore.getJogo().getPlayer();
+        player.addToTranquilidade(nivelAtual.getEscolhaFeita().getStatus()[0]);
+        player.addToFelicidade(nivelAtual.getEscolhaFeita().getStatus()[1]);
+        player.addToSanidade(nivelAtual.getEscolhaFeita().getStatus()[2]);
+        player.addToFinancas(nivelAtual.getEscolhaFeita().getStatus()[3]);
+        player.addToInteligencia(nivelAtual.getEscolhaFeita().getStatus()[4]);
+        player.addToCarisma(nivelAtual.getEscolhaFeita().getStatus()[5]);
+        player.addToForca(nivelAtual.getEscolhaFeita().getStatus()[6]);
+    }
+    public void atualizarAmizadesPlayer() {
+        Jogo jogo = arvore.getJogo();
+        double[] amizades = nivelAtual.getEscolhaFeita().getAmizades();
+        Personagem[] personagens = jogo.getPersonagens();
+        for(int i = 0; i < personagens.length; i++) {
+            personagens[i].addToAmizade(amizades[i]);
         }
     }
     public boolean isTerminada() {
@@ -133,14 +163,10 @@ public class Fase implements Comparable<Fase>, Cloneable {
     }
     public void setId(int id) {this.id = id;}
     public void setTitulo(String titulo) {this.titulo = titulo;}
-    public void setNiveis(ArrayList<Nivel> niveis) {this.niveis = niveis;}
+    public void setNiveis(ArrayList<ArrayList<Nivel>> niveis) {this.niveis = niveis;}
     public void setDescricao(String descricao) {this.descricao = descricao;}
     public void setTerminada(boolean terminada) {this.terminada = terminada;}
     public void addToStatus(double val) {this.status += val;}
-    public void adicionarNivel(Nivel nivel) {
-        nivel.setParentFase(this);
-        niveis.add(nivel);
-    }
     public Arvore getArvore() {
         return arvore;
     }
