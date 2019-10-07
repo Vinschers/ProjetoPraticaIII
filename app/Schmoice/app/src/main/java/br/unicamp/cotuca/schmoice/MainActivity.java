@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
                     Jogar();
                 } else {
                     new AlertDialog.Builder(context)
-                            .setTitle("Erro de comunicacao")
-                            .setMessage("Controle nao foi conectado corretamente. Ir para configuracoes?")
+                            .setTitle("Erro de comunicação")
+                            .setMessage("Controle não foi conectado corretamente. Ir para configurações?")
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     Configuracoes();

@@ -1,7 +1,10 @@
 package br.unicamp.cotuca.schmoice;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import br.unicamp.cotuca.schmoice.Escolha;
@@ -10,7 +13,9 @@ public class Nivel {
     private int id;
     private ArrayList<Escolha> escolhas;
     private String descricao;
-    private Image background;
+    private Bitmap background;
+    private boolean terminado;
+    private Fase parentFase;
 
     public int getId() {
         return id;
@@ -33,12 +38,25 @@ public class Nivel {
         this.descricao = descricao;
     }
 
-    public Image getBackground() {
+    public Bitmap getBackground() {
         return background;
     }
 
-    public void setBackground(Image background) {
+    public void setBackground(Bitmap background) {
         this.background = background;
+    }
+
+    public boolean isTerminado() {return terminado;}
+    public void setTerminado(boolean terminado) {
+        this.terminado = terminado;
+        parentFase.atualizarNivelAtual();
+    }
+
+    public Fase getParentFase() {
+        return parentFase;
+    }
+    public void setParentFase(Fase fase) {
+        parentFase = fase;
     }
 
     public Nivel() {
@@ -46,6 +64,8 @@ public class Nivel {
         id = -1;
         descricao = null;
         background = null;
+        terminado = false;
+        parentFase = null;
     }
 
     public Nivel(Nivel nivel) {
@@ -53,6 +73,8 @@ public class Nivel {
         this.id = nivel.id;
         this.descricao = nivel.descricao;
         this.background = nivel.background;
+        this.terminado = nivel.terminado;
+        this.parentFase = nivel.parentFase;
     }
 
     public int hashCode() {
@@ -61,6 +83,7 @@ public class Nivel {
         ret = ret * 3 + new Integer(id).hashCode();
         ret = ret * 5 + descricao.hashCode();
         ret = ret * 7 + background.hashCode();
+        ret = ret * 11 + new Boolean(terminado).hashCode();
         return ret;
     }
 
@@ -80,6 +103,8 @@ public class Nivel {
             return false;
         if (!background.equals(n.background))
             return false;
+        if (terminado != n.terminado)
+            return false;
         return true;
     }
 
@@ -95,6 +120,26 @@ public class Nivel {
         String s = id + ": " + descricao + "\n";
         s += "Escolhas: " + escolhas.toString() + "\n";
         s += "Imagem: " + background.toString();
+        s += padLeft((terminado?"Terminado":""), 10);
         return s;
+    }
+
+    private String padLeft(String inputString, int length) {
+        if (inputString.length() >= length) {
+            return inputString;
+        }
+        StringBuilder sb = new StringBuilder();
+        while (sb.length() < length - inputString.length()) {
+            sb.append(' ');
+        }
+        sb.append(inputString);
+
+        return sb.toString();
+    }
+
+    public void efetuarEscolha(Escolha e) {
+        //fazer as coisas
+        setTerminado(true);
+        parentFase.atualizarNivelAtual();
     }
 }

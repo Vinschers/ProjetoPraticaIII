@@ -103,10 +103,10 @@ public class SavesActivity extends AppCompatActivity {
     }
 
     public void carregarJogo(int ind) {
-        /*Intent intent = new Intent(SavesActivity.this, ComecoJogoActivity.class);
+        Intent intent = new Intent(SavesActivity.this, JogoActivity.class);
         Bundle params = new Bundle();
         params.putSerializable("jogo", jogos[ind]);
         intent.putExtras(params);
-        startActivity(intent);*/
+        startActivity(intent);
     }
 }

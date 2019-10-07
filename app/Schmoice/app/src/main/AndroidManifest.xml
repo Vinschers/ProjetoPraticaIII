@@ -12,7 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SavesActivity"></activity>
+        <activity
+            android:name=".JogoActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_jogo"
+            android:theme="@style/FullscreenTheme"></activity>
+        <activity android:name=".SavesActivity" />
         <activity android:name=".ConfigActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

@@ -1,14 +1,15 @@
 package br.unicamp.cotuca.schmoice;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Arvore {
+public class Arvore implements Serializable {
     private No raiz;
     private No faseAtual;
     private ArrayList<Integer> caminho;
     public Arvore() {
         raiz = null;
-        faseAtual = null;
+        faseAtual = raiz;
         caminho = new ArrayList<Integer>();
     }
     public Arvore(Arvore arvore) {
@@ -47,14 +48,20 @@ public class Arvore {
         ret = ret * 5 + caminho.hashCode();
         return ret;
     }
-    public Fase getFaseAtual() {
-        if (faseAtual.getFase().isTerminada()) {
+    public void atualizarFaseAtual() {
+        if (faseAtual == null) {
+            faseAtual = raiz;
+        }
+        else if (faseAtual.getFase().isTerminada()) {
             long s = Math.round(faseAtual.getFase().getStatus());
             if (s == 1)
                 faseAtual = faseAtual.getDireita();
             else
                 faseAtual = faseAtual.getEsquerda();
         }
+    }
+    public Fase getFaseAtual() {
+        atualizarFaseAtual();
         return faseAtual.getFase();
     }
     public Fase getFase(Fase fase) throws Exception {
@@ -81,7 +88,10 @@ public class Arvore {
                 throw new Exception("Fase <" + fase.toString() + "> ja existe!");
             }
         }
+        fase.setArvore(this);
         atual = new No(fase, null, null);
+        if (raiz == null)
+            raiz = atual;
     }
     public void remover(Fase fase) throws Exception {
         No atual = raiz;

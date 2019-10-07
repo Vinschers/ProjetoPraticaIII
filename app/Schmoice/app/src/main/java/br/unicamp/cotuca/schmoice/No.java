@@ -28,13 +28,13 @@ public class No {
     public void setEsquerda(No esq) {
         esquerda = esq;
     }
-    public No getEsquerda() {
+    public No   getEsquerda() {
         return esquerda;
     }
     public void setDireita(No dir) {
         direita = dir;
     }
-    public No getDireita(){
+    public No   getDireita(){
         return direita;
     }
 
@@ -68,6 +68,8 @@ public class No {
     }
 
     private String toStringAux(No no) {
+        if (no == null)
+            return "";
         return "(" + toStringAux(no.getEsquerda()) + ")" + no.getFase() + "(" + toStringAux(no.getDireita()) + ")";
     }
 

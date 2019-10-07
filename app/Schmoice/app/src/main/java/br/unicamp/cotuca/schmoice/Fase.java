@@ -10,11 +10,13 @@ public class Fase implements Comparable<Fase>, Cloneable {
     private Nivel nivelAtual;
     private boolean terminada;
     private double status;
+    private Arvore arvore;
     public Fase() {
         nivelAtual = null;
         niveis = new ArrayList<Nivel>();
         terminada = false;
         status = 0.5;
+        arvore = null;
     }
     public Fase(Fase fase) {
         this.id = fase.id;
@@ -24,6 +26,7 @@ public class Fase implements Comparable<Fase>, Cloneable {
         this.nivelAtual = fase.nivelAtual;
         this.terminada = fase.terminada;
         this.status = fase.status;
+        this.arvore = fase.arvore;
     }
     public int compareTo(Fase fase) {
         return this.id - fase.id;
@@ -56,6 +59,8 @@ public class Fase implements Comparable<Fase>, Cloneable {
         if (terminada != fase.terminada)
             return false;
         if (status != fase.status)
+            return false;
+        if (!arvore.equals(fase.arvore))
             return false;
         return true;
     }
@@ -91,6 +96,18 @@ public class Fase implements Comparable<Fase>, Cloneable {
         ret = ret * 37 + new Double(status).hashCode();
         return ret;
     }
+    public void atualizarNivelAtual() {
+        if (nivelAtual == null)
+            nivelAtual = niveis.get(0);
+        if (nivelAtual.isTerminado()) {
+            int index = niveis.indexOf(nivelAtual);
+            if (index >= niveis.size()) {
+                arvore.atualizarFaseAtual();
+            }
+            else
+                nivelAtual = niveis.get(index + 1);
+        }
+    }
     public Nivel getNivelAtual() {
         return nivelAtual;
     }
@@ -113,5 +130,21 @@ public class Fase implements Comparable<Fase>, Cloneable {
     }
     public double getStatus() {
         return status;
+    }
+    public void setId(int id) {this.id = id;}
+    public void setTitulo(String titulo) {this.titulo = titulo;}
+    public void setNiveis(ArrayList<Nivel> niveis) {this.niveis = niveis;}
+    public void setDescricao(String descricao) {this.descricao = descricao;}
+    public void setTerminada(boolean terminada) {this.terminada = terminada;}
+    public void addToStatus(double val) {this.status += val;}
+    public void adicionarNivel(Nivel nivel) {
+        nivel.setParentFase(this);
+        niveis.add(nivel);
+    }
+    public Arvore getArvore() {
+        return arvore;
+    }
+    public void setArvore(Arvore a) {
+        arvore = a;
     }
 }
