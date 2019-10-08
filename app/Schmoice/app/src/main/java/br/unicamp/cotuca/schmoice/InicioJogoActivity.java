@@ -5,18 +5,32 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.TargetApi;
+import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.os.PersistableBundle;
+import android.text.Layout;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static android.graphics.text.LineBreaker.JUSTIFICATION_MODE_INTER_WORD;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -160,14 +174,81 @@ public class InicioJogoActivity extends AppCompatActivity {
         });
     }
     //endregion
-    LinearLayout llEscurecer;
+    LinearLayout llEscurecer, llExplicacao;
+    TextView tvExplicacao;
+    Thread resizeLL;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inicio_jogo);
         iniciarFullscreen();
         llEscurecer = (LinearLayout)findViewById(R.id.llEscurecer);
+        llExplicacao = (LinearLayout)findViewById(R.id.llExplicacao);
+        tvExplicacao = (TextView)findViewById(R.id.tvExplicacao);
+        tvExplicacao.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
         escurecerFundo();
+        llExplicacao.setBackgroundColor(Color.argb(255, 255,255,255));
+        llExplicacao.setVisibility(View.VISIBLE);
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+                        String s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+                        escreverAnimado(tvExplicacao, s);
+                    }
+                }, 1000);
+        resizeLL = new Thread(new Runnable() {
+            boolean atual = false;
+            final int HEIGHT_SMALL = 150;
+            final int HEIGHT_BIG = HEIGHT_SMALL + 26;
+            final int WIDTH_SMALL = 325;
+            final int WIDTH_BIG = WIDTH_SMALL + 26;
+            final int MARGIN_SMALL = 100;
+            final int MARGIN_BIG = 87;
+            @Override
+            public void run() {
+                while(true) {
+                    try {
+                        if (atual) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)llExplicacao.getLayoutParams();
+                                    params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, HEIGHT_SMALL, getResources().getDisplayMetrics());
+                                    params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, WIDTH_SMALL, getResources().getDisplayMetrics());
+                                    params.topMargin = MARGIN_SMALL;
+                                    llExplicacao.setLayoutParams(params);
+                                }
+                            });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)llExplicacao.getLayoutParams();
+                                    params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, HEIGHT_BIG, getResources().getDisplayMetrics());
+                                    params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, WIDTH_BIG, getResources().getDisplayMetrics());
+                                    params.topMargin = MARGIN_BIG;
+                                    llExplicacao.setLayoutParams(params);
+                                }
+                            });
+                        }
+                        atual = !atual;
+                        Thread.sleep(500);
+                    } catch (Exception e) {
+                        new AlertDialog.Builder(InicioJogoActivity.this)
+                                .setTitle("Erro")
+                                .setMessage(e.getMessage())
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                                .setNegativeButton(android.R.string.no, null)
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+                    }
+                }
+            }
+        });
+        //resizeLL.start();
     }
 
     private void escurecerFundo() {
@@ -199,5 +280,34 @@ public class InicioJogoActivity extends AppCompatActivity {
 
         });
         colorAnimation.start();
+    }
+    public void escreverAnimado(final TextView tv, final String s)
+    {
+        final int[] i = new int[1];
+        i[0] = 0;
+        final int length = s.length();
+        final Handler handler = new Handler()
+        {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                char c= s.charAt(i[0]);
+                Log.d("Strange",""+c);
+                tv.append(String.valueOf(c));
+                i[0]++;
+            }
+        };
+
+        final Timer timer = new Timer();
+        TimerTask taskEverySplitSecond = new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0);
+                if (i[0] == length - 1) {
+                    timer.cancel();
+                }
+            }
+        };
+        timer.schedule(taskEverySplitSecond, 1, 75);
     }
 }

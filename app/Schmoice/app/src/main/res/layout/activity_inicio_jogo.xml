@@ -20,7 +20,26 @@
             android:id="@+id/llEscurecer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+            <LinearLayout
+                android:id="@+id/llExplicacao"
+                android:layout_width="325dp"
+                android:layout_height="150dp"
+                android:gravity="center"
+                android:layout_marginTop="100dp"
+                android:layout_marginHorizontal="40dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvExplicacao"
+                    android:layout_width="310dp"
+                    android:layout_height="150dp"
+                    android:fontFamily="@font/droid_sans_mono"
+                    android:textSize="20dp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <!-- This FrameLayout insets its children based on system windows using
@@ -38,7 +57,7 @@
             android:layout_gravity="bottom|center_horizontal"
             android:background="@color/black_overlay"
             android:orientation="horizontal"
-            tools:ignore="UselessParent"/>
+            tools:ignore="UselessParent" />
     </FrameLayout>
 
 </FrameLayout>
