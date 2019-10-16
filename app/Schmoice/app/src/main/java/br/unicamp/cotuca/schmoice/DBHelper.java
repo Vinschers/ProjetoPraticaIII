@@ -10,7 +10,22 @@ public class DBHelper extends SQLiteOpenHelper {
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE schmoice (" +
+        db.execSQL("CREATE TABLE Jogo (" +
+                "_ID INT PRIMARY KEY," +
+                "info ntext NOT NULL);");
+        db.execSQL("CREATE TABLE Fase (" +
+                "_ID INT PRIMARY KEY," +
+                "info ntext NOT NULL);");
+        db.execSQL("CREATE TABLE Nivel (" +
+                "_ID INT PRIMARY KEY," +
+                "info ntext NOT NULL);");
+        db.execSQL("CREATE TABLE NivelFase (" +
+                "_ID INT PRIMARY KEY," +
+                "info ntext NOT NULL);");
+        db.execSQL("CREATE TABLE Escolha (" +
+                "_ID INT PRIMARY KEY," +
+                "info ntext NOT NULL);");;
+        db.execSQL("CREATE TABLE EscolhaNivel (" +
                 "_ID INT PRIMARY KEY," +
                 "info ntext NOT NULL);");
     }
