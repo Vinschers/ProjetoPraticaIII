@@ -8,5 +8,6 @@
     <string name="title_activity_inicio_jogo">InicioJogoActivity</string>
 
     <string name="title_activity_minigame2">Minigame2Activity</string>
+    <string name="title_activity_minigame1">Minigame1Activity</string>
 
 </resources>

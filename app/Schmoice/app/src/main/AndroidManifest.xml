@@ -16,6 +16,9 @@
             android:name=".Minigame2Activity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_minigame2"
+            android:name=".Minigame1Activity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_minigame1"
             android:theme="@style/FullscreenTheme"></activity>
         <activity
             android:name=".InicioJogoActivity"
