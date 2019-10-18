@@ -13,10 +13,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Minigame1Activity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_minigame1"
+            android:theme="@style/FullscreenTheme"></activity>
+        <activity
             android:name=".InicioJogoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_inicio_jogo"
-            android:theme="@style/FullscreenTheme"></activity>
+            android:theme="@style/FullscreenTheme" />
         <activity
             android:name=".JogoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
