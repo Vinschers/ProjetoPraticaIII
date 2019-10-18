@@ -1,28 +1,34 @@
 package br.unicamp.cotuca.schmoice;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 
-import java.io.File;
-import java.util.ArrayList;
-
-public class JogoActivity extends AppCompatActivity {
+/**
+ * An example full-screen activity that shows and hides the system UI (i.e.
+ * status bar and navigation/system bar) with user interaction.
+ */
+public class Minigame2Activity extends AppCompatActivity {
     //region Comandos gerados automaticamente para controle de fullscreen
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -93,7 +99,6 @@ public class JogoActivity extends AppCompatActivity {
             return false;
         }
     };
-
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -162,48 +167,100 @@ public class JogoActivity extends AppCompatActivity {
     }
     //endregion
 
-    ImageView imgCenario;
-    Jogo jogo;
+    LinearLayout llFundo, llClick, llPassar;
+    int diff;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_jogo);
+        setContentView(R.layout.activity_minigame2);
         iniciarFullscreen();
+        llFundo = (LinearLayout)findViewById(R.id.llFundo);
+        llClick = (LinearLayout)findViewById(R.id.llClick);
+        llPassar = (LinearLayout)findViewById(R.id.llPassar);
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
-        jogo = (Jogo)params.getSerializable("jogo");
-        if (jogo.getAcabouDeComecar()) {
-            Intent intentInicio = new Intent(JogoActivity.this, Minigame2Activity.class);
-            startActivity(intentInicio);
-        }
-        imgCenario = (ImageView)findViewById(R.id.imgCenario);
-
-        /*File sd = Environment.getExternalStorageDirectory();
-        File image = new File(sd+filePath, imageName);
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
-        bitmap = Bitmap.createScaledBitmap(bitmap, imgCenario.getWidth(), imgCenario.getHeight(),true);*/
-        Bitmap bg = getImageByName("oi");
-        Arvore a = jogo.getArvore();
-        try {
-            Fase f = new Fase();
-            f.setId(0);
-            f.setTitulo("teste");
-            a.adicionar(f);
-        } catch (Exception e) {}
-        Fase f = a.getFaseAtual();
-        ArrayList<ArrayList<Nivel>> ni = new ArrayList<ArrayList<Nivel>>();
-        ArrayList<Nivel> aux = new ArrayList<Nivel>();
-        aux.add(new Nivel());
-        ni.add(aux);
-        f.setNiveis(ni);
-        Nivel n = f.getNivelAtual();
-        n.setBackground(bg);
-
-        imgCenario.setImageBitmap(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground());
+        //diff = params.getInt("diff");
+        diff = 1;
+        escurecerFundo(llFundo, 220);
+        escurecerFundo(llClick, 200);
+        escurecerFundo(llPassar, 120);
     }
-    public Bitmap getImageByName(String imageName){
-        int id = getResources().getIdentifier(imageName, "drawable", getPackageName());
-        return BitmapFactory.decodeResource(getResources(), id);
+
+    private void escurecerFundo(final LinearLayout ll, final int qtd) {
+        final ViewTreeObserver treeOb = ll.getViewTreeObserver();
+
+        treeOb.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                ll.setDrawingCacheEnabled(true);
+                ll.buildDrawingCache();
+                Bitmap bitmap = ll.getDrawingCache();
+                int pixel = bitmap.getPixel(0,0);
+                int redValue = Color.red(pixel);
+                int blueValue = Color.blue(pixel);
+                int greenValue = Color.green(pixel);
+                int alpha = Color.alpha(pixel);
+                int colorFrom = Color.argb(alpha, redValue, greenValue, blueValue);
+                int colorTo = Color.argb(qtd, redValue, greenValue, blueValue);
+                ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+                colorAnimation.setDuration(750); // milliseconds
+                colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animator) {
+                        ll.setBackgroundColor((int) animator.getAnimatedValue());
+                    }
+
+                });
+                colorAnimation.start();
+            }
+        });
+    }
+
+    public class ObjetoMinigame implements Runnable {
+        private int vel;
+        private boolean morta;
+        private Bitmap b;
+        private LinearLayout ll;
+        public ObjetoMinigame(int tipo, int v, LinearLayout l) {
+            b = getArrow(tipo);
+            vel = v;
+            ll = l;
+        }
+        private Bitmap getArrow(int t) {
+            Bitmap bmp = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(b);
+            Paint paint = new Paint();
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(2);
+            paint.setColor(Color.RED);
+            Path path = new Path();
+            path.moveTo(0, -10);
+            path.lineTo(5, 0);
+            path.lineTo(-5, 0);
+            path.close();
+            path.offset(10, 40);
+            canvas.drawPath(path, paint);
+            path.offset(50, 100);
+            canvas.drawPath(path, paint);
+            path.offset(50, 100);
+            canvas.drawPath(path, paint);
+            canvas.rotate(90 * t);
+            return bmp;
+        }
+        private void mover() {
+            //
+        }
+        @Override
+        public void run() {
+            while(!morta) {
+                mover();
+                try {
+                    Thread.sleep(15);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

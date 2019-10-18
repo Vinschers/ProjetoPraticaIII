@@ -182,7 +182,7 @@ public class InicioJogoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inicio_jogo);
         iniciarFullscreen();
-        llEscurecer = (LinearLayout)findViewById(R.id.llEscurecer);
+        llEscurecer  = (LinearLayout)findViewById(R.id.llEscurecer);
         llExplicacao = (LinearLayout)findViewById(R.id.llExplicacao);
         tvExplicacao = (TextView)findViewById(R.id.tvExplicacao);
         tvExplicacao.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
@@ -192,7 +192,7 @@ public class InicioJogoActivity extends AppCompatActivity {
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        String s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+                        String s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempout aliquip ";
                         escreverAnimado(tvExplicacao, s);
                     }
                 }, 1000);
@@ -248,7 +248,7 @@ public class InicioJogoActivity extends AppCompatActivity {
                 }
             }
         });
-        //resizeLL.start();
+        resizeLL.start();
     }
 
     private void escurecerFundo() {
