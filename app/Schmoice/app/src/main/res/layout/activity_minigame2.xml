@@ -16,16 +16,19 @@
         android:orientation="vertical"
         android:gravity="center"
         android:keepScreenOn="true">
-        <LinearLayout
-            android:id="@+id/llFundo"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center_vertical">
-            <LinearLayout
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/imgCenario"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <!--<LinearLayout
+                android:id="@+id/llFundoMinigame"
                 android:layout_width="match_parent"
                 android:layout_height="125dp"
-                android:layout_marginBottom="200dp">
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
                 <LinearLayout
                     android:id="@+id/llClick"
                     android:layout_width="wrap_content"
@@ -40,8 +43,14 @@
                     android:background="#FFF"
                     android:layout_weight="0.9"
                     android:orientation="vertical"></LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
+            </LinearLayout>-->
+            <ImageView
+                android:id="@+id/imgViewFundoJogo"
+                android:layout_width="match_parent"
+                android:layout_height="125dp"
+                android:layout_marginTop="20dp"
+                android:background="@android:color/transparent"/>
+        </RelativeLayout>
     </LinearLayout>
 
     <!-- This FrameLayout insets its children based on system windows using

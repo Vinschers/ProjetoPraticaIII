@@ -72,11 +72,11 @@ public class SavesActivity extends AppCompatActivity {
             btns[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (jogos[atual] != null)
-                        carregarJogo(atual);
+                    if (jogos[index] != null)
+                        carregarJogo(index);
                     else {
-                        jogos[atual] = new Jogo();
-                        carregarJogo(atual);
+                        jogos[index] = new Jogo();
+                        carregarJogo(index);
                     }
                 }
             });
@@ -118,6 +118,7 @@ public class SavesActivity extends AppCompatActivity {
         Bundle params = new Bundle();
         params.putInt("cenario", R.drawable.oi);
         params.putInt("personagem", R.drawable.oi);
+        params.putSerializable("jogo", jogos[ind]);
         intent.putExtras(params);
         startActivity(intent);
     }
