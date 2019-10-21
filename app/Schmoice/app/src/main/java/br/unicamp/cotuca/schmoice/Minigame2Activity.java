@@ -251,6 +251,11 @@ public class Minigame2Activity extends AppCompatActivity {
         private void mover() {
             //
         }
+        public void setMorta(boolean t) {
+            morta = t;
+        }
+        public void desenhar() {
+        }
         @Override
         public void run() {
             while(!morta) {

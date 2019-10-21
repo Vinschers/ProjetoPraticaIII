@@ -109,7 +109,12 @@ public class SavesActivity extends AppCompatActivity {
         params.putSerializable("jogo", jogos[ind]);
         intent.putExtras(params);
         startActivity(intent);*/
-        Intent intent = new Intent(SavesActivity.this, Minigame1Activity.class);
+        Intent intent;
+        if (ind == 0) {
+            intent = new Intent(SavesActivity.this, Minigame1Activity.class);
+        } else {
+            intent = new Intent(SavesActivity.this, Minigame2Activity.class);
+        }
         Bundle params = new Bundle();
         params.putInt("cenario", R.drawable.oi);
         params.putInt("personagem", R.drawable.oi);
