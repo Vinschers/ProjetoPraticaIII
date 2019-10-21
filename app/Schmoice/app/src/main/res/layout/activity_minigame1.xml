@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc"
+    android:background="#48c5ff"
     tools:context=".Minigame1Activity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -53,16 +53,15 @@
 
         <ProgressBar
             android:id="@+id/pbVida"
-            style="?android:attr/progressBarStyleHorizontal"
+            style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="330dp"
-            android:layout_height="56dp"
+            android:layout_height="46dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:max="100"
-            android:progress="0"
-            android:progressBackgroundTint="#00616161"
-            android:progressTint="#00960303"
+            android:max="75"
+            android:progressBackgroundTint="#ffc993"
+            android:progressTint="#AA0000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.492"
             app:layout_constraintStart_toStartOf="parent"
