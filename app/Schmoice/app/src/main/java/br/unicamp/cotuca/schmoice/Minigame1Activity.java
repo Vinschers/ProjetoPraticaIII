@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.lang.reflect.UndeclaredThrowableException;
@@ -53,6 +54,12 @@ public class Minigame1Activity extends AppCompatActivity {
         } else {
             show();
         }
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                pbVida.incrementProgressBy(1); // TIRAR DEPOIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            }
+        });
     }
 
     private void hide() {
@@ -158,10 +165,12 @@ public class Minigame1Activity extends AppCompatActivity {
     //endregion
 
     ImageView ivCenario, ivPersonagem;
+    TextView tvTempo;
+    ProgressBar pbVida;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         Bundle params = intent.getExtras();
 
         super.onCreate(savedInstanceState);
@@ -169,32 +178,97 @@ public class Minigame1Activity extends AppCompatActivity {
         setContentView(R.layout.activity_minigame1);
         iniciarFullscreen();
 
+        final Controle controle = (Controle)params.getSerializable("controle");
+        controle.setEventos(new Eventos(){
+            @Override
+            public void onOK() {
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!tvTempo.getText().equals("Ganhou!") && !tvTempo.getText().equals("Perdeu!"))
+                            pbVida.incrementProgressBy(1); // TIRAR DEPOIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    }
+                });
+            }
+        });
+
         int idCenario = (int)params.get("cenario");
         int idPersonagem = (int)params.get("personagem");
 
         ivCenario = findViewById(R.id.ivCenario);
         ivPersonagem = findViewById(R.id.ivPersonagem);
+        tvTempo = findViewById(R.id.tvTempo);
+        pbVida = findViewById(R.id.pbVida);
 
         ivCenario.setImageResource(idCenario);
         ivPersonagem.setImageResource(idPersonagem);
+
+        TimerJogo tmr = new TimerJogo(tvTempo, pbVida, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1500);
+                    Intent intent2 = new Intent(Minigame1Activity.this, SavesActivity.class);
+                    Bundle params = new Bundle();
+                    controle.setEventos(null);
+                    params.putSerializable("controle", controle);
+                    params.putBoolean("ganhou", true);
+                    intent2.putExtras(params);
+                    startActivity(intent2);
+                }
+                catch (InterruptedException ex) {}
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1500);
+                    Intent intent2 = new Intent(Minigame1Activity.this, SavesActivity.class);
+                    Bundle params = new Bundle();
+                    controle.setEventos(null);
+                    params.putSerializable("controle", controle);
+                    params.putBoolean("ganhou", false);
+                    intent2.putExtras(params);
+                    startActivity(intent2);
+                }
+                catch (InterruptedException ex) {}
+            }
+        });
+        tmr.start();
     }
 }
-class TimerJogo implements Runnable {
+class TimerJogo extends Thread {
 
     TextView tvTimer;
-    int segundos = 15;
+    ProgressBar pbVida;
+    Runnable onGanhou, onPerdeu;
 
-    public TimerJogo(TextView tvTimer) {
+    public TimerJogo(TextView tvTimer, ProgressBar pbVida, Runnable onGanhou, Runnable onPerdeu) {
         this.tvTimer = tvTimer;
-        tvTimer.setText(segundos);
+        this.pbVida = pbVida;
+        this.onGanhou = onGanhou;
+        this.onPerdeu = onPerdeu;
     }
 
     public void run() {
         try {
-            Thread.sleep(1000);
-            tvTimer.setText(--segundos);
+            for (int segundos = 15; segundos >= 0; segundos--)
+            {
+                Thread.sleep(1000);
+                tvTimer.setText(segundos + "");
+                if (pbVida.getProgress() == pbVida.getMax())
+                    break;
+            }
+            if (pbVida.getProgress() == pbVida.getMax()) {
+                tvTimer.setText("Ganhou!");
+                onGanhou.run();
+            }
+            else {
+                tvTimer.setText("Perdeu!");
+                onPerdeu.run();
+            }
         }
         catch (InterruptedException ex) {}
-        catch (Throwable ex) {}
+        catch (Throwable ex) {System.out.println(ex.getMessage());}
     }
 }
