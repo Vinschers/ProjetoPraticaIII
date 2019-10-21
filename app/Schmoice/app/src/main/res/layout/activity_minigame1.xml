@@ -13,7 +13,7 @@
         android:id="@+id/fullscreen_content">
 
         <TextView
-            android:id="@+id/tvTempo2"
+            android:id="@+id/tv"
             android:layout_width="361dp"
             android:layout_height="62dp"
             android:layout_marginStart="8dp"

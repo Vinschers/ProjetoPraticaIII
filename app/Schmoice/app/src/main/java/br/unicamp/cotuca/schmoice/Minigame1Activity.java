@@ -158,6 +158,7 @@ public class Minigame1Activity extends AppCompatActivity {
     //endregion
 
     ImageView ivCenario, ivPersonagem;
+    TextView tvTempo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,9 +175,12 @@ public class Minigame1Activity extends AppCompatActivity {
 
         ivCenario = findViewById(R.id.ivCenario);
         ivPersonagem = findViewById(R.id.ivPersonagem);
+        tvTempo = findViewById(R.id.tvTempo);
 
         ivCenario.setImageResource(idCenario);
         ivPersonagem.setImageResource(idPersonagem);
+
+        TimerJogo tmr = new TimerJogo(tvTempo);
     }
 }
 class TimerJogo implements Runnable {
