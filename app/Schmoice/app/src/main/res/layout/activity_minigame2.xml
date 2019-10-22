@@ -23,7 +23,7 @@
                 android:id="@+id/imgCenario"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-            <!--<LinearLayout
+            <LinearLayout
                 android:id="@+id/llFundoMinigame"
                 android:layout_width="match_parent"
                 android:layout_height="125dp"
@@ -43,7 +43,7 @@
                     android:background="#FFF"
                     android:layout_weight="0.9"
                     android:orientation="vertical"></LinearLayout>
-            </LinearLayout>-->
+            </LinearLayout>
             <ImageView
                 android:id="@+id/imgViewFundoJogo"
                 android:layout_width="match_parent"

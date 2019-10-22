@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -176,7 +178,7 @@ public class Minigame2Activity extends AppCompatActivity {
 
     LinearLayout llFundoMinigame, llClick, llPassar;
     ImageView imgCenario, imgViewFundoJogo;
-    Canvas canvas;
+    AnimacaoMinigame animacao;
 
     Jogo jogo;
     int diff;
@@ -185,54 +187,42 @@ public class Minigame2Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_minigame2);
-        iniciarFullscreen();
         imgViewFundoJogo = (ImageView)findViewById(R.id.imgViewFundoJogo);
-        //llFundoMinigame = (LinearLayout)findViewById(R.id.llFundoMinigame);
+        llFundoMinigame = (LinearLayout)findViewById(R.id.llFundoMinigame);
         imgCenario = (ImageView)findViewById(R.id.imgCenario);
-        //llClick = (LinearLayout)findViewById(R.id.llClick);
-        //llPassar = (LinearLayout)findViewById(R.id.llPassar);
+        llClick = (LinearLayout)findViewById(R.id.llClick);
+        llPassar = (LinearLayout)findViewById(R.id.llPassar);
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
         //diff = params.getInt("diff");
         jogo = (Jogo)params.getSerializable("jogo");
         diff = 1;
-        //llFundoMinigame.setBackgroundColor(Color.argb(240, 0, 0, 0));
-        //llClick.setBackgroundColor(Color.argb(200, 255, 255, 224));
-        //llPassar.setBackgroundColor(Color.argb(120, 255, 255, 255));
         //imgCenario.setImageBitmap(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground());
-        canvas = new Canvas();
+        llFundoMinigame.setBackgroundColor(Color.argb(240, 0, 0, 0));
+        llClick.setBackgroundColor(Color.argb(200, 255, 255, 224));
+        llPassar.setBackgroundColor(Color.argb(120, 255, 255, 255));
         imgCenario.setImageBitmap(getImageByName("oi"));
 
-        //animacao = new ObjetoMinigame(0, 100, imgViewFundoJogo);
-        //new Thread(animacao).start();
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+                        int w = llFundoMinigame.getMeasuredWidth();
+                        int h = llFundoMinigame.getMeasuredHeight();
+                        ObjetoMinigame[] objs = new ObjetoMinigame[10 * diff];
+                        for (int i = 0; i < 10 * diff; i++) {
+                            objs[i] = new ObjetoMinigame(Minigame2Activity.this);
+                            objs[i].setTipo(1);
+                            objs[i].setX(w - (i * objs[i].getWidth()) + 40);
+                            objs[i].setY(h);
+                            llFundoMinigame.addView(objs[i]);
+                        }
 
-
-
-        Bitmap bmp = getArrow(0);
-        canvas.drawBitmap(bmp, 40f, 40f, null);
-        imgViewFundoJogo.draw(canvas);
-
-    }
-    private Bitmap getArrow(int t) {
-        Bitmap bmp = getImageByName("arrowminigame2");
-        Random rnd = new Random();
-        int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-        bmp = colorirBitmap(bmp, color);
-        return rotateBitmap(bmp, t * 90);
-    }
-    private Bitmap rotateBitmap(Bitmap source, float angle) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(angle);
-        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
-    }
-    private Bitmap colorirBitmap(Bitmap bmp, int c) {
-        Bitmap src = bmp.copy(Bitmap.Config.ARGB_8888, true);
-        int[] pixels = new int[src.getHeight()*src.getWidth()];
-        src.getPixels(pixels, 0, src.getWidth(), 0, 0, src.getWidth(), src.getHeight());
-        for (int i=0; i<src.getWidth()*5; i++)
-            pixels[i] = c;
-        src.setPixels(pixels, 0, src.getWidth(), 0, 0, src.getWidth(), src.getHeight());
-        return src;
+                        animacao = new AnimacaoMinigame(objs);
+                        new Thread(animacao).start();
+                    }
+                },
+                500);
+        iniciarFullscreen();
     }
     public Bitmap getImageByName(String imageName){
         int id = getResources().getIdentifier(imageName, "drawable", getPackageName());
@@ -240,60 +230,31 @@ public class Minigame2Activity extends AppCompatActivity {
     }
 
 
-    /*public class ObjetoMinigame implements Runnable {
+    public class AnimacaoMinigame implements Runnable {
         private int vel;
         private boolean morta;
-        private Bitmap b;
-        private ImageView view;
-        private float x, y;
-        public ObjetoMinigame(int tipo, int v, ImageView vw) {
-            b = getArrow(tipo);
-            vel = v;
-            view = vw;
-            x = vw.getWidth() - 40;
-            y = vw.getHeight() - 10;
-            canvas.drawBitmap(b, x, y, null);
-        }
-        private Bitmap getArrow(int t) {
-            Bitmap bmp = getImageByName("arrowminigame2");
-            Random rnd = new Random();
-            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-            bmp = colorirBitmap(bmp, color);
-            return rotateBitmap(bmp, t * 90);
-        }
-        private Bitmap rotateBitmap(Bitmap source, float angle) {
-            Matrix matrix = new Matrix();
-            matrix.postRotate(angle);
-            return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
-        }
-        private Bitmap colorirBitmap(Bitmap bmp, int c) {
-            Bitmap src = bmp.copy(Bitmap.Config.ARGB_8888, true);
-            int[] pixels = new int[src.getHeight()*src.getWidth()];
-            src.getPixels(pixels, 0, src.getWidth(), 0, 0, src.getWidth(), src.getHeight());
-            for (int i=0; i<src.getWidth()*5; i++)
-                pixels[i] = c;
-            src.setPixels(pixels, 0, src.getWidth(), 0, 0, src.getWidth(), src.getHeight());
-            return src;
+        private ObjetoMinigame[] objsMinigame;
+        public AnimacaoMinigame(ObjetoMinigame[] o) {
+            objsMinigame = o;
+            vel = diff * 10;
         }
         private void mover() {
-
+            boolean acabou = true;
+            for(ObjetoMinigame obj : objsMinigame) {
+                if (obj.getWidth() + obj.getX() > 0) {
+                    obj.setX(obj.getX() - vel);
+                    acabou = false;
+                }
+            }
+            setMorta(acabou);
         }
         public void setMorta(boolean t) {
             morta = t;
-        }
-        public void desenhar() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    view.draw(canvas);
-                }
-            });
         }
         @Override
         public void run() {
             while(!morta) {
                 mover();
-                desenhar();
                 try {
                     Thread.sleep(15);
                 } catch (InterruptedException e) {
@@ -301,5 +262,56 @@ public class Minigame2Activity extends AppCompatActivity {
                 }
             }
         }
-    }*/
+    }
+
+
+
+    public class ObjetoMinigame extends View {
+        private Paint paint;
+        private int tipo, cor;
+
+        public int getTipo() {
+            return tipo;
+        }
+
+        public void setTipo(int tipo) {
+            this.tipo = tipo;
+        }
+
+        public ObjetoMinigame(Context context) {
+            super(context);
+            cor = getCorAleatoria();
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+            paint = new Paint();
+            drawArrow(canvas);
+        }
+        private int getCorAleatoria() {
+            Random rnd = new Random();
+            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+            return color;
+        }
+        private void drawArrow(Canvas canvas) {
+            paint.setStyle(Paint.Style.STROKE);
+            //paint.setStyle(Paint.Style.FILL);
+            paint.setColor(cor);
+            canvas.drawRect(getX(), getY(), getX() + 100, getY() + 50, paint);
+            Path path = new Path();
+            Point p1 = new Point((int)getX(), (int)getY()-30);
+            Point p2 = new Point((int)getX()-50, (int)getY() + 25);
+            Point p3 = new Point((int)getX(), (int)getY()+80);
+            path.moveTo(p1.x, p1.y);
+            path.lineTo(p2.x, p2.y);
+            path.moveTo(p2.x, p2.y);
+            path.lineTo(p3.x, p3.y);
+            path.moveTo(p3.x, p3.y);
+            path.lineTo(p1.x, p1.y);
+            path.close();
+            canvas.drawPath(path, paint);
+            canvas.rotate(tipo * 90);
+        }
+    }
 }
