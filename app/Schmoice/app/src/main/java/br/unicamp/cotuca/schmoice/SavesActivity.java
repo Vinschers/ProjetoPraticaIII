@@ -117,11 +117,11 @@ public class SavesActivity extends AppCompatActivity {
         }
         else {
             intent = new Intent(SavesActivity.this, JogoActivity.class);
-            params.putSerializable("jogo", jogos[ind]);
         }
         params.putInt("cenario", R.drawable.oi);
         params.putInt("personagem", R.drawable.oi);
         params.putSerializable("jogo", jogos[ind]);
+        params.putInt("diff", 1);
         controle.setEventos(null);
 
         params.putSerializable("controle", controle);
