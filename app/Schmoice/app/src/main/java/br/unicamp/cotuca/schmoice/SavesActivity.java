@@ -121,7 +121,7 @@ public class SavesActivity extends AppCompatActivity {
         params.putInt("cenario", R.drawable.oi);
         params.putInt("personagem", R.drawable.oi);
         params.putSerializable("jogo", jogos[ind]);
-        params.putInt("diff", 1);
+        params.putInt("diff", 3);
         controle.setEventos(null);
 
         params.putSerializable("controle", controle);

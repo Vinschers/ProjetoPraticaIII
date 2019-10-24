@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -172,7 +173,7 @@ public class Minigame2Activity extends AppCompatActivity {
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                toggle();
+                controle.eventos.onOK();
             }
         });
     }
@@ -180,19 +181,19 @@ public class Minigame2Activity extends AppCompatActivity {
 
     LinearLayout llFundoMinigame;
     ImageView imgCenario, imgViewFundoJogo;
-    //AnimacaoMinigame animacao;
     CanvasMinigame canvas;
     ObjetoMinigame[] objs;
     ValueAnimator animator;
+    final float click = 0.30f;
 
     Jogo jogo;
     Controle controle;
     int diff;
-    //ObjetoMinigame animacao;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_minigame2);
+        iniciarFullscreen();
         canvas = new CanvasMinigame(Minigame2Activity.this);
         imgViewFundoJogo = (ImageView)findViewById(R.id.imgViewFundoJogo);
         llFundoMinigame = (LinearLayout)findViewById(R.id.llFundoMinigame);
@@ -205,70 +206,89 @@ public class Minigame2Activity extends AppCompatActivity {
         //imgCenario.setImageBitmap(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground());
         imgCenario.setImageBitmap(getImageByName("oi"));
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        int w = llFundoMinigame.getMeasuredWidth();
-                        int h = llFundoMinigame.getMeasuredHeight();
-                        int v = 5 * diff;
-                        objs = new ObjetoMinigame[10 * diff];
-                        for (int i = 0; i < 10 * diff; i++) {
-                            ObjetoMinigame obj = new ObjetoMinigame(new Random().nextInt(4), v);
-                            obj.setX(w + i * (450 - 20*diff));
-                            obj.setY((h-110)/2);
-                            objs[i] = obj;
-                        }
-                        canvas.setObjs(objs);
-                        llFundoMinigame.addView(canvas);
-                        animator = new ValueAnimator();
-                        int dS = w + (diff * 10 - 1) * (450 - 20*diff);
-                        int dT = dS/v;
-                        animator.setIntValues(0, 100);
-                        animator.setDuration(1000 * dT);
-                        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animation) {
-                                canvas.invalidate();
-                            }
-                        });
-                        controle.setEventos(new Eventos(){
-                            @Override
-                            public void onPraEsquerda() {
-                                ObjetoMinigame obj = getObjetoAtual();
-                                if (obj.getTipo() != 0) {
-                                    perder();
-                                }
-                            }
+        llFundoMinigame.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                iniciarMinigame();
+            }
+        });
+    }
+    public void iniciarMinigame() {
+        int w = llFundoMinigame.getMeasuredWidth();
+        int h = llFundoMinigame.getMeasuredHeight();
+        int v = 5 * diff;
+        objs = new ObjetoMinigame[10 * diff];
+        for (int i = 0; i < 10 * diff; i++) {
+            ObjetoMinigame obj = new ObjetoMinigame(new Random().nextInt(4), v);
+            obj.setX(w + i * (450 - 20*diff));
+            obj.setY((h-110)/2);
+            objs[i] = obj;
+        }
+        canvas.setObjs(objs);
+        llFundoMinigame.addView(canvas);
+        animator = new ValueAnimator();
+        int dS = w + (diff * 10 - 1) * (450 - 20*diff);
+        int dT = dS/v;
+        animator.setIntValues(0, 1000 * dT);
+        animator.setDuration(1000 * dT);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                canvas.invalidate();
+            }
+        });
+        controle.setEventos(new Eventos(){
+            @Override
+            public void onOK() {
+                ObjetoMinigame obj = getObjetoAtual();
+                if (obj.getTipo() == -1 || obj.getX() + obj.getWidth()/2 > llFundoMinigame.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
+                    perder();
+                } else {
+                    obj.fade();
+                }
+            }
 
-                            @Override
-                            public void onPraCima() {
-                                ObjetoMinigame obj = getObjetoAtual();
-                                if (obj.getTipo() != 1) {
-                                    perder();
-                                }
-                            }
+            @Override
+            public void onPraEsquerda() {
+                ObjetoMinigame obj = getObjetoAtual();
+                if (obj.getTipo() != 0 || obj.getX() + obj.getWidth()/2 > llFundoMinigame.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
+                    perder();
+                } else {
+                    obj.fade();
+                }
+            }
 
-                            @Override
-                            public void onPraDireita() {
-                                ObjetoMinigame obj = getObjetoAtual();
-                                if (obj.getTipo() != 2) {
-                                    perder();
-                                }
-                            }
+            @Override
+            public void onPraCima() {
+                ObjetoMinigame obj = getObjetoAtual();
+                if (obj.getTipo() != 1 || obj.getX() + obj.getWidth()/2 > llFundoMinigame.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
+                    perder();
+                } else {
+                    obj.fade();
+                }
+            }
 
-                            @Override
-                            public void onPraBaixo() {
-                                ObjetoMinigame obj = getObjetoAtual();
-                                if (obj.getTipo() != 3) {
-                                    perder();
-                                }
-                            }
-                        });
-                        animator.start();
-                    }
-                },
-                500);
-        iniciarFullscreen();
+            @Override
+            public void onPraDireita() {
+                ObjetoMinigame obj = getObjetoAtual();
+                if (obj.getTipo() != 2 || obj.getX() + obj.getWidth()/2 > llFundoMinigame.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
+                    perder();
+                } else {
+                    obj.fade();
+                }
+            }
+
+            @Override
+            public void onPraBaixo() {
+                ObjetoMinigame obj = getObjetoAtual();
+                if (obj.getTipo() != 3 || obj.getX() + obj.getWidth()/2 > llFundoMinigame.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
+                    perder();
+                } else {
+                    obj.fade();
+                }
+            }
+        });
+        animator.start();
     }
     public Bitmap getImageByName(String imageName){
         int id = getResources().getIdentifier(imageName, "drawable", getPackageName());
@@ -276,19 +296,30 @@ public class Minigame2Activity extends AppCompatActivity {
     }
     public ObjetoMinigame getObjetoAtual() {
         for (ObjetoMinigame obj : objs) {
-            if (obj.getX() <= llFundoMinigame.getMeasuredWidth()/4)
+            if (obj.getX() + obj.getWidth() > 0)
                 return obj;
         }
         return new ObjetoMinigame(-1, 0);
     }
     public void perder() {
-        animator.end();
+        if (animator.isRunning())
+            animator.end();
         new AlertDialog.Builder(Minigame2Activity.this)
-                .setTitle("Erro de comunicação")
-                .setMessage("Controle não foi conectado corretamente. Ir para configurações?")
+                .setTitle("Perdeu")
+                .setMessage("Você perdeu. Deseja tentar novamente?")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        //
+                        startActivity(getIntent());
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(Minigame2Activity.this, SavesActivity.class);
+                        Bundle params = new Bundle();
+                        params.putSerializable("controle", controle);
+                        intent.putExtras(params);
+                        startActivity(intent);
                     }
                 })
                 .setNegativeButton(android.R.string.no, null)
@@ -298,7 +329,7 @@ public class Minigame2Activity extends AppCompatActivity {
 
 
     public class ObjetoMinigame {
-        private int tipo, cor, v;
+        private int tipo, cor, v, alpha;
         private float x, y;
 
         public int getTipo() {
@@ -325,13 +356,20 @@ public class Minigame2Activity extends AppCompatActivity {
         public void setY(float y) {
             this.y = y;
         }
+        public int getWidth() {
+            if (tipo == 0 || tipo == 2)
+                return 150;
+            return 110;
+        }
 
         public ObjetoMinigame(int t, int vel) {
             tipo = t;
             cor = getCorAleatoria();
             v = vel;
+            alpha = 255;
         }
         public void draw(Canvas canvas) {
+            cor = Color.argb(alpha, Color.red(cor), Color.green(cor), Color.blue(cor));
             switch (tipo) {
                 case 0:
                     draw0(canvas);
@@ -351,39 +389,23 @@ public class Minigame2Activity extends AppCompatActivity {
             Paint paint = new Paint();
             paint.setStyle(Paint.Style.FILL);
             paint.setColor(cor);
-            canvas.drawRect(getX(), getY(), getX() + 100, getY() + 50, paint);
+            canvas.drawRect(getX() + 50, getY() + 30, getX() + 150, getY() + 80, paint);
             Path path = new Path();
-            Point p1 = new Point((int)getX(), (int)getY()-30);
-            Point p2 = new Point((int)getX()-50, (int)getY() + 25);
-            Point p3 = new Point((int)getX(), (int)getY()+80);
-            path.moveTo(p1.x, p1.y);
-            path.lineTo(p2.x, p2.y);
-            path.moveTo(p2.x, p2.y);
-            path.lineTo(p3.x, p3.y);
-            path.moveTo(p3.x, p3.y);
-            path.lineTo(p1.x, p1.y);
-            path.close();
-            paint.setStyle(Paint.Style.STROKE);
-            canvas.drawPath(path, paint);
+            Point p1 = new Point((int)getX() + 50, (int)getY());
+            Point p2 = new Point((int)getX(), (int)getY() + 55);
+            Point p3 = new Point((int)getX() + 50, (int)getY()+110);
+            drawTriangulo(canvas, p1, p2, p3);
         }
         private void draw1(Canvas canvas) {
             Paint paint = new Paint();
             paint.setStyle(Paint.Style.FILL);
             paint.setColor(cor);
-            canvas.drawRect(getX(), getY(), getX() + 50, getY() + 100, paint);
+            canvas.drawRect(getX() + 30, getY() + 50, getX() + 80, getY() + 150, paint);
             Path path = new Path();
-            Point p1 = new Point((int)getX()-30, (int)getY());
-            Point p2 = new Point((int)getX()+25, (int)getY() - 50);
-            Point p3 = new Point((int)getX()+80, (int)getY());
-            path.moveTo(p1.x, p1.y);
-            path.lineTo(p2.x, p2.y);
-            path.moveTo(p2.x, p2.y);
-            path.lineTo(p3.x, p3.y);
-            path.moveTo(p3.x, p3.y);
-            path.lineTo(p1.x, p1.y);
-            path.close();
-            paint.setStyle(Paint.Style.STROKE);
-            canvas.drawPath(path, paint);
+            Point p1 = new Point((int)getX(), (int)getY() + 50);
+            Point p2 = new Point((int)getX()+55, (int)getY());
+            Point p3 = new Point((int)getX()+110, (int)getY() + 50);
+            drawTriangulo(canvas, p1, p2, p3);
         }
         private void draw2(Canvas canvas) {
             Paint paint = new Paint();
@@ -394,44 +416,64 @@ public class Minigame2Activity extends AppCompatActivity {
             Point p1 = new Point((int)getX() + 100, (int)getY()-30);
             Point p2 = new Point((int)getX()+150, (int)getY() + 25);
             Point p3 = new Point((int)getX() + 100, (int)getY()+80);
-            path.moveTo(p1.x, p1.y);
-            path.lineTo(p2.x, p2.y);
-            path.moveTo(p2.x, p2.y);
-            path.lineTo(p3.x, p3.y);
-            path.moveTo(p3.x, p3.y);
-            path.lineTo(p1.x, p1.y);
-            path.close();
-            paint.setStyle(Paint.Style.STROKE);
-            canvas.drawPath(path, paint);
+            drawTriangulo(canvas, p1, p2, p3);
         }
         private void draw3(Canvas canvas) {
             Paint paint = new Paint();
             paint.setStyle(Paint.Style.FILL);
             paint.setColor(cor);
-            canvas.drawRect(getX(), getY(), getX() + 50, getY() + 100, paint);
+            canvas.drawRect(getX() + 30, getY(), getX() + 80, getY() + 100, paint);
             Path path = new Path();
-            Point p1 = new Point((int)getX()-30, (int)getY()+100);
-            Point p2 = new Point((int)getX()+25, (int)getY() + 150);
-            Point p3 = new Point((int)getX()+80, (int)getY()+100);
+            Point p1 = new Point((int)getX(), (int)getY()+100);
+            Point p2 = new Point((int)getX()+55, (int)getY() + 150);
+            Point p3 = new Point((int)getX()+110, (int)getY()+100);
+            drawTriangulo(canvas, p1, p2, p3);
+        }
+        private void drawTriangulo(Canvas canvas, Point p1, Point p2, Point p3) {
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+            paint.setStrokeWidth(2);
+            paint.setColor(cor);
+            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+            paint.setAntiAlias(true);
+
+            Path path = new Path();
+            path.setFillType(Path.FillType.EVEN_ODD);
             path.moveTo(p1.x, p1.y);
             path.lineTo(p2.x, p2.y);
-            path.moveTo(p2.x, p2.y);
             path.lineTo(p3.x, p3.y);
-            path.moveTo(p3.x, p3.y);
             path.lineTo(p1.x, p1.y);
             path.close();
-            paint.setStyle(Paint.Style.STROKE);
+
             canvas.drawPath(path, paint);
         }
         public void atualizar() {
-            if (getX() + 150 >= 0) {
+            if (getX() + getWidth() >= 0) {
                 setX(getX() - v);
+            }
+            if (getX() < -1 * getWidth() && alpha == 255) {
+                perder();
             }
         }
         private int getCorAleatoria() {
             Random rnd = new Random();
             int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
             return color;
+        }
+        public void fade() {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while(alpha > 0) {
+                        alpha--;
+                        try {
+                            Thread.sleep(0, 250);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
         }
     }
 
@@ -449,6 +491,12 @@ public class Minigame2Activity extends AppCompatActivity {
 
         public CanvasMinigame(Context context) {
             super(context);
+        }
+
+        @Override
+        public void setOnClickListener(@Nullable OnClickListener l) {
+            super.setOnClickListener(l);
+            controle.eventos.onOK();
         }
 
         @Override
@@ -470,7 +518,7 @@ public class Minigame2Activity extends AppCompatActivity {
             paint.setColor(corPassar);
             canvas.drawPaint(paint);
             paint.setColor(corClick);
-            canvas.drawRect(getX(), getY(), w/4, h, paint);
+            canvas.drawRect(getX(), getY(), w * click, h, paint);
         }
     }
 }
