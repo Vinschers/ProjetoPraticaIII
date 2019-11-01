@@ -17,7 +17,9 @@ import android.os.Environment;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -162,8 +164,11 @@ public class JogoActivity extends AppCompatActivity {
     }
     //endregion
 
+    Button[] btnsEscolha;
     ImageView imgCenario;
     Jogo jogo;
+    ArrayList<Escolha> escolhas;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -172,35 +177,33 @@ public class JogoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
         jogo = (Jogo)params.getSerializable("jogo");
+        final Jogo jogoAtual = jogo;
         if (jogo.getAcabouDeComecar()) {
             Intent intentInicio = new Intent(JogoActivity.this, Minigame2Activity.class);
             startActivity(intentInicio);
         }
         imgCenario = (ImageView)findViewById(R.id.imgCenario);
 
-        /*File sd = Environment.getExternalStorageDirectory();
-        File image = new File(sd+filePath, imageName);
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
-        bitmap = Bitmap.createScaledBitmap(bitmap, imgCenario.getWidth(), imgCenario.getHeight(),true);*/
-        Bitmap bg = getImageByName("oi");
-        Arvore a = jogo.getArvore();
-        try {
-            Fase f = new Fase();
-            f.setId(0);
-            f.setTitulo("teste");
-            a.adicionar(f);
-        } catch (Exception e) {}
-        Fase f = a.getFaseAtual();
-        ArrayList<ArrayList<Nivel>> ni = new ArrayList<ArrayList<Nivel>>();
-        ArrayList<Nivel> aux = new ArrayList<Nivel>();
-        aux.add(new Nivel());
-        ni.add(aux);
-        f.setNiveis(ni);
-        Nivel n = f.getNivelAtual();
-        n.setBackground(bg);
+        btnsEscolha = new Button[4];
+        btnsEscolha[0] = (Button)findViewById(R.id.btnEscolha1);
+        btnsEscolha[1] = (Button)findViewById(R.id.btnEscolha2);
+        btnsEscolha[2] = (Button)findViewById(R.id.btnEscolha3);
+        btnsEscolha[3] = (Button)findViewById(R.id.btnEscolha4);
 
-        imgCenario.setImageBitmap(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground());
+        escolhas = jogo.getArvore().getFaseAtual().getNivelAtual().getEscolhas();
+        //imgCenario.setImageBitmap(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground());
+        imgCenario.setImageBitmap(getImageByName("oi"));
+
+        for (int i = 0; i < escolhas.size(); i++) {
+            final int ind = i;
+            btnsEscolha[i].setText(escolhas.get(i).getNome());
+            btnsEscolha[i].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    jogoAtual.getArvore().getFaseAtual().getNivelAtual().efetuarEscolha(escolhas.get(ind));
+                }
+            });
+        }
     }
     public Bitmap getImageByName(String imageName){
         int id = getResources().getIdentifier(imageName, "drawable", getPackageName());
