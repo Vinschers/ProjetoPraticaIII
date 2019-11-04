@@ -9,9 +9,6 @@ sql.connect(conexaoStr)
    .then(conexao => global.conexao = conexao)
    .catch(erro => console.log(erro));
 
-// configurando o body parser para pegar POSTS mais tarde
-app.use(bodyParser.urlencoded({limit: '500gb', extended: true}));
-app.use(bodyParser.json({limit: '500gb', extended: true}));
 //acrescentando informacoes de cabecalho para suportar o CORS
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -22,36 +19,41 @@ app.use(function(req, res, next) {
 //definindo as rotas
 
 
-function Fase(i, n, t, d, na, te, s, pa) {
-  var id = i;
-  var niveis = n;
-  var titulo = t;
-  var descricao = d;
-  var nivelAtual = na;
-  var terminada = te;
-  var status = s;
-  var parteAtual = pa;
+function Fase(id, niveis, titulo, descricao, nivelAtual, terminada, status, parteAtual) {
+  this.id = id;
+  this.niveis = niveis;
+  this.titulo = titulo;
+  this.descricao = descricao;
+  this.nivelAtual = nivelAtual;
+  this.terminada = terminada;
+  this.status = status;
+  this.parteAtual = parteAtual;
 }
 
-function Nivel() {
-  var escolhas;
-  var descricao;
-  var background;
-  var terminado;
-  var parentFase;
-  var escolhaFeita;
+function Nivel(escolhas, descricao, background, terminado, parentFase, escolhaFeita) {
+  this.escolhas = escolhas;
+  this.descricao = descricao;
+  this.background = background;
+  this.terminado = terminado;
+  this.parentFase = parentFase;
+  this.escolhaFeita = escolhaFeita;
 }
 
-var f = new Fase(0, [new Nivel(), new Nivel(), new Nivel()], "Teste", "Entrega parcial do projeto", 0, false, 0.5, 0)
+function Escolha(nome, paraOndeIr, status, amizades) {
+  this.nAmigos = 10;
+  this.nome = nome;
+  this.paraOndeIr = paraOndeIr;
+  this.status = status;
+  this.amizades = amizades;
+}
 
+var f = new Fase(0, [new Nivel([new Escolha("avançar", 1, [], [])], "Nível padrão", "oi", false, null, null), new Nivel([new Escolha("avançar", 2, [], [])], "Minigame 1", "oi", false, null, null), new Nivel([new Escolha("avançar", -1, [], [])], "Minigame 1", "oi", false, null, null)], "Teste", "Entrega parcial do projeto", 0, false, 0.5, 0)
 var fases = [f]
-
-
 
 
 const rota = express.Router();
 rota.get('/', (req, res) => {
-  res.json(fases);
+  res.json(fases[0]);
 });
 app.use('/', rota);
 
