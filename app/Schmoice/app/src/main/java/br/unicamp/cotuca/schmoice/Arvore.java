@@ -138,12 +138,12 @@ public class Arvore implements Serializable {
                 faseAtual = faseAtual.getDireita();
         }
     }
-    public void setCaminho(String s) {
+    /*public void setCaminho(String s) {
         caminho = new ArrayList<Integer>();
         for (char c : s.toCharArray()) {
             caminho.add((int)c-42);
         }
-    }
+    }*/
     public void adicionarAoCaminho(int s) {
         caminho.add(s);
         if (s == 0)

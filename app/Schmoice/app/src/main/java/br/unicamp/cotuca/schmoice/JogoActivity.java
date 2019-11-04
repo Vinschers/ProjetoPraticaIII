@@ -178,10 +178,10 @@ public class JogoActivity extends AppCompatActivity {
         Bundle params = intent.getExtras();
         jogo = (Jogo)params.getSerializable("jogo");
         final Jogo jogoAtual = jogo;
-        if (jogo.getAcabouDeComecar()) {
+        /*if (jogo.getAcabouDeComecar()) {
             Intent intentInicio = new Intent(JogoActivity.this, Minigame2Activity.class);
             startActivity(intentInicio);
-        }
+        }*/
         imgCenario = (ImageView)findViewById(R.id.imgCenario);
 
         btnsEscolha = new Button[4];
@@ -191,8 +191,7 @@ public class JogoActivity extends AppCompatActivity {
         btnsEscolha[3] = (Button)findViewById(R.id.btnEscolha4);
 
         escolhas = jogo.getArvore().getFaseAtual().getNivelAtual().getEscolhas();
-        //imgCenario.setImageBitmap(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground());
-        imgCenario.setImageBitmap(getImageByName("oi"));
+        imgCenario.setImageBitmap(getImageByName(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground()));
 
         for (int i = 0; i < escolhas.size(); i++) {
             final int ind = i;

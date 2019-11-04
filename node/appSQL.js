@@ -40,20 +40,19 @@ function Nivel(escolhas, descricao, background, terminado, parentFase, escolhaFe
 }
 
 function Escolha(nome, paraOndeIr, status, amizades) {
-  this.nAmigos = 10;
   this.nome = nome;
   this.paraOndeIr = paraOndeIr;
   this.status = status;
   this.amizades = amizades;
 }
 
-var f = new Fase(0, [new Nivel([new Escolha("avançar", 1, [], [])], "Nível padrão", "oi", false, null, null), new Nivel([new Escolha("avançar", 2, [], [])], "Minigame 1", "oi", false, null, null), new Nivel([new Escolha("avançar", -1, [], [])], "Minigame 1", "oi", false, null, null)], "Teste", "Entrega parcial do projeto", 0, false, 0.5, 0)
+var f = new Fase(0, [[new Nivel([new Escolha("avançar", 1, [], [])], "Nível padrão", "oi", false, null, null), new Nivel([new Escolha("avançar", 2, [], [])], "Minigame 1", "oi", false, null, null), new Nivel([new Escolha("avançar", -1, [], [])], "Minigame 1", "oi", false, null, null)]], "Teste", "Entrega parcial do projeto", null, false, 0.5, 0)
 var fases = [f]
 
 
 const rota = express.Router();
-rota.get('/', (req, res) => {
-  res.json(fases[0]);
+rota.get('/get', (req, res) => {
+  res.json(fases);
 });
 app.use('/', rota);
 

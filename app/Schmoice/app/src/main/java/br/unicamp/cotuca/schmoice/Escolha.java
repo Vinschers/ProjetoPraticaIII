@@ -1,6 +1,8 @@
 package br.unicamp.cotuca.schmoice;
 
-public class Escolha {
+import java.io.Serializable;
+
+public class Escolha implements Serializable {
     private final int nAmigos = 10;
     private String nome;
     private int paraOndeIr;

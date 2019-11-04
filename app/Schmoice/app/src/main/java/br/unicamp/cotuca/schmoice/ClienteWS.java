@@ -28,7 +28,6 @@ public class ClienteWS
         {
             for(String parametro: parametros)
                 urlWebService = urlWebService + "/" + parametro.replaceAll(" ", "%20");
-
             URL url = new URL(urlWebService);
             HttpURLConnection connection =
                     (HttpURLConnection) url.openConnection();

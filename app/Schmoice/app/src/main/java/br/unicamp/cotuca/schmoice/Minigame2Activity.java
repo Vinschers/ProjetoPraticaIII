@@ -225,6 +225,7 @@ public class Minigame2Activity extends AppCompatActivity {
             objs[i] = obj;
         }
         canvas.setObjs(objs);
+        llFundoMinigame.removeAllViews();
         llFundoMinigame.addView(canvas);
         animator = new ValueAnimator();
         int dS = w + (diff * 10 - 1) * (450 - 20*diff);

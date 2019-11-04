@@ -1,8 +1,9 @@
 package br.unicamp.cotuca.schmoice;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Fase implements Comparable<Fase>, Cloneable {
+public class Fase implements Comparable<Fase>, Cloneable, Serializable {
     private int id;
     private ArrayList<ArrayList<Nivel>> niveis;
     private String titulo;
@@ -11,8 +12,8 @@ public class Fase implements Comparable<Fase>, Cloneable {
     private boolean terminada;
     private double status;
     private int parteAtual;
-
     private Arvore arvore;
+
     public Fase() {
         nivelAtual = null;
         niveis = new ArrayList<ArrayList<Nivel>>();
@@ -172,5 +173,13 @@ public class Fase implements Comparable<Fase>, Cloneable {
     }
     public void setArvore(Arvore a) {
         arvore = a;
+    }
+
+    public void setParteAtual(int p) {
+        parteAtual = p;
+    }
+    public int getParteAtual() {return parteAtual;}
+    public ArrayList<ArrayList<Nivel>> getNiveis() {
+        return niveis;
     }
 }

@@ -1,6 +1,8 @@
 package br.unicamp.cotuca.schmoice;
 
-public class No {
+import java.io.Serializable;
+
+public class No implements Serializable {
     private Fase fase;
     private No esquerda, direita;
     public No() {

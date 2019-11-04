@@ -4,20 +4,21 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import br.unicamp.cotuca.schmoice.Escolha;
 
-public class Nivel {
+public class Nivel implements Serializable {
     private ArrayList<Escolha> escolhas;
     private String descricao;
-    private Bitmap background;
+    private String background;
     private boolean terminado;
     private Fase parentFase;
     private Escolha escolhaFeita;
 
-    public Nivel(ArrayList<Escolha> escolhas, String descricao, Bitmap background, boolean terminado, Fase parentFase, Escolha escolhaFeita) {
+    public Nivel(ArrayList<Escolha> escolhas, String descricao, String background, boolean terminado, Fase parentFase, Escolha escolhaFeita) {
         this.escolhas = escolhas;
         this.descricao = descricao;
         this.background = background;
@@ -40,18 +41,19 @@ public class Nivel {
         this.descricao = descricao;
     }
 
-    public Bitmap getBackground() {
+    public String getBackground() {
         return background;
     }
 
-    public void setBackground(Bitmap background) {
+    public void setBackground(String background) {
         this.background = background;
     }
 
     public boolean isTerminado() {return terminado;}
     public void setTerminado(boolean terminado) {
         this.terminado = terminado;
-        parentFase.atualizarNivelAtual();
+        if (parentFase != null)
+            parentFase.atualizarNivelAtual();
     }
 
     public Fase getParentFase() {
