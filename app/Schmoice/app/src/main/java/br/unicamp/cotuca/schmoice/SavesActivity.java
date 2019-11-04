@@ -7,9 +7,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import java.util.ArrayList;
 
 public class SavesActivity extends AppCompatActivity {
     final int maxJogos = 3;
@@ -83,8 +86,24 @@ public class SavesActivity extends AppCompatActivity {
         }
     }
     public Jogo[] getJogos() {
-        //access SQLite
-        return new Jogo[maxJogos];
+        jogos = new Jogo[maxJogos];
+        try {
+            jogos[1] = new Jogo();
+            Consultor consultor = new Consultor();
+            consultor.start();
+            while (!consultor.isMorta()) {}
+            Fase[] fases = consultor.getFases();
+            for (Fase f : fases) {
+                for (ArrayList<Nivel> arr : f.getNiveis())
+                    for(Nivel n : arr) {
+                        n.setParentFase(f);
+                    }
+                jogos[1].getArvore().adicionar(fases[0]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jogos;
     }
     public void desselecionar(boolean fromFocusChange) {
         if (!fromFocusChange)
@@ -103,29 +122,58 @@ public class SavesActivity extends AppCompatActivity {
     }
 
     public void carregarJogo(int ind) {
-        /*
         Intent intent = new Intent(SavesActivity.this, JogoActivity.class);
         Bundle params = new Bundle();
         intent.putExtras(params);
-        startActivity(intent);*/
-        Intent intent;
-        Bundle params = new Bundle();
-        if (ind == 0) {
-            intent = new Intent(SavesActivity.this, Minigame1Activity.class);
-        } else if (ind == 1) {
-            intent = new Intent(SavesActivity.this, Minigame2Activity.class);
-        }
-        else {
-            intent = new Intent(SavesActivity.this, JogoActivity.class);
-        }
-        params.putInt("cenario", R.drawable.oi);
-        params.putInt("personagem", R.drawable.oi);
-        params.putSerializable("jogo", jogos[ind]);
-        params.putInt("diff", 3);
         controle.setEventos(null);
 
         params.putSerializable("controle", controle);
+        params.putSerializable("jogo", jogos[ind]);
         intent.putExtras(params);
         startActivity(intent);
+    }
+    public class Consultor extends Thread
+    {
+        Fase[] fases;
+        boolean morta = false;
+        public boolean isMorta()
+        {
+            return morta;
+        }
+
+        @Override
+        public void run() {
+            try {
+                                                                                                //trocar por ipv4 do pc
+                //FaseInfo f = (FaseInfo)ClienteWS.getObjeto(FaseInfo.class, "http://177.220.18.97:3000/get");
+                //fases = f.getFases();
+                fases = (Fase[])ClienteWS.getObjeto(Fase[].class, "http://177.220.18.97:3000/get");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            morta = true;
+        }
+        public Fase[] getFases()
+        {
+            return  fases;
+        }
+    }
+
+    public class MyTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
     }
 }
