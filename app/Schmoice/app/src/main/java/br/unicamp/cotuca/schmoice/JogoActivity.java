@@ -168,6 +168,7 @@ public class JogoActivity extends AppCompatActivity {
     ImageView imgCenario;
     Jogo jogo;
     ArrayList<Escolha> escolhas;
+    Controle controle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,35 +178,69 @@ public class JogoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
         jogo = (Jogo)params.getSerializable("jogo");
+        controle = (Controle)params.getSerializable("controle");
         final Jogo jogoAtual = jogo;
         /*if (jogo.getAcabouDeComecar()) {
             Intent intentInicio = new Intent(JogoActivity.this, Minigame2Activity.class);
             startActivity(intentInicio);
         }*/
-        imgCenario = (ImageView)findViewById(R.id.imgCenario);
+        if (jogo.getArvore().getFaseAtual().getNivelAtual().getTipo() == 1) {
+            Intent intentMinigame = new Intent(JogoActivity.this, Minigame1Activity.class);
+            Bundle pars = new Bundle();
 
-        btnsEscolha = new Button[4];
-        btnsEscolha[0] = (Button)findViewById(R.id.btnEscolha1);
-        btnsEscolha[1] = (Button)findViewById(R.id.btnEscolha2);
-        btnsEscolha[2] = (Button)findViewById(R.id.btnEscolha3);
-        btnsEscolha[3] = (Button)findViewById(R.id.btnEscolha4);
+            pars.putSerializable("controle", controle);
+            pars.putSerializable("jogo", jogo);
+            String img = jogo.getArvore().getFaseAtual().getNivelAtual().getBackground();
+            int ids = getImageIdByName(img);
+            pars.putInt("cenario", ids);
+            pars.putInt("personagem", ids);
 
-        escolhas = jogo.getArvore().getFaseAtual().getNivelAtual().getEscolhas();
-        imgCenario.setImageBitmap(getImageByName(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground()));
+            intentMinigame.putExtras(pars);
+            startActivity(intentMinigame);
+        } else if (jogo.getArvore().getFaseAtual().getNivelAtual().getTipo() == 2) {
+            Intent intentMinigame = new Intent(JogoActivity.this, Minigame2Activity.class);
+            Bundle pars = new Bundle();
 
-        for (int i = 0; i < escolhas.size(); i++) {
-            final int ind = i;
-            btnsEscolha[i].setText(escolhas.get(i).getNome());
-            btnsEscolha[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    jogoAtual.getArvore().getFaseAtual().getNivelAtual().efetuarEscolha(escolhas.get(ind));
-                }
-            });
+            pars.putSerializable("controle", controle);
+            pars.putSerializable("diff", jogo.getArvore().getFaseAtual().getNivelAtual().getDiff());
+
+            intentMinigame.putExtras(pars);
+            startActivity(intentMinigame);
+        } else {
+            imgCenario = (ImageView)findViewById(R.id.imgCenario);
+
+            btnsEscolha = new Button[4];
+            btnsEscolha[0] = (Button)findViewById(R.id.btnEscolha1);
+            btnsEscolha[1] = (Button)findViewById(R.id.btnEscolha2);
+            btnsEscolha[2] = (Button)findViewById(R.id.btnEscolha3);
+            btnsEscolha[3] = (Button)findViewById(R.id.btnEscolha4);
+
+            escolhas = jogo.getArvore().getFaseAtual().getNivelAtual().getEscolhas();
+            imgCenario.setImageBitmap(getImageByName(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground()));
+
+            for (int i = 0; i < escolhas.size(); i++) {
+                final int ind = i;
+                btnsEscolha[i].setText(escolhas.get(i).getNome());
+                btnsEscolha[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        jogoAtual.getArvore().getFaseAtual().getNivelAtual().efetuarEscolha(escolhas.get(ind));
+                        Intent inte = new Intent(JogoActivity.this, JogoActivity.class);
+                        Bundle par = new Bundle();
+                        par.putSerializable("jogo", jogo);
+                        par.putSerializable("controle", controle);
+                        inte.putExtras(par);
+                        startActivity(inte);
+                    }
+                });
+            }
         }
     }
+
+    public int getImageIdByName(String imageName) {
+        return getResources().getIdentifier(imageName, "drawable", getPackageName());
+    }
     public Bitmap getImageByName(String imageName){
-        int id = getResources().getIdentifier(imageName, "drawable", getPackageName());
-        return BitmapFactory.decodeResource(getResources(), id);
+        return BitmapFactory.decodeResource(getResources(), getImageIdByName(imageName));
     }
 }

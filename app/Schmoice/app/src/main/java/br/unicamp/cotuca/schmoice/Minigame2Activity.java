@@ -186,7 +186,6 @@ public class Minigame2Activity extends AppCompatActivity {
     ValueAnimator animator;
     final float click = 0.30f;
 
-    Jogo jogo;
     Controle controle;
     int diff;
     @Override
@@ -201,7 +200,6 @@ public class Minigame2Activity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
         diff = params.getInt("diff");
-        jogo = (Jogo)params.getSerializable("jogo");
         controle = (Controle)params.getSerializable("controle");
         //imgCenario.setImageBitmap(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground());
         imgCenario.setImageBitmap(getImageByName("oi"));

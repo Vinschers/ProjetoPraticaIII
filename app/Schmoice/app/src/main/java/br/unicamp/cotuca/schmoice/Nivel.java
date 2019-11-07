@@ -17,6 +17,7 @@ public class Nivel implements Serializable {
     private boolean terminado;
     private Fase parentFase;
     private Escolha escolhaFeita;
+    private int tipo, diff;
 
     public Nivel(ArrayList<Escolha> escolhas, String descricao, String background, boolean terminado, Fase parentFase, Escolha escolhaFeita) {
         this.escolhas = escolhas;
@@ -44,7 +45,6 @@ public class Nivel implements Serializable {
     public String getBackground() {
         return background;
     }
-
     public void setBackground(String background) {
         this.background = background;
     }
@@ -52,8 +52,6 @@ public class Nivel implements Serializable {
     public boolean isTerminado() {return terminado;}
     public void setTerminado(boolean terminado) {
         this.terminado = terminado;
-        if (parentFase != null)
-            parentFase.atualizarNivelAtual();
     }
 
     public Fase getParentFase() {
@@ -62,6 +60,12 @@ public class Nivel implements Serializable {
     public void setParentFase(Fase fase) {
         parentFase = fase;
     }
+
+    public int getTipo() {return tipo;}
+    public void setTipo(int t) {tipo = t;}
+
+    public int getDiff() {return diff;}
+    public void setDiff(int d) {diff = d;}
 
     public Nivel() {
         escolhas = new ArrayList<Escolha>();

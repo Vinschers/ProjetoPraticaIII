@@ -1,5 +1,7 @@
 package br.unicamp.cotuca.schmoice;
 
+import android.content.Intent;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -114,8 +116,9 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
             if (parteAtual >= niveis.size()) {
                 arvore.atualizarFaseAtual();
             }
-            else
+            else {
                 nivelAtual = niveis.get(parteAtual).get(result);
+            }
         }
     }
     public Nivel getNivelAtual() {
@@ -152,7 +155,7 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
         Jogo jogo = arvore.getJogo();
         double[] amizades = nivelAtual.getEscolhaFeita().getAmizades();
         Personagem[] personagens = jogo.getPersonagens();
-        for(int i = 0; i < personagens.length; i++) {
+        for(int i = 0; personagens != null && i < personagens.length; i++) {
             personagens[i].addToAmizade(amizades[i]);
         }
     }

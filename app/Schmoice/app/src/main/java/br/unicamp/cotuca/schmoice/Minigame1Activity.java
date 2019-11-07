@@ -179,6 +179,7 @@ public class Minigame1Activity extends AppCompatActivity {
         iniciarFullscreen();
 
         final Controle controle = (Controle)params.getSerializable("controle");
+        final Jogo jogo = (Jogo)params.getSerializable("jogo");
         controle.setEventos(new Eventos(){
             @Override
             public void onOK() {
@@ -208,11 +209,12 @@ public class Minigame1Activity extends AppCompatActivity {
             public void run() {
                 try {
                     Thread.sleep(1500);
-                    Intent intent2 = new Intent(Minigame1Activity.this, SavesActivity.class);
+                    Intent intent2 = new Intent(Minigame1Activity.this, JogoActivity.class);
                     Bundle params = new Bundle();
+                    jogo.getArvore().getFaseAtual().avancarNivel();
                     controle.setEventos(null);
                     params.putSerializable("controle", controle);
-                    params.putBoolean("ganhou", true);
+                    params.putSerializable("jogo", jogo);
                     intent2.putExtras(params);
                     startActivity(intent2);
                 }
