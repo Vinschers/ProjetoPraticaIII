@@ -12,7 +12,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SavesActivity extends AppCompatActivity {
     final int maxJogos = 3;
@@ -86,20 +90,23 @@ public class SavesActivity extends AppCompatActivity {
         }
     }
     public Jogo[] getJogos() {
-        jogos = new Jogo[maxJogos];
         try {
-            jogos[1] = new Jogo();
             Consultor consultor = new Consultor();
             consultor.start();
             while (!consultor.isMorta()) {}
             Fase[] fases = consultor.getFases();
-            for (Fase f : fases) {
-                for (ArrayList<Nivel> arr : f.getNiveis())
-                    for(Nivel n : arr) {
-                        n.setParentFase(f);
+            Jogo[] jogosObtidos = consultor.getJogos();
+            for (int i = 0; i < jogosObtidos.length; i++)
+                if (jogosObtidos[i] != null) {
+                    jogos[i] = jogosObtidos[i];
+                    for (Fase f : fases) {
+                        for (ArrayList<Nivel> arr : f.getNiveis())
+                            for (Nivel n : arr) {
+                                n.setParentFase(f);
+                            }
+                        jogos[i].getArvore().adicionar(fases[0]);
                     }
-                jogos[1].getArvore().adicionar(fases[0]);
-            }
+                }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -122,7 +129,11 @@ public class SavesActivity extends AppCompatActivity {
     }
 
     public void carregarJogo(int ind) {
-        Intent intent = new Intent(SavesActivity.this, JogoActivity.class);
+        Intent intent;
+        if (jogos[ind].getAcabouDeComecar())
+            intent = new Intent(SavesActivity.this, InicioJogoActivity.class);
+        else
+            intent = new Intent(SavesActivity.this, JogoActivity.class);
         Bundle params = new Bundle();
         intent.putExtras(params);
         controle.setEventos(null);
@@ -135,6 +146,8 @@ public class SavesActivity extends AppCompatActivity {
     public class Consultor extends Thread
     {
         Fase[] fases;
+        Jogo[] jogosObtidos;
+
         boolean morta = false;
         public boolean isMorta()
         {
@@ -144,10 +157,12 @@ public class SavesActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                                                                                                //trocar por ipv4 do pc
+
                 //FaseInfo f = (FaseInfo)ClienteWS.getObjeto(FaseInfo.class, "http://177.220.18.97:3000/get");
                 //fases = f.getFases();
-                fases = (Fase[])ClienteWS.getObjeto(Fase[].class, "http://177.220.18.97:3000/get");
+                String ip = "http://177.220.18.90:3000"; //trocar por ipv4 do pc
+                fases = (Fase[])ClienteWS.getObjeto(Fase[].class, ip + "/get");
+                jogosObtidos = (Jogo[])ClienteWS.getObjeto(Jogo[].class, ip + "/jogos/" + getIPAddress(true));
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -157,6 +172,7 @@ public class SavesActivity extends AppCompatActivity {
         {
             return  fases;
         }
+        public  Jogo[] getJogos() {return  jogosObtidos; }
     }
 
     public class MyTask extends AsyncTask<String, String, String> {
@@ -175,5 +191,31 @@ public class SavesActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
         }
+    }
+    public static String getIPAddress(boolean useIPv4) {
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface intf : interfaces) {
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+                for (InetAddress addr : addrs) {
+                    if (!addr.isLoopbackAddress()) {
+                        String sAddr = addr.getHostAddress();
+                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
+                        boolean isIPv4 = sAddr.indexOf(':')<0;
+
+                        if (useIPv4) {
+                            if (isIPv4)
+                                return sAddr;
+                        } else {
+                            if (!isIPv4) {
+                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
+                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) { } // for now eat exceptions
+        return "";
     }
 }

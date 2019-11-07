@@ -1,8 +1,8 @@
-const express = require('express');
+﻿const express = require('express');
 const app = express();
 const porta = 3000; //porta padrão
 const sql = require('mssql');
-const conexaoStr = "Server=regulus.cotuca.unicamp.br;Database=PR118178;User Id=PR118178;Password=MillerScherer1;";
+const conexaoStr = "Server=regulus.cotuca.unicamp.br;Database=PR118179;User Id=PR118179;Password=MillerScherer1;";
 
 //conexao com BD
 sql.connect(conexaoStr)
@@ -56,6 +56,9 @@ rota.get('/get', (req, res) => {
   res.json(fases);
 });
 
+rota.get('/jogos/:ip', (req, res) => {
+  execSQL(`select * from Jogo where ip='${req.params.ip}' order by slot asc`, res);
+})
 rota.post('/criarJogo', (req, res) => {
   const slot = req.body.slot;
   const ip = req.body.ip;
@@ -107,7 +110,7 @@ function execSQL(sql, resposta) {
 	global.conexao.request()
 				  .query(sql)
 				  .then(resultado => resposta.json(resultado.recordset))
-				  .catch(erro => resposta.json(erro));
+				  .catch(erro => {console.log(sql); resposta.json(erro);});
 }
 function execSQLSemResposta(sql, resposta) {
 	global.conexao.request()
