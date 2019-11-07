@@ -118,6 +118,7 @@ public class InicioJogoActivity extends AppCompatActivity {
     }
 
     private void toggle() {
+        controle.eventos.onOK(); // TIRAR DEPOIS!!!!!
         if (mVisible) {
             hide();
         } else {
@@ -176,7 +177,8 @@ public class InicioJogoActivity extends AppCompatActivity {
     //endregion
     LinearLayout llEscurecer, llExplicacao;
     TextView tvExplicacao;
-    Thread resizeLL;
+    ThreadRedimensionar resizeLL;
+    Controle controle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -192,62 +194,26 @@ public class InicioJogoActivity extends AppCompatActivity {
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
-                        String s = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempout aliquip ";
+                        String s = "Bem vindo! Você agora viverá a conturbada vida de um aluno de um colégio técnico. Me diga um pouco sobre você! (Distribua 3 pontos de atributo)";
                         escreverAnimado(tvExplicacao, s);
                     }
                 }, 1000);
-        resizeLL = new Thread(new Runnable() {
-            boolean atual = false;
-            final int HEIGHT_SMALL = 150;
-            final int HEIGHT_BIG = HEIGHT_SMALL + 26;
-            final int WIDTH_SMALL = 325;
-            final int WIDTH_BIG = WIDTH_SMALL + 26;
-            final int MARGIN_SMALL = 100;
-            final int MARGIN_BIG = 87;
+        controle = (Controle) getIntent().getExtras().getSerializable("controle");
+
+        controle.setEventos(new Eventos() {
             @Override
-            public void run() {
-                while(true) {
-                    try {
-                        if (atual) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)llExplicacao.getLayoutParams();
-                                    params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, HEIGHT_SMALL, getResources().getDisplayMetrics());
-                                    params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, WIDTH_SMALL, getResources().getDisplayMetrics());
-                                    params.topMargin = MARGIN_SMALL;
-                                    llExplicacao.setLayoutParams(params);
-                                }
-                            });
-                        } else {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)llExplicacao.getLayoutParams();
-                                    params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, HEIGHT_BIG, getResources().getDisplayMetrics());
-                                    params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, WIDTH_BIG, getResources().getDisplayMetrics());
-                                    params.topMargin = MARGIN_BIG;
-                                    llExplicacao.setLayoutParams(params);
-                                }
-                            });
-                        }
-                        atual = !atual;
-                        Thread.sleep(500);
-                    } catch (Exception e) {
-                        new AlertDialog.Builder(InicioJogoActivity.this)
-                                .setTitle("Erro")
-                                .setMessage(e.getMessage())
-                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                })
-                                .setNegativeButton(android.R.string.no, null)
-                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                .show();
-                    }
+            public void onOK() {
+                if (resizeLL.isAlive())
+                {
+                    llExplicacao.setVisibility(View.INVISIBLE);
+                    clarearFundo();
+                    resizeLL.matar();
                 }
             }
         });
+
+
+        resizeLL = new ThreadRedimensionar();
         resizeLL.start();
     }
 
@@ -308,6 +274,65 @@ public class InicioJogoActivity extends AppCompatActivity {
                 }
             }
         };
-        timer.schedule(taskEverySplitSecond, 1, 75);
+        timer.schedule(taskEverySplitSecond, 1, 55);
+    }
+    public class ThreadRedimensionar extends Thread
+    {
+        boolean atual = false, funcionando = true;
+        final int HEIGHT_SMALL = 180;
+        final int HEIGHT_BIG = HEIGHT_SMALL + 20;
+        final int WIDTH_SMALL = 325;
+        final int WIDTH_BIG = WIDTH_SMALL + 20;
+        final int MARGIN_SMALL = 100;
+        final int MARGIN_BIG = 87;
+
+        public void matar()
+        {
+            funcionando = false;
+        }
+
+        @Override
+        public void run() {
+            while(funcionando) {
+                try {
+                    if (atual) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)llExplicacao.getLayoutParams();
+                                params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, HEIGHT_SMALL, getResources().getDisplayMetrics());
+                                params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, WIDTH_SMALL, getResources().getDisplayMetrics());
+                                params.topMargin = MARGIN_SMALL;
+                                llExplicacao.setLayoutParams(params);
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams)llExplicacao.getLayoutParams();
+                                params.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, HEIGHT_BIG, getResources().getDisplayMetrics());
+                                params.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, WIDTH_BIG, getResources().getDisplayMetrics());
+                                params.topMargin = MARGIN_BIG;
+                                llExplicacao.setLayoutParams(params);
+                            }
+                        });
+                    }
+                    atual = !atual;
+                    Thread.sleep(500);
+                } catch (Exception e) {
+                    new AlertDialog.Builder(InicioJogoActivity.this)
+                            .setTitle("Erro")
+                            .setMessage(e.getMessage())
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, null)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }
+            }
+        }
     }
 }

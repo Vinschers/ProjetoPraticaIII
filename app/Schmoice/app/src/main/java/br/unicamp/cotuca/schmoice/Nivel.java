@@ -17,15 +17,17 @@ public class Nivel implements Serializable {
     private boolean terminado;
     private Fase parentFase;
     private Escolha escolhaFeita;
-    private int tipo, diff;
+    private int tipo; // 0 -> normal; 1 -> minigame 1; 2 -> minigame 2.
+    private int diff;
 
-    public Nivel(ArrayList<Escolha> escolhas, String descricao, String background, boolean terminado, Fase parentFase, Escolha escolhaFeita) {
+    public Nivel(ArrayList<Escolha> escolhas, String descricao, String background, boolean terminado, Fase parentFase, Escolha escolhaFeita, int tipo) {
         this.escolhas = escolhas;
         this.descricao = descricao;
         this.background = background;
         this.terminado = terminado;
         this.parentFase = parentFase;
         this.escolhaFeita = escolhaFeita;
+        this.tipo = tipo;
     }
 
     public ArrayList<Escolha> getEscolhas() {
@@ -61,8 +63,8 @@ public class Nivel implements Serializable {
         parentFase = fase;
     }
 
-    public int getTipo() {return tipo;}
-    public void setTipo(int t) {tipo = t;}
+    public int getTipo() {return  tipo;}
+    public void setTipo(int tipo) {this.tipo = tipo;}
 
     public int getDiff() {return diff;}
     public void setDiff(int d) {diff = d;}
@@ -82,6 +84,7 @@ public class Nivel implements Serializable {
         this.terminado = nivel.terminado;
         this.parentFase = nivel.parentFase;
         this.escolhaFeita = nivel.escolhaFeita;
+        this.tipo = nivel.tipo;
     }
 
     public int hashCode() {
@@ -90,6 +93,7 @@ public class Nivel implements Serializable {
         ret = ret * 5 + descricao.hashCode();
         ret = ret * 7 + background.hashCode();
         ret = ret * 11 + new Boolean(terminado).hashCode();
+        ret = ret * 13 + Integer.valueOf(tipo).hashCode();
         return ret;
     }
 
@@ -108,6 +112,8 @@ public class Nivel implements Serializable {
         if (!background.equals(n.background))
             return false;
         if (terminado != n.terminado)
+            return false;
+        if (tipo != n.tipo)
             return false;
         return true;
     }
