@@ -19,24 +19,26 @@ app.use(function(req, res, next) {
 //definindo as rotas
 
 
-function Fase(id, niveis, titulo, descricao, nivelAtual, terminada, status, parteAtual) {
+function Fase(id, niveis, titulo, descricao) {
   this.id = id;
   this.niveis = niveis;
   this.titulo = titulo;
   this.descricao = descricao;
-  this.nivelAtual = nivelAtual;
-  this.terminada = terminada;
-  this.status = status;
-  this.parteAtual = parteAtual;
+  this.nivelAtual = null;
+  this.terminada = false;
+  this.status = 0.5;
+  this.parteAtual = 0;
 }
 
-function Nivel(escolhas, descricao, background, terminado, parentFase, escolhaFeita) {
+function Nivel(escolhas, descricao, background, tipo = 0, diff = -1) {
   this.escolhas = escolhas;
   this.descricao = descricao;
   this.background = background;
-  this.terminado = terminado;
-  this.parentFase = parentFase;
-  this.escolhaFeita = escolhaFeita;
+  this.terminado = false;
+  this.parentFase = null;
+  this.escolhaFeita = null;
+  this.tipo = tipo; // 0 -> normal; 1-> minigame 1; 2-> minigame 2.
+  this.diff = diff;
 }
 
 function Escolha(nome, paraOndeIr, status, amizades) {
@@ -46,7 +48,7 @@ function Escolha(nome, paraOndeIr, status, amizades) {
   this.amizades = amizades;
 }
 
-var f = new Fase(0, [[new Nivel([new Escolha("avançar", 0, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Nível padrão", "oi", false, null, null)], [new Nivel([new Escolha("avançar", 0, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Minigame 1", "oi", false, null, null)], [new Nivel([new Escolha("avançar", -1, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Minigame 1", "oi", false, null, null)]], "Teste", "Entrega parcial do projeto", null, false, 0.5, 0)
+var f = new Fase(0, [[new Nivel([new Escolha("avançar", 0, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Nível padrão", "oi")], [new Nivel([new Escolha("avançar", 0, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Minigame 1", "oi", 1, 2)], [new Nivel([new Escolha("avançar", -1, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Minigame 2", "oi", 2, 3)]], "Teste", "Entrega parcial do projeto")
 var fases = [f]
 
 
