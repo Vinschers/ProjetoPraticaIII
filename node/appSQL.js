@@ -30,13 +30,14 @@ function Fase(id, niveis, titulo, descricao, nivelAtual, terminada, status, part
   this.parteAtual = parteAtual;
 }
 
-function Nivel(escolhas, descricao, background, terminado, parentFase, escolhaFeita) {
+function Nivel(escolhas, descricao, background, terminado, parentFase, escolhaFeita, tipo) {
   this.escolhas = escolhas;
   this.descricao = descricao;
   this.background = background;
   this.terminado = terminado;
   this.parentFase = parentFase;
   this.escolhaFeita = escolhaFeita;
+  this.tipo = tipo; // 0 -> normal; 1-> minigame 1; 2-> minigame 2.
 }
 
 function Escolha(nome, paraOndeIr, status, amizades) {
@@ -46,8 +47,8 @@ function Escolha(nome, paraOndeIr, status, amizades) {
   this.amizades = amizades;
 }
 
-var f = new Fase(0, [[new Nivel([new Escolha("avançar", 1, [], [])], "Nível padrão", "oi", false, null, null), new Nivel([new Escolha("avançar", 2, [], [])], "Minigame 1", "oi", false, null, null), new Nivel([new Escolha("avançar", -1, [], [])], "Minigame 1", "oi", false, null, null)]], "Teste", "Entrega parcial do projeto", null, false, 0.5, 0)
-var fases = [f]
+var f = new Fase(0, [[new Nivel([new Escolha("avançar", 1, [], [])], "Nível padrão", "oi", false, null, null, 0), new Nivel([new Escolha("avançar", 2, [], [])], "Minigame 1", "oi", false, null, null, 1), new Nivel([new Escolha("avançar", -1, [], [])], "Minigame 1", "oi", false, null, null, 0)]], "Teste", "Entrega parcial do projeto", null, false, 0.5, 0)
+var fases = [f];
 
 
 const rota = express.Router();
