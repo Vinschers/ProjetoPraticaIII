@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -16,6 +17,410 @@
         android:orientation="vertical"
         android:gravity="center"
         android:keepScreenOn="true">
+
+        <TextView
+            android:id="@+id/tvDistribua"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Distribua 3 pontos!"
+            android:textAlignment="center"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvRestantes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="3 pontos restantes"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:textStyle="italic" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Tranquilidade"
+                android:textSize="30sp"
+                android:translationY="20sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvTranquilidade"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="8dp"
+                android:text="0"
+                android:textAlignment="textEnd"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:translationX="-140sp"
+                android:translationY="-13sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnTM"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btnTP"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="+"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/textView4"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btnTM"
+                android:layout_width="63dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:enabled="false"
+                android:text="-"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/btnTP"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Felicidade"
+                android:textSize="30sp"
+                android:translationY="25sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+            <TextView
+                android:id="@+id/tvFelicidade"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
+                android:layout_marginEnd="8dp"
+                android:text="0"
+                android:textAlignment="textEnd"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:translationX="-140sp"
+                android:translationY="-8sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnFeM"
+                app:layout_constraintTop_toTopOf="@+id/tvTranquilidade" />
+
+            <Button
+                android:id="@+id/btnFeP"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="+"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:translationY="-7sp"
+                app:layout_constraintEnd_toEndOf="@+id/textView5"
+                app:layout_constraintTop_toBottomOf="@+id/btnTP" />
+
+            <Button
+                android:id="@+id/btnFeM"
+                android:layout_width="63dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:enabled="false"
+                android:text="-"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:translationY="-7sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnFeP"
+                app:layout_constraintTop_toBottomOf="@+id/btnTM" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="20dp"
+                android:text="Sanidade"
+                android:textSize="30sp"
+                android:translationY="25sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+            <TextView
+                android:id="@+id/tvSanidade"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:layout_marginEnd="8dp"
+                android:text="0"
+                android:textAlignment="textEnd"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:translationX="-140sp"
+                android:translationY="-8sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnSM"
+                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+            <Button
+                android:id="@+id/btnSP"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="+"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:translationY="-7sp"
+                app:layout_constraintEnd_toEndOf="@+id/textView6"
+                app:layout_constraintTop_toBottomOf="@+id/btnFeP" />
+
+            <Button
+                android:id="@+id/btnSM"
+                android:layout_width="63dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:enabled="false"
+                android:text="-"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:translationY="-7sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnSP"
+                app:layout_constraintTop_toBottomOf="@+id/btnFeM" />
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="20dp"
+                android:text="Carisma"
+                android:textSize="30sp"
+                android:translationY="25sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+            <TextView
+                android:id="@+id/tvCarisma"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="8dp"
+                android:text="0"
+                android:textAlignment="textEnd"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:translationX="-140sp"
+                android:translationY="-8sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnCM"
+                app:layout_constraintTop_toTopOf="@+id/textView9" />
+
+            <Button
+                android:id="@+id/btnCM"
+                android:layout_width="63dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:enabled="false"
+                android:text="-"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:translationY="-7sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnCP"
+                app:layout_constraintTop_toBottomOf="@+id/btnSM" />
+
+            <Button
+                android:id="@+id/btnCP"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="+"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:translationY="-7sp"
+                app:layout_constraintEnd_toEndOf="@+id/textView9"
+                app:layout_constraintTop_toBottomOf="@+id/btnSP" />
+
+            <TextView
+                android:id="@+id/textView10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="20dp"
+                android:text="Força"
+                android:textSize="30sp"
+                android:translationY="25sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView9" />
+
+            <TextView
+                android:id="@+id/tvForca"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="8dp"
+                android:text="0"
+                android:textAlignment="textEnd"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:translationX="-140sp"
+                android:translationY="-8sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnFoM"
+                app:layout_constraintTop_toTopOf="@+id/textView10" />
+
+            <Button
+                android:id="@+id/btnFoM"
+                android:layout_width="63dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:enabled="false"
+                android:text="-"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:translationY="-7sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnFoP"
+                app:layout_constraintTop_toBottomOf="@+id/btnCM" />
+
+            <Button
+                android:id="@+id/btnFoP"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="+"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:translationY="-7sp"
+                app:layout_constraintEnd_toEndOf="@+id/textView10"
+                app:layout_constraintTop_toBottomOf="@+id/btnCP" />
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="32dp"
+                android:text="Financas"
+                android:textSize="30sp"
+                android:translationY="25sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+            <TextView
+                android:id="@+id/tvFinancas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="8dp"
+                android:text="0"
+                android:textAlignment="textEnd"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:translationX="-140sp"
+                android:translationY="-8sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnFi-"
+                app:layout_constraintTop_toTopOf="@+id/textView7" />
+
+            <Button
+                android:id="@+id/btnFiM"
+                android:layout_width="63dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:enabled="false"
+                android:text="-"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:translationY="-7sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnFiP"
+                app:layout_constraintTop_toBottomOf="@+id/btnFoM" />
+
+            <Button
+                android:id="@+id/btnFiP"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="+"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:translationY="-7sp"
+                app:layout_constraintEnd_toEndOf="@+id/textView7"
+                app:layout_constraintTop_toBottomOf="@+id/btnFoP" />
+
+            <TextView
+                android:id="@+id/tvInteligencia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginEnd="8dp"
+                android:text="0"
+                android:textAlignment="textEnd"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:translationX="-140sp"
+                android:translationY="-8sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnIM"
+                app:layout_constraintTop_toTopOf="@+id/textView8" />
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="20dp"
+                android:text="Inteligencia"
+                android:textSize="30sp"
+                android:translationY="25sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView7" />
+
+            <Button
+                android:id="@+id/btnIM"
+                android:layout_width="63dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:enabled="false"
+                android:text="-"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:translationY="-7sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnIP"
+                app:layout_constraintTop_toBottomOf="@+id/btnFiM" />
+
+            <Button
+                android:id="@+id/btnIP"
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:text="+"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:translationY="-7sp"
+                app:layout_constraintEnd_toEndOf="@+id/textView8"
+                app:layout_constraintTop_toBottomOf="@+id/btnFiP" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <Button
+            android:id="@+id/btnFinalizar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:text="Finalizar"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <LinearLayout
             android:id="@+id/llEscurecer"
             android:layout_width="match_parent"
