@@ -24,6 +24,7 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -176,9 +177,24 @@ public class InicioJogoActivity extends AppCompatActivity {
     }
     //endregion
     LinearLayout llEscurecer, llExplicacao;
-    TextView tvExplicacao;
+    TextView tvExplicacao, tvTranquilidade, tvFelicidade, tvSanidade, tvCarisma, tvFinancas, tvForca, tvInteligencia, tvRestantes;
+    Button btnFinalizar, btnTP, btnTM, btnFeP, btnFeM, btnSP, btnSM, btnCP, btnCM, btnFiP, btnFiM, btnFoP, btnFoM, btnIP, btnIM;
     ThreadRedimensionar resizeLL;
     Controle controle;
+
+    private void atualizarPositivos(boolean ativar)
+    {
+        btnTP.setEnabled(ativar);
+        btnFeP.setEnabled(ativar);
+        btnSP.setEnabled(ativar);
+        btnCP.setEnabled(ativar);
+        btnFiP.setEnabled(ativar);
+        btnFoP.setEnabled(ativar);
+        btnIP.setEnabled(ativar);
+
+        btnFinalizar.setEnabled(!ativar);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -191,6 +207,217 @@ public class InicioJogoActivity extends AppCompatActivity {
         escurecerFundo();
         llExplicacao.setBackgroundColor(Color.argb(255, 255,255,255));
         llExplicacao.setVisibility(View.VISIBLE);
+        tvExplicacao = findViewById(R.id.tvExplicacao);
+        tvRestantes = findViewById(R.id.tvRestantes);
+        final String textoPadrao = " pontos restantes";
+
+        final double[] stats = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 };
+        final int pontosDisponiveis[] = {3};
+
+        tvCarisma = findViewById(R.id.tvCarisma);
+        btnCP = findViewById(R.id.btnCP);
+        btnCM = findViewById(R.id.btnCM);
+        btnCP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[0] += 0.1;
+                tvCarisma.setText(-0.5 + 10 * stats[0] + "");
+
+                tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
+                if(pontosDisponiveis[0] == 0)
+                    atualizarPositivos(false);
+                btnCM.setEnabled(true);
+            }
+        });
+        btnCM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[0] -= 0.1;
+                tvCarisma.setText(-0.5 + 10 * stats[0] + "");
+
+                tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
+                if(stats[0] == 0.5)
+                    btnCM.setEnabled(false);
+
+                atualizarPositivos(true);
+            }
+        });
+
+        tvFelicidade = findViewById(R.id.tvFelicidade);
+        btnFeP = findViewById(R.id.btnFeP);
+        btnFeM = findViewById(R.id.btnFeM);
+        btnFeP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[1] += 0.1;
+                tvFelicidade.setText(-0.5 + 10 * stats[1] + "");
+
+                tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
+                if(pontosDisponiveis[0] == 0)
+                    atualizarPositivos(false);
+                btnFeM.setEnabled(true);
+            }
+        });
+        btnFeM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[1] -= 0.1;
+                tvFelicidade.setText(-0.5 + 10 * stats[1] + "");
+
+                tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
+                if(stats[1] == 0.5)
+                    btnFeM.setEnabled(false);
+
+                atualizarPositivos(true);
+            }
+        });
+
+        tvFinancas = findViewById(R.id.tvFinancas);
+        btnFiM = findViewById(R.id.btnFiM);
+        btnFiP = findViewById(R.id.btnFiP);
+        btnFiP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[2] += 0.1;
+                tvFinancas.setText(-0.5 + 10 * stats[2] + "");
+
+                tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
+                if(pontosDisponiveis[0] == 0)
+                    atualizarPositivos(false);
+                btnFiM.setEnabled(true);
+            }
+        });
+        btnFiM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[2] -= 0.1;
+                tvFinancas.setText(-0.5 + 10 * stats[2] + "");
+
+                tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
+                if(stats[2] == 0.5)
+                    btnFiM.setEnabled(false);
+
+                atualizarPositivos(true);
+            }
+        });
+
+        tvForca = findViewById(R.id.tvForca);
+        btnFoM = findViewById(R.id.btnFoM);
+        btnFoP = findViewById(R.id.btnFoP);
+        btnFoP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[3] += 0.1;
+                tvForca.setText(-0.5 + 10 * stats[3] + "");
+
+                tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
+                if(pontosDisponiveis[0] == 0)
+                    atualizarPositivos(false);
+
+                btnFoM.setEnabled(true);
+            }
+        });
+        btnFoM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[3] -= 0.1;
+                tvForca.setText(-0.5 + 10 * stats[3] + "");
+
+                tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
+                if(stats[3] == 0.5)
+                    btnFoM.setEnabled(false);
+
+                atualizarPositivos(true);
+            }
+        });
+
+        tvInteligencia = findViewById(R.id.tvInteligencia);
+        btnIM = findViewById(R.id.btnIM);
+        btnIP = findViewById(R.id.btnIP);
+        btnIP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[4] += 0.1;
+                tvInteligencia.setText(-0.5 + 10 * stats[4] + "");
+
+                tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
+                if(pontosDisponiveis[0] == 0)
+                    atualizarPositivos(false);
+                btnIM.setEnabled(true);
+            }
+        });
+        btnIM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[4] -= 0.1;
+                tvInteligencia.setText(-0.5 + 10 * stats[4] + "");
+
+                tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
+                if(stats[4] == 0.5)
+                    btnIM.setEnabled(false);
+
+                atualizarPositivos(true);
+            }
+        });
+
+        tvSanidade = findViewById(R.id.tvSanidade);
+        btnSM = findViewById(R.id.btnSM);
+        btnSP = findViewById(R.id.btnSP);
+        btnSP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[5] += 0.1;
+                tvSanidade.setText(-0.5 + 10 * stats[5]  + "");
+
+                tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
+                if(pontosDisponiveis[0] == 0)
+                    atualizarPositivos(false);
+                btnSM.setEnabled(true);
+            }
+        });
+        btnSM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[5] -= 0.1;
+                tvSanidade.setText(-0.5 + 10 * stats[5] + "");
+
+                tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
+                if(stats[5] == 0.5)
+                    btnSM.setEnabled(false);
+
+                atualizarPositivos(true);
+            }
+        });
+
+        tvTranquilidade = findViewById(R.id.tvTranquilidade);
+        btnTM = findViewById(R.id.btnSM);
+        btnTP = findViewById(R.id.btnTP);
+        btnTP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[6] += 0.1;
+                tvTranquilidade.setText(-0.5 + 10 * stats[6] + "");
+
+                tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
+                if(pontosDisponiveis[0] == 0)
+                    atualizarPositivos(false);
+                btnTM.setEnabled(true);
+            }
+        });
+        btnTM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stats[6] -= 0.1;
+                tvTranquilidade.setText(-0.5 + 10 * stats[6] + "");
+
+                tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
+                if(stats[6] == 0.5)
+                    btnTM.setEnabled(false);
+
+                atualizarPositivos(true);
+            }
+        });
+
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
