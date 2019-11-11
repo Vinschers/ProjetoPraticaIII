@@ -160,9 +160,12 @@ public class SavesActivity extends AppCompatActivity {
 
                 //FaseInfo f = (FaseInfo)ClienteWS.getObjeto(FaseInfo.class, "http://177.220.18.97:3000/get");
                 //fases = f.getFases();
-                String ip = "http://177.220.18.90:3000"; //trocar por ipv4 do pc
-                fases = (Fase[])ClienteWS.getObjeto(Fase[].class, ip + "/get");
-                jogosObtidos = (Jogo[])ClienteWS.getObjeto(Jogo[].class, ip + "/jogos/" + getIPAddress(true));
+                String ip = "177.220.18.97";
+                fases = (Fase[])ClienteWS.getObjeto(Fase[].class, "http://" + ip + ":3000/get");
+                jogosObtidos = new Jogo[3];
+                //jogosObtidos = (Jogo[])ClienteWS.getObjeto(Jogo[].class, ip + "/jogos/" + ip);
+                jogosObtidos[1] = new Jogo();
+                jogosObtidos[1].setAcabouDeComecar(false);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -173,24 +176,6 @@ public class SavesActivity extends AppCompatActivity {
             return  fases;
         }
         public  Jogo[] getJogos() {return  jogosObtidos; }
-    }
-
-    public class MyTask extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-        }
     }
     public static String getIPAddress(boolean useIPv4) {
         try {

@@ -180,10 +180,6 @@ public class JogoActivity extends AppCompatActivity {
         jogo = (Jogo)params.getSerializable("jogo");
         controle = (Controle)params.getSerializable("controle");
         final Jogo jogoAtual = jogo;
-        /*if (jogo.getAcabouDeComecar()) {
-            Intent intentInicio = new Intent(JogoActivity.this, Minigame2Activity.class);
-            startActivity(intentInicio);
-        }*/
         if (jogo.getArvore().getFaseAtual().getNivelAtual().getTipo() == 1) {
             Intent intentMinigame = new Intent(JogoActivity.this, Minigame1Activity.class);
             Bundle pars = new Bundle();
@@ -194,6 +190,7 @@ public class JogoActivity extends AppCompatActivity {
             int ids = getImageIdByName(img);
             pars.putInt("cenario", ids);
             pars.putInt("personagem", ids);
+            pars.putInt("diff", jogo.getArvore().getFaseAtual().getNivelAtual().getDiff());
 
             intentMinigame.putExtras(pars);
             startActivity(intentMinigame);

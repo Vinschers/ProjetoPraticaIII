@@ -28,6 +28,7 @@ function Fase(id, niveis, titulo, descricao) {
   this.terminada = false;
   this.status = 0.5;
   this.parteAtual = 0;
+  this.rotaAtual = 0;
 }
 
 function Nivel(escolhas, descricao, background, tipo = 0, diff = -1) {
@@ -48,7 +49,7 @@ function Escolha(nome, paraOndeIr, status, amizades) {
   this.amizades = amizades;
 }
 
-var f = new Fase(0, [[new Nivel([new Escolha("avançar", 0, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Nível padrão", "oi")], [new Nivel([new Escolha("avançar", 0, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Minigame 1", "oi", 1, 2)], [new Nivel([new Escolha("avançar", -1, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Minigame 2", "oi", 2, 3)]], "Teste", "Entrega parcial do projeto")
+var f = new Fase(0, [[new Nivel([new Escolha("avançar", 0, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Nível padrão", "oi"), new Nivel([], "Minigame 1", "oi", 1, 2), new Nivel([], "Minigame 2", "oi", 2, 3)], [], []], "Teste", "Entrega parcial do projeto")
 var fases = [f]
 
 

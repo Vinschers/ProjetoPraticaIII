@@ -204,12 +204,13 @@ public class Minigame2Activity extends AppCompatActivity {
         //imgCenario.setImageBitmap(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground());
         imgCenario.setImageBitmap(getImageByName("oi"));
 
-        llFundoMinigame.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                iniciarMinigame();
-            }
-        });
+        new android.os.Handler().postDelayed(
+                new Runnable() {
+                    public void run() {
+                        iniciarMinigame();
+                    }
+                },
+                100);
     }
     public void iniciarMinigame() {
         int w = llFundoMinigame.getMeasuredWidth();
@@ -225,17 +226,9 @@ public class Minigame2Activity extends AppCompatActivity {
         canvas.setObjs(objs);
         llFundoMinigame.removeAllViews();
         llFundoMinigame.addView(canvas);
-        animator = new ValueAnimator();
-        int dS = w + (diff * 10 - 1) * (450 - 20*diff);
-        int dT = dS/v;
-        animator.setIntValues(0, 1000 * dT);
-        animator.setDuration(1000 * dT);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                canvas.invalidate();
-            }
-        });
+
+        Thread thread = new Thread(new ThreadJogo(canvas));
+
         controle.setEventos(new Eventos(){
             @Override
             public void onOK() {
@@ -287,8 +280,9 @@ public class Minigame2Activity extends AppCompatActivity {
                 }
             }
         });
-        animator.start();
+        thread.start();
     }
+
     public Bitmap getImageByName(String imageName){
         int id = getResources().getIdentifier(imageName, "drawable", getPackageName());
         return BitmapFactory.decodeResource(getResources(), id);
@@ -301,11 +295,34 @@ public class Minigame2Activity extends AppCompatActivity {
         return new ObjetoMinigame(-1, 0);
     }
     public void perder() {
-        if (animator.isRunning())
-            animator.end();
+        canvas.setFim(true);
         new AlertDialog.Builder(Minigame2Activity.this)
                 .setTitle("Perdeu")
                 .setMessage("Você perdeu. Deseja tentar novamente?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(getIntent());
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(Minigame2Activity.this, SavesActivity.class);
+                        Bundle params = new Bundle();
+                        params.putSerializable("controle", controle);
+                        intent.putExtras(params);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton(android.R.string.no, null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+    public void ganhar() {
+        canvas.setFim(true);
+        new AlertDialog.Builder(Minigame2Activity.this)
+                .setTitle("Ganhou")
+                .setMessage("Você ganhou. Não tem mais nada agora.")
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         startActivity(getIntent());
@@ -479,6 +496,7 @@ public class Minigame2Activity extends AppCompatActivity {
     public class CanvasMinigame extends View {
         private Paint paint;
         private ObjetoMinigame[] objs;
+        private boolean fim = false;
 
         public ObjetoMinigame[] getObjs() {
             return objs;
@@ -487,6 +505,9 @@ public class Minigame2Activity extends AppCompatActivity {
         public void setObjs(ObjetoMinigame[] objs) {
             this.objs = objs;
         }
+
+        public boolean isFim() {return fim;}
+        public void setFim(boolean f) {fim = f;}
 
         public CanvasMinigame(Context context) {
             super(context);
@@ -507,6 +528,8 @@ public class Minigame2Activity extends AppCompatActivity {
                 obj.atualizar();
                 obj.draw(canvas);
             }
+            if (objs[objs.length - 1].getX() + objs[objs.length - 1].getWidth()/2 < 0)
+                fim = true;
         }
         private void drawPartes(Canvas canvas) {
             int w = llFundoMinigame.getMeasuredWidth();
@@ -518,6 +541,21 @@ public class Minigame2Activity extends AppCompatActivity {
             canvas.drawPaint(paint);
             paint.setColor(corClick);
             canvas.drawRect(getX(), getY(), w * click, h, paint);
+        }
+    }
+
+    public class ThreadJogo implements Runnable {
+        CanvasMinigame canvas;
+
+        public ThreadJogo(CanvasMinigame canvas)
+        {
+            this.canvas = canvas;
+        }
+
+        @Override
+        public void run() {
+            while(!canvas.isFim())
+                canvas.invalidate();
         }
     }
 }

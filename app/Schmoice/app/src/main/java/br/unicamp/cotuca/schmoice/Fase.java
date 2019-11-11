@@ -13,7 +13,7 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
     private Nivel nivelAtual;
     private boolean terminada;
     private double status;
-    private int parteAtual;
+    private int parteAtual, rotaAtual = 0;
     private Arvore arvore;
 
     public Fase() {
@@ -109,16 +109,7 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
         if (nivelAtual == null)
             nivelAtual = niveis.get(0).get(0);
         if (nivelAtual.isTerminado()) {
-            atualizarStatusPlayer();
-            atualizarAmizadesPlayer();
-            int result = nivelAtual.getEscolhaFeita().getParaOndeIr();
-            parteAtual++;
-            if (parteAtual >= niveis.size()) {
-                arvore.atualizarFaseAtual();
-            }
-            else {
-                nivelAtual = niveis.get(parteAtual).get(result);
-            }
+            avancarNivel();
         }
     }
     public Nivel getNivelAtual() {
@@ -132,13 +123,16 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
         nivelAtual = niveis.get(i).get(j);
     }
     public void avancarNivel() {
-        if (parteAtual >= niveis.size()) {
+        if (parteAtual >= niveis.get(rotaAtual).size()) {
             terminada = true;
         } else {
-            atualizarStatusPlayer();
-            atualizarAmizadesPlayer();
-            int result = nivelAtual.getEscolhaFeita().getParaOndeIr();
-            nivelAtual = niveis.get(++parteAtual).get(result);
+            if (nivelAtual.getTipo() == 0) {
+                atualizarStatusPlayer();
+                atualizarAmizadesPlayer();
+                rotaAtual = nivelAtual.getEscolhaFeita().getParaOndeIr();
+            }
+            parteAtual++;
+            nivelAtual = niveis.get(rotaAtual).get(parteAtual);
         }
     }
     public void atualizarStatusPlayer() {
@@ -185,4 +179,8 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
     public ArrayList<ArrayList<Nivel>> getNiveis() {
         return niveis;
     }
+    public void setRotaAtual(int r) {
+        rotaAtual = r;
+    }
+    public int getRotaAtual() {return rotaAtual;}
 }
