@@ -144,6 +144,143 @@ public class SavesActivity extends AppCompatActivity {
         intent.putExtras(params);
         startActivity(intent);
     }
+    public class JogoRecebido
+    {
+        int id;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public int getSlot() {
+            return slot;
+        }
+
+        public void setSlot(int slot) {
+            this.slot = slot;
+        }
+
+        public int getFaseAtual() {
+            return faseAtual;
+        }
+
+        public void setFaseAtual(int faseAtual) {
+            this.faseAtual = faseAtual;
+        }
+
+        public int getParteAtual() {
+            return parteAtual;
+        }
+
+        public void setParteAtual(int parteAtual) {
+            this.parteAtual = parteAtual;
+        }
+
+        public int getRotaAtual() {
+            return rotaAtual;
+        }
+
+        public void setRotaAtual(int rotaAtual) {
+            this.rotaAtual = rotaAtual;
+        }
+
+        public String getIp() {
+            return ip;
+        }
+
+        public void setIp(String ip) {
+            this.ip = ip;
+        }
+
+        public String getCaminho() {
+            return caminho;
+        }
+
+        public void setCaminho(String caminho) {
+            this.caminho = caminho;
+        }
+
+        public boolean isAcabouDeComecar() {
+            return acabouDeComecar;
+        }
+
+        public void setAcabouDeComecar(boolean acabouDeComecar) {
+            this.acabouDeComecar = acabouDeComecar;
+        }
+
+        public double getTranquilidade() {
+            return tranquilidade;
+        }
+
+        public void setTranquilidade(double tranquilidade) {
+            this.tranquilidade = tranquilidade;
+        }
+
+        public double getFelicidade() {
+            return felicidade;
+        }
+
+        public void setFelicidade(double felicidade) {
+            this.felicidade = felicidade;
+        }
+
+        public double getFinancas() {
+            return financas;
+        }
+
+        public void setFinancas(double financas) {
+            this.financas = financas;
+        }
+
+        public double getForca() {
+            return forca;
+        }
+
+        public void setForca(double forca) {
+            this.forca = forca;
+        }
+
+        public double getInteligencia() {
+            return inteligencia;
+        }
+
+        public void setInteligencia(double inteligencia) {
+            this.inteligencia = inteligencia;
+        }
+
+        public double getSanidade() {
+            return sanidade;
+        }
+
+        public void setSanidade(double sanidade) {
+            this.sanidade = sanidade;
+        }
+
+        public double getCarisma() {
+            return carisma;
+        }
+
+        public void setCarisma(double carisma) {
+            this.carisma = carisma;
+        }
+
+        int slot;
+        int faseAtual;
+        int parteAtual;
+        int rotaAtual;
+        String ip, caminho;
+        boolean acabouDeComecar;
+        double tranquilidade, felicidade, financas, forca, inteligencia, sanidade, carisma;
+    }
+    public class PersonagemRecebido
+    {
+        int id, idJogo, idPersonagem;
+        double amizade;
+    }
     public class Consultor extends Thread
     {
         Fase[] fases;
@@ -159,14 +296,32 @@ public class SavesActivity extends AppCompatActivity {
         public void run() {
             try {
 
-                //FaseInfo f = (FaseInfo)ClienteWS.getObjeto(FaseInfo.class, "http://177.220.18.97:3000/get");
+                //FaseInfo f = (FaseInfo)ClienteWS.getObjeto(FaseInfo.class, "http://177.220.18.90:3000/get");
                 //fases = f.getFases();
-                String ip = "177.220.18.97";
-                fases = (Fase[])ClienteWS.getObjeto(Fase[].class, "http://" + ip + ":3000/get");
-                jogosObtidos = new Jogo[3];
-                //jogosObtidos = (Jogo[])ClienteWS.getObjeto(Jogo[].class, ip + "/jogos/" + ip);
-                jogosObtidos[1] = new Jogo();
-                jogosObtidos[1].setAcabouDeComecar(false);
+                String ipNode = "http://177.220.18.90:3000"; // IP do node (trocar pelo IPV4 do PC)
+                String ipUsuario = getIPAddress(true); // IP do usuario
+                fases = (Fase[])ClienteWS.getObjeto(Fase[].class, "http://" + ipNode + ":3000/get");
+                //jogosObtidos = new Jogo[3];
+                JogoRecebido[] jogosRecebidos = (JogoRecebido[])ClienteWS.getObjeto(JogoRecebido[].class, ipNode + "/jogos/" + ipUsuario);
+
+                jogosObtidos = new Jogo[jogosRecebidos.length];
+                for (int i = 0; i < jogosRecebidos.length; i++)
+                {
+                    PersonagemRecebido[] amigosRecebidos = (PersonagemRecebido[])ClienteWS.getObjeto(PersonagemRecebido[].class, ipNode + "/personagensJogo/" + jogosRecebidos[i].getId());
+                    jogosObtidos[i] = new Jogo();
+                    jogosObtidos[i].setAcabouDeComecar(false);
+
+                    Player jogador = jogosObtidos[i].getPlayer();
+                    jogador.setTranquilidade(jogosRecebidos[i].getTranquilidade());
+                    jogador.setSanidade(jogosRecebidos[i].getSanidade());
+                    jogador.setInteligencia(jogosRecebidos[i].getInteligencia());
+                    jogador.setForca(jogosRecebidos[i].getForca());
+                    jogador.setFinancas(jogosRecebidos[i].getFinancas());
+                    jogador.setFelicidade(jogosRecebidos[i].getFelicidade());
+                    jogador.setCarisma(jogosRecebidos[i].getCarisma());
+                }
+
+
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

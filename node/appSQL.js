@@ -103,6 +103,9 @@ rota.post('/addNivel', (req, res) => {
 rota.get('/jogos/:ip', (req, res) => {
   execSQL(`select * from Jogo where ip='${req.params.ip}' order by slot asc`, res);
 })
+rota.get('/personagensJogo/:id', (req, res) => {
+  execSQL(`select * from JogoPersonagem where idJogo=${req.params.id}`);
+})
 rota.post('/criarJogo', (req, res) => {
   const slot = req.body.slot;
   const ip = req.body.ip;
