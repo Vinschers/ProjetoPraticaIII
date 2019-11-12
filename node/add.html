@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title>Gerenciar Jogo</title>
+</head>
+<body>
+    <fieldset>
+        <legend>Adicionar fase</legend>
+        <div>
+            <form action="#">
+                <label>ID: </label> <input type="text" id="idF"><br>
+                <label>Titulo: </label> <input type="text" id="titF"><br>
+                <label>Descrição: </label> <input type="text" id="descF"><br><br>
+                <button id="btnAddFase">Adicionar</button>
+            </form>
+        </div>
+    </fieldset>
+    <fieldset>
+            <legend>Adicionar Nivel</legend>
+            <div>
+                <form action="#">
+                    <label>Descrição: </label> <input type="text" id="descN"><br>
+                    <label>Background: </label> <input type="text" id="backN"><br>
+                    <label>Tipo: </label> <input type="text" id="tipoN"><br>
+                    <label>Dificuldade: </label> <input type="text" id="diffN"><br>
+                    <label>Rota: </label> <input type="text" id="rotaN"><br>
+                    <label>Fase: </label> <select id="faseN"></select><br><br>
+                    <button id="btnAddNivel">Adicionar</button>
+                </form>
+            </div>
+        </fieldset>
+    <script>
+        $("document").ready(function() {
+            $("#btnAddFase").click(function() {
+                var obj = {
+                    idFase: $("#idF").val(),
+                    titulo: $("#titF").val(),
+                    descricao: $("#descF").val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://localhost:3000/addFase',
+                    data: obj,
+                    success: function(d) {
+                        $("#idF").val('');
+                        $("#titF").val('');
+                        $("#descF").val('');
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log(errorThrown)
+                    }
+                })
+            });
+
+            $.get('http://localhost:3000/get', res => {
+                res.forEach(f => {
+                    $("#faseN").append(`<option value="${f.idFase}">${f.titulo}</option>`)
+                });
+            });
+
+            $("#btnAddNivel").click(function() {
+                var obj = {
+                    descricao: $("#descN").val(),
+                    background: $("#backN").val(),
+                    tipo: $("#tipoN").val(),
+                    diff: $("#diffN").val(),
+                    rota: $("#rotaN").val(),
+                    fase: $("#faseN").children("option:selected").val()
+                };
+
+                $.ajax({
+                type: 'POST',
+                url: 'http//localhost:3000/addNivel',
+                data: obj,
+                success: function() {
+                    $("#descN").val('');
+                    $("#backN").val('');
+                    $("#tipoN").val('');
+                    $("#diffN").val('');
+                    $("#rotaN").val('');
+                    $("#faseN").val('1');
+                }
+            });
+            })
+        })
+    </script>
+</body>
+</html>

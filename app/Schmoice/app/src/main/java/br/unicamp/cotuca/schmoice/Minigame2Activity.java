@@ -183,11 +183,12 @@ public class Minigame2Activity extends AppCompatActivity {
     ImageView imgCenario, imgViewFundoJogo;
     CanvasMinigame canvas;
     ObjetoMinigame[] objs;
-    ValueAnimator animator;
     final float click = 0.30f;
 
     Controle controle;
+    Jogo jogo;
     int diff;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -201,6 +202,7 @@ public class Minigame2Activity extends AppCompatActivity {
         Bundle params = intent.getExtras();
         diff = params.getInt("diff");
         controle = (Controle)params.getSerializable("controle");
+        jogo = (Jogo)params.getSerializable("jogo");
         //imgCenario.setImageBitmap(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground());
         imgCenario.setImageBitmap(getImageByName("oi"));
 
@@ -320,27 +322,20 @@ public class Minigame2Activity extends AppCompatActivity {
     }
     public void ganhar() {
         canvas.setFim(true);
-        new AlertDialog.Builder(Minigame2Activity.this)
-                .setTitle("Ganhou")
-                .setMessage("Você ganhou. Não tem mais nada agora.")
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        startActivity(getIntent());
-                    }
-                })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(Minigame2Activity.this, SavesActivity.class);
-                        Bundle params = new Bundle();
-                        params.putSerializable("controle", controle);
-                        intent.putExtras(params);
-                        startActivity(intent);
-                    }
-                })
-                .setNegativeButton(android.R.string.no, null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+        try {
+            Thread.sleep(1000);
+            Intent intent2 = new Intent(Minigame2Activity.this, JogoActivity.class);
+            Bundle params = new Bundle();
+            jogo.getArvore().getFaseAtual().avancarNivel();
+            controle.setEventos(null);
+            params.putSerializable("controle", controle);
+            params.putSerializable("jogo", jogo);
+            intent2.putExtras(params);
+            startActivity(intent2);
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
 
@@ -522,14 +517,17 @@ public class Minigame2Activity extends AppCompatActivity {
         @Override
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
-            paint = new Paint();
-            drawPartes(canvas);
-            for (ObjetoMinigame obj : objs) {
-                obj.atualizar();
-                obj.draw(canvas);
+            if (!isFim())
+            {
+                paint = new Paint();
+                drawPartes(canvas);
+                for (ObjetoMinigame obj : objs) {
+                    obj.atualizar();
+                    obj.draw(canvas);
+                }
+                if (objs[objs.length - 1].getX() + objs[objs.length - 1].getWidth() < 0)
+                    ganhar();
             }
-            if (objs[objs.length - 1].getX() + objs[objs.length - 1].getWidth()/2 < 0)
-                fim = true;
         }
         private void drawPartes(Canvas canvas) {
             int w = llFundoMinigame.getMeasuredWidth();

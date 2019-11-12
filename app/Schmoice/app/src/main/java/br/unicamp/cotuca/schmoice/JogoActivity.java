@@ -199,6 +199,7 @@ public class JogoActivity extends AppCompatActivity {
             Bundle pars = new Bundle();
 
             pars.putSerializable("controle", controle);
+            pars.putSerializable("jogo", jogo);
             pars.putSerializable("diff", jogo.getArvore().getFaseAtual().getNivelAtual().getDiff());
 
             intentMinigame.putExtras(pars);

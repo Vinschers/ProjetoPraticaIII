@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Fase implements Comparable<Fase>, Cloneable, Serializable {
-    private int id;
+    private int idFase;
     private ArrayList<ArrayList<Nivel>> niveis;
     private String titulo;
     private String descricao;
@@ -25,7 +25,7 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
         parteAtual = 0;
     }
     public Fase(Fase fase) {
-        this.id = fase.id;
+        this.idFase = fase.idFase;
         this.niveis = fase.niveis;
         this.titulo = fase.titulo;
         this.descricao = fase.descricao;
@@ -36,7 +36,7 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
         this.parteAtual = fase.parteAtual;
     }
     public int compareTo(Fase fase) {
-        return this.id - fase.id;
+        return this.idFase - fase.idFase;
     }
     public Object clone() {
         Fase f = null;
@@ -53,7 +53,7 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
         if (outro.getClass() != getClass())
             return false;
         Fase fase = (Fase) outro;
-        if (fase.id != this.id)
+        if (fase.idFase != this.idFase)
             return false;
         if (!fase.niveis.equals(this.niveis))
             return false;
@@ -87,7 +87,7 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
     }
     public String toString() {
         String s = "";
-        s += id + ": " + titulo + "\t" + descricao;
+        s += idFase + ": " + titulo + "\t" + descricao;
         s += "\nNíveis: ";
         s += niveis.toString();
         s += padLeft((terminada?"Terminada":""), 10);
@@ -96,7 +96,7 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
     }
     public int hashCode() {
         int ret = 3;
-        ret = ret * 7 + new Integer(id).hashCode();
+        ret = ret * 7 + new Integer(idFase).hashCode();
         ret = ret * 11 + niveis.hashCode();
         ret = ret * 17 + titulo.hashCode();
         ret = ret * 23 + descricao.hashCode();
@@ -137,17 +137,17 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
     }
     public void atualizarStatusPlayer() {
         Player player = arvore.getJogo().getPlayer();
-        player.addToTranquilidade(nivelAtual.getEscolhaFeita().getStatus()[0]);
-        player.addToFelicidade(nivelAtual.getEscolhaFeita().getStatus()[1]);
-        player.addToSanidade(nivelAtual.getEscolhaFeita().getStatus()[2]);
-        player.addToFinancas(nivelAtual.getEscolhaFeita().getStatus()[3]);
-        player.addToInteligencia(nivelAtual.getEscolhaFeita().getStatus()[4]);
-        player.addToCarisma(nivelAtual.getEscolhaFeita().getStatus()[5]);
-        player.addToForca(nivelAtual.getEscolhaFeita().getStatus()[6]);
+        player.addToTranquilidade(nivelAtual.getEscolhaFeita().getStatusPlayer()[0]);
+        player.addToFelicidade(nivelAtual.getEscolhaFeita().getStatusPlayer()[1]);
+        player.addToSanidade(nivelAtual.getEscolhaFeita().getStatusPlayer()[2]);
+        player.addToFinancas(nivelAtual.getEscolhaFeita().getStatusPlayer()[3]);
+        player.addToInteligencia(nivelAtual.getEscolhaFeita().getStatusPlayer()[4]);
+        player.addToCarisma(nivelAtual.getEscolhaFeita().getStatusPlayer()[5]);
+        player.addToForca(nivelAtual.getEscolhaFeita().getStatusPlayer()[6]);
     }
     public void atualizarAmizadesPlayer() {
         Jogo jogo = arvore.getJogo();
-        double[] amizades = nivelAtual.getEscolhaFeita().getAmizades();
+        double[] amizades = nivelAtual.getEscolhaFeita().getStatusAmizades();
         Personagem[] personagens = jogo.getPersonagens();
         for(int i = 0; personagens != null && i < personagens.length; i++) {
             personagens[i].addToAmizade(amizades[i]);
@@ -159,7 +159,7 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
     public double getStatus() {
         return status;
     }
-    public void setId(int id) {this.id = id;}
+    public void setId(int id) {this.idFase = id;}
     public void setTitulo(String titulo) {this.titulo = titulo;}
     public void setNiveis(ArrayList<ArrayList<Nivel>> niveis) {this.niveis = niveis;}
     public void setDescricao(String descricao) {this.descricao = descricao;}
@@ -183,4 +183,7 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
         rotaAtual = r;
     }
     public int getRotaAtual() {return rotaAtual;}
+
+    public int getIdFase() {return idFase;}
+    public void setIdFase(int i) {idFase = i;}
 }

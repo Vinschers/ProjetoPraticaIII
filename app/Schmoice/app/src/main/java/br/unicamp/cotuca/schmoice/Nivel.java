@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import br.unicamp.cotuca.schmoice.Escolha;
 
 public class Nivel implements Serializable {
+    private int idNivel;
     private ArrayList<Escolha> escolhas;
     private String descricao;
     private String background;
@@ -19,6 +20,24 @@ public class Nivel implements Serializable {
     private Escolha escolhaFeita;
     private int tipo; // 0 -> normal; 1 -> minigame 1; 2 -> minigame 2.
     private int diff;
+    private int parte;
+    private int rota;
+
+    public int getParte() {
+        return parte;
+    }
+
+    public void setParte(int parte) {
+        this.parte = parte;
+    }
+
+    public int getRota() {
+        return rota;
+    }
+
+    public void setRota(int rota) {
+        this.rota = rota;
+    }
 
     public Nivel(ArrayList<Escolha> escolhas, String descricao, String background, boolean terminado, Fase parentFase, Escolha escolhaFeita, int tipo) {
         this.escolhas = escolhas;
@@ -29,6 +48,9 @@ public class Nivel implements Serializable {
         this.escolhaFeita = escolhaFeita;
         this.tipo = tipo;
     }
+
+    public void setIdNivel(int i) {idNivel = i;}
+    public int getIdNivel() {return idNivel;}
 
     public ArrayList<Escolha> getEscolhas() {
         return escolhas;

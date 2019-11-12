@@ -3,6 +3,7 @@ const app = express();
 const porta = 3000; //porta padrão
 const sql = require('mssql');
 const conexaoStr = "Server=regulus.cotuca.unicamp.br;Database=PR118179;User Id=PR118179;Password=MillerScherer1;";
+var bodyParser = require('body-parser');
 
 //conexao com BD
 sql.connect(conexaoStr)
@@ -16,6 +17,8 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS, PATCH, DELETE");
   next();
 });
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 //definindo as rotas
 
 
@@ -24,11 +27,6 @@ function Fase(id, niveis, titulo, descricao) {
   this.niveis = niveis;
   this.titulo = titulo;
   this.descricao = descricao;
-  this.nivelAtual = null;
-  this.terminada = false;
-  this.status = 0.5;
-  this.parteAtual = 0;
-  this.rotaAtual = 0;
 }
 
 function Nivel(escolhas, descricao, background, tipo = 0, diff = -1) {
@@ -49,14 +47,58 @@ function Escolha(nome, paraOndeIr, status, amizades) {
   this.amizades = amizades;
 }
 
-var f = new Fase(0, [[new Nivel([new Escolha("avançar", 0, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Nível padrão", "oi"), new Nivel([], "Minigame 1", "oi", 1, 2), new Nivel([], "Minigame 2", "oi", 2, 3)], [], []], "Teste", "Entrega parcial do projeto")
+var f = new Fase(0, [[new Nivel([new Escolha("avançar", 0, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Nível padrão", "oi"), new Nivel([], "Minigame 2", "oi", 2, 1),  new Nivel([], "Minigame 1", "oi", 1, 2)], [], []], "Teste", "Entrega parcial do projeto")
 var fases = [f]
 
 
 const rota = express.Router();
 rota.get('/get', (req, res) => {
-  res.json(fases);
+  	global.conexao.request().query(`select * from Escolha select * from Nivel select * from EscolhaNivel select * from Fase select * from NivelFase`).then(result => {
+		var matriz = result.recordsets;
+		var escolhas = matriz[0];
+		var niveis = matriz[1];
+		var escolhaNivel = matriz[2];
+		var fases = matriz[3];
+		var nivelFase = matriz[4];
+
+		for (var i = 0; i < fases.length; i++)
+			fases[i].niveis = [[]];
+
+		for (var i = 0; i < niveis.length; i++)
+			niveis[i].escolhas = [];
+
+		escolhaNivel.forEach(en => {
+			niveis.find(n => n.idNivel == en.idNivel).escolhas.push(escolhas.find(e => e.idEscolha == en.idEscolha));
+		});
+
+		nivelFase.forEach(nf => {
+			var f = fases.find(f => f.idFase == nf.idFase);
+			var n = niveis.find(n => n.idNivel == nf.idNivel);
+			if (n.rota >= f.niveis.length)
+				f.niveis.push(new Array(n.parte));
+			f.niveis[n.rota].push(n);
+		});
+
+		for (var i = 0; i < fases.length; i++)
+			fases[i].niveis.forEach(ns => {
+				ns.sort((n1, n2) => {return n1.parte - n2.parte});
+			});
+
+		res.json(fases)
+  	}).catch(erro => {
+		console.log(erro)
+  	});
 });
+
+rota.post('/addFase', (req, res) => {
+	var str = `insert into Fase values(${req.body.idFase}, '${req.body.titulo}', '${req.body.descricao}')`;
+	execSQL(str, res);
+})
+rota.post('/addNivel', (req, res) => {
+	var n = req.body;
+	var str = `adicionarNivel_sp '${n.descricao}', '${n.background}', ${n.tipo}, ${n.diff}, ${n.rota}, ${n.fase}`;
+	execSQL(str, res);
+})
 
 rota.get('/jogos/:ip', (req, res) => {
   execSQL(`select * from Jogo where ip='${req.params.ip}' order by slot asc`, res);

@@ -3,11 +3,15 @@ package br.unicamp.cotuca.schmoice;
 import java.io.Serializable;
 
 public class Escolha implements Serializable {
+    private int idEscolha;
     private final int nAmigos = 10;
     private String nome;
     private int paraOndeIr;
-    private double[] status;
-    private double[] amizades;
+    private double[] statusPlayer;
+    private double[] statusAmizades;
+
+    public int getIdEscolha() {return idEscolha;}
+    public void setIdEscolha(int i) {idEscolha = i;}
 
     public String getNome() {
         return nome;
@@ -17,20 +21,30 @@ public class Escolha implements Serializable {
         this.nome = nome;
     }
 
-    public double[] getStatus() {
-        return status;
+    public double[] getStatusPlayer() {
+        return statusPlayer;
     }
 
-    public void setStatus(double[] status) {
-        this.status = status;
+    public void setStatusPlayer(String status) {
+        try {
+            this.statusPlayer = (double[])ClienteWS.fromJson(status, double[].class);
+        }
+        catch (Exception er) {
+            er.printStackTrace();
+        }
     }
 
-    public double[] getAmizades() {
-        return amizades;
+    public double[] getStatusAmizades() {
+        return statusAmizades;
     }
 
-    public void setAmizades(double[] amizades) {
-        this.amizades = amizades;
+    public void setStatusAmizades(String amizades) {
+        try {
+            this.statusAmizades = (double[])ClienteWS.fromJson(amizades, double[].class);
+        }
+        catch (Exception er) {
+            er.printStackTrace();
+        }
     }
     public void setParaOndeIr(int paraOndeIr) {
         this.paraOndeIr = paraOndeIr;
@@ -41,13 +55,13 @@ public class Escolha implements Serializable {
     public Escolha() {
         nome = "";
         paraOndeIr = 0;
-        status = new double[7];
-        amizades = new double[nAmigos];
+        statusPlayer = new double[7];
+        statusAmizades = new double[nAmigos];
     }
     public Escolha(String nome, int paraOndeIr, double[] s, double[] a) {
         this.nome = nome;
         this.paraOndeIr = paraOndeIr;
-        this.status = s;
-        this.amizades = a;
+        this.statusPlayer = s;
+        this.statusAmizades = a;
     }
 }
