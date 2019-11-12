@@ -140,6 +140,7 @@ public class SavesActivity extends AppCompatActivity {
 
         params.putSerializable("controle", controle);
         params.putSerializable("jogo", jogos[ind]);
+        params.putInt("slot", ind);
         intent.putExtras(params);
         startActivity(intent);
     }

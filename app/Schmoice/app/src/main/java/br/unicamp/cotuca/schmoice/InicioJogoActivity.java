@@ -7,12 +7,16 @@ import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +32,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Collections;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -181,6 +189,7 @@ public class InicioJogoActivity extends AppCompatActivity {
     Button btnFinalizar, btnTP, btnTM, btnFeP, btnFeM, btnSP, btnSM, btnCP, btnCM, btnFiP, btnFiM, btnFoP, btnFoM, btnIP, btnIM;
     ThreadRedimensionar resizeLL;
     Controle controle;
+    ConstraintLayout clAtributos;
 
     private void atualizarPositivos(boolean ativar)
     {
@@ -195,6 +204,8 @@ public class InicioJogoActivity extends AppCompatActivity {
         btnFinalizar.setEnabled(!ativar);
     }
 
+    int slotEnviado = 0;
+    final double[] stats = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -211,7 +222,6 @@ public class InicioJogoActivity extends AppCompatActivity {
         tvRestantes = findViewById(R.id.tvRestantes);
         final String textoPadrao = " pontos restantes";
 
-        final double[] stats = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5 };
         final int pontosDisponiveis[] = {3};
 
         tvCarisma = findViewById(R.id.tvCarisma);
@@ -221,7 +231,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[0] += 0.1;
-                tvCarisma.setText(-0.5 + 10 * stats[0] + "");
+                tvCarisma.setText(Math.round(-5 + 10 * stats[0]) + "");
 
                 tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
                 if(pontosDisponiveis[0] == 0)
@@ -233,7 +243,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[0] -= 0.1;
-                tvCarisma.setText(-0.5 + 10 * stats[0] + "");
+                tvCarisma.setText(Math.round(-5 + 10 * stats[0]) + "");
 
                 tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
                 if(stats[0] == 0.5)
@@ -250,7 +260,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[1] += 0.1;
-                tvFelicidade.setText(-0.5 + 10 * stats[1] + "");
+                tvFelicidade.setText(Math.round(-5 + 10 * stats[1]) + "");
 
                 tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
                 if(pontosDisponiveis[0] == 0)
@@ -262,7 +272,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[1] -= 0.1;
-                tvFelicidade.setText(-0.5 + 10 * stats[1] + "");
+                tvFelicidade.setText(Math.round(-5 + 10 * stats[1]) + "");
 
                 tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
                 if(stats[1] == 0.5)
@@ -279,7 +289,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[2] += 0.1;
-                tvFinancas.setText(-0.5 + 10 * stats[2] + "");
+                tvFinancas.setText(Math.round(-5 + 10 * stats[2]) + "");
 
                 tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
                 if(pontosDisponiveis[0] == 0)
@@ -291,7 +301,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[2] -= 0.1;
-                tvFinancas.setText(-0.5 + 10 * stats[2] + "");
+                tvFinancas.setText(Math.round(-5 + 10 * stats[2]) + "");
 
                 tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
                 if(stats[2] == 0.5)
@@ -308,7 +318,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[3] += 0.1;
-                tvForca.setText(-0.5 + 10 * stats[3] + "");
+                tvForca.setText(Math.round(-5 + 10 * stats[3]) + "");
 
                 tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
                 if(pontosDisponiveis[0] == 0)
@@ -321,7 +331,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[3] -= 0.1;
-                tvForca.setText(-0.5 + 10 * stats[3] + "");
+                tvForca.setText(Math.round(-5 + 10 * stats[3]) + "");
 
                 tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
                 if(stats[3] == 0.5)
@@ -338,7 +348,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[4] += 0.1;
-                tvInteligencia.setText(-0.5 + 10 * stats[4] + "");
+                tvInteligencia.setText(Math.round(-5 + 10 * stats[4]) + "");
 
                 tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
                 if(pontosDisponiveis[0] == 0)
@@ -350,7 +360,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[4] -= 0.1;
-                tvInteligencia.setText(-0.5 + 10 * stats[4] + "");
+                tvInteligencia.setText(Math.round(-5 + 10 * stats[4]) + "");
 
                 tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
                 if(stats[4] == 0.5)
@@ -367,7 +377,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[5] += 0.1;
-                tvSanidade.setText(-0.5 + 10 * stats[5]  + "");
+                tvSanidade.setText(Math.round(-5 + 10 * stats[5])  + "");
 
                 tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
                 if(pontosDisponiveis[0] == 0)
@@ -379,7 +389,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[5] -= 0.1;
-                tvSanidade.setText(-0.5 + 10 * stats[5] + "");
+                tvSanidade.setText(Math.round(-5 + 10 * stats[5]) + "");
 
                 tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
                 if(stats[5] == 0.5)
@@ -390,13 +400,13 @@ public class InicioJogoActivity extends AppCompatActivity {
         });
 
         tvTranquilidade = findViewById(R.id.tvTranquilidade);
-        btnTM = findViewById(R.id.btnSM);
+        btnTM = findViewById(R.id.btnTM);
         btnTP = findViewById(R.id.btnTP);
         btnTP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 stats[6] += 0.1;
-                tvTranquilidade.setText(-0.5 + 10 * stats[6] + "");
+                tvTranquilidade.setText(Math.round(-5 + 10 * stats[6]) + "");
 
                 tvRestantes.setText(--(pontosDisponiveis[0]) + textoPadrao);
                 if(pontosDisponiveis[0] == 0)
@@ -408,7 +418,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 stats[6] -= 0.1;
-                tvTranquilidade.setText(-0.5 + 10 * stats[6] + "");
+                tvTranquilidade.setText(Math.round(-5 + 10 * stats[6]) + "");
 
                 tvRestantes.setText(++(pontosDisponiveis[0]) + textoPadrao);
                 if(stats[6] == 0.5)
@@ -418,6 +428,11 @@ public class InicioJogoActivity extends AppCompatActivity {
             }
         });
 
+        btnFinalizar = findViewById(R.id.btnFinalizar);
+
+        clAtributos = findViewById(R.id.clAtributos);
+
+
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
@@ -426,8 +441,130 @@ public class InicioJogoActivity extends AppCompatActivity {
                     }
                 }, 1000);
         controle = (Controle) getIntent().getExtras().getSerializable("controle");
+        slotEnviado = getIntent().getExtras().getInt("slot", 0);
 
-        controle.setEventos(new Eventos() {
+        resizeLL = new ThreadRedimensionar();
+        resizeLL.start();
+
+        configurarBotoes();
+    }
+
+    int atual = 1;
+    public void configurarBotoes()
+    {
+        final Button[] botoes = {btnTM, btnTP, btnFeM, btnFeP, btnSM, btnSP, btnCM, btnCP, btnFoM, btnFoP, btnFiM, btnFiP, btnIM, btnIP, btnFinalizar};
+
+        controle.setEventos(new Eventos(){
+            @Override
+            public void onPraBaixo() {
+                desselecionar(botoes[atual], false);
+
+                boolean jaSelecionou = false;
+                int indiceSelecionadoA = atual, indiceSelecionadoB = atual;
+
+                for (int i = atual; i < botoes.length; i += 2)
+                    if (botoes[i].isEnabled())
+                    {
+                        jaSelecionou = true;
+                        indiceSelecionadoA = i;
+                        break;
+                    }
+                for (int i = (atual % 2 == 0 ? 0: 1); i < atual && !jaSelecionou; i+=2)
+                    if (botoes[i].isEnabled()) {
+                        indiceSelecionadoA = i;
+                        break;
+                    }
+
+                jaSelecionou = false;
+
+                for (int i = atual + 1; i < botoes.length; i += 2)
+                    if (botoes[i].isEnabled() && (indiceSelecionadoA < atual || i - atual < indiceSelecionadoA - atual))
+                    {
+                        jaSelecionou = true;
+                        indiceSelecionadoB = i;
+                        break;
+                    }
+                for (int i = (atual % 2 == 0 ? 1: 0); i < botoes.length && !jaSelecionou && indiceSelecionadoA < atual; i += 2)
+                    if (botoes[i].isEnabled() && atual - i < atual - indiceSelecionadoA)
+                    {
+                        jaSelecionou = true;
+                        indiceSelecionadoB = i;
+                        break;
+                    }
+                if (jaSelecionou)
+                    atual = indiceSelecionadoB < atual && btnFinalizar.isEnabled()? botoes.length - 1 : indiceSelecionadoB;
+                else
+                    atual = indiceSelecionadoA < atual && btnFinalizar.isEnabled()? botoes.length - 1 : indiceSelecionadoA;
+
+                selecionar(botoes[atual],false);
+            }
+
+            @Override
+            public void onPraCima() {
+                desselecionar(botoes[atual], false);
+
+                boolean jaSelecionou = false;
+                int indiceSelecionadoA = atual, indiceSelecionadoB = atual;
+
+                for (int i = atual; i >= 0; i -= 2)
+                    if (botoes[i].isEnabled())
+                    {
+                        jaSelecionou = true;
+                        indiceSelecionadoA = i;
+                        break;
+                    }
+                for (int i = (atual % 2 == 0 ? botoes.length - 2: botoes.length - 1); i > atual && !jaSelecionou; i -= 2)
+                    if (botoes[i].isEnabled()) {
+                        indiceSelecionadoA = i;
+                        break;
+                    }
+
+                jaSelecionou = false;
+
+                for (int i = atual - 1; i >= 0; i -= 2)
+                    if (botoes[i].isEnabled() && (indiceSelecionadoA > atual || i - atual > indiceSelecionadoA - atual))
+                    {
+                        jaSelecionou = true;
+                        indiceSelecionadoB = i;
+                        break;
+                    }
+                for (int i = (atual % 2 == 0 ? botoes.length - 1: botoes.length - 2); i >= 0 && !jaSelecionou && indiceSelecionadoA > atual; i -= 2)
+                    if (botoes[i].isEnabled() && atual - i > atual - indiceSelecionadoA)
+                    {
+                        jaSelecionou = true;
+                        indiceSelecionadoB = i;
+                        break;
+                    }
+                if (jaSelecionou)
+                    atual = indiceSelecionadoB > atual && btnFinalizar.isEnabled()? botoes.length - 1 : indiceSelecionadoB;
+                else
+                    atual = indiceSelecionadoA > atual && btnFinalizar.isEnabled()? botoes.length - 1 : indiceSelecionadoA;
+
+                selecionar(botoes[atual],false);
+            }
+
+            @Override
+            public void onPraEsquerda() {
+                if (atual != botoes.length - 1)
+                {
+                    if (atual % 2 == 1 && botoes[atual - 1].isEnabled())
+                    {
+                        desselecionar(botoes[atual], false);
+                        selecionar(botoes[--atual], false);
+                    }
+                    else if (atual % 2 == 0 && botoes[atual + 1].isEnabled())
+                    {
+                        desselecionar(botoes[atual], false);
+                        selecionar(botoes[++atual], false);
+                    }
+                }
+            }
+
+            @Override
+            public void onPraDireita() {
+                controle.eventos.onPraEsquerda();
+            }
+
             @Override
             public void onOK() {
                 if (resizeLL.isAlive())
@@ -435,13 +572,66 @@ public class InicioJogoActivity extends AppCompatActivity {
                     llExplicacao.setVisibility(View.INVISIBLE);
                     clarearFundo();
                     resizeLL.matar();
+                    clAtributos.setVisibility(View.VISIBLE);
                 }
+                else if (botoes[atual].isEnabled())
+                    botoes[atual].performClick();
             }
         });
 
+        for (int i = 0; i < botoes.length; i++) {
+            final int index = i;
+            botoes[i].setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    desselecionar(botoes[atual],true);
+                    atual = index;
+                    selecionar(botoes[atual],true);
+                }
+            });
+        }
 
-        resizeLL = new ThreadRedimensionar();
-        resizeLL.start();
+        backgroundDefault = botoes[atual].getBackground();
+
+        btnFinalizar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Jogo jogo = new Jogo();
+                Player jogador = jogo.getPlayer();
+                jogador.setCarisma(stats[0]);
+                jogador.setFelicidade(stats[1]);
+                jogador.setFinancas(stats[2]);
+                jogador.setForca(stats[3]);
+                jogador.setInteligencia(stats[4]);
+                jogador.setSanidade(stats[5]);
+                jogador.setTranquilidade(stats[6]);
+
+                ObjetoEnvio obj = new ObjetoEnvio(jogador);
+
+                Registrador reg = new Registrador(obj);
+                reg.start();
+                while (!reg.isMorta()) {}
+            }
+        });
+
+        selecionar(botoes[atual], false);
+    }
+
+    Drawable backgroundDefault;
+    public void desselecionar(Button botao, boolean fromFocusChange) {
+        if (!fromFocusChange)
+            botao.clearFocus();
+        botao.setBackground(backgroundDefault);
+    }
+    public void selecionar(Button botao, boolean fromFocusChange) {
+        if (!fromFocusChange)
+            botao.findFocus();
+        ShapeDrawable shapedrawable = new ShapeDrawable();
+        shapedrawable.setShape(new RectShape());
+        shapedrawable.getPaint().setColor(Color.RED);
+        shapedrawable.getPaint().setStrokeWidth(10f);
+        shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
+        botao.setBackground(shapedrawable);
     }
 
     private void escurecerFundo() {
@@ -560,6 +750,149 @@ public class InicioJogoActivity extends AppCompatActivity {
                             .show();
                 }
             }
+        }
+    }
+    public static String getIPAddress(boolean useIPv4) {
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface intf : interfaces) {
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+                for (InetAddress addr : addrs) {
+                    if (!addr.isLoopbackAddress()) {
+                        String sAddr = addr.getHostAddress();
+                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
+                        boolean isIPv4 = sAddr.indexOf(':')<0;
+
+                        if (useIPv4) {
+                            if (isIPv4)
+                                return sAddr;
+                        } else {
+                            if (!isIPv4) {
+                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
+                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) { } // for now eat exceptions
+        return "";
+    }
+    public class ObjetoEnvio
+    {
+        public double getCarisma() {
+            return carisma;
+        }
+
+        public void setCarisma(double carisma) {
+            this.carisma = carisma;
+        }
+
+        public double getInteligencia() {
+            return inteligencia;
+        }
+
+        public void setInteligencia(double inteligencia) {
+            this.inteligencia = inteligencia;
+        }
+
+        public double getTranquilidade() {
+            return tranquilidade;
+        }
+
+        public void setTranquilidade(double tranquilidade) {
+            this.tranquilidade = tranquilidade;
+        }
+
+        public double getForca() {
+            return forca;
+        }
+
+        public void setForca(double forca) {
+            this.forca = forca;
+        }
+
+        public double getFinancas() {
+            return financas;
+        }
+
+        public void setFinancas(double financas) {
+            this.financas = financas;
+        }
+
+        public double getSanidade() {
+            return sanidade;
+        }
+
+        public void setSanidade(double sanidade) {
+            this.sanidade = sanidade;
+        }
+
+        public double getFelicidade() {
+            return felicidade;
+        }
+
+        public void setFelicidade(double felicidade) {
+            this.felicidade = felicidade;
+        }
+
+        public String getIp() {
+            return ip;
+        }
+
+        public void setIp(String ip) {
+            this.ip = ip;
+        }
+
+        public int getSlot() {
+            return slot;
+        }
+
+        public void setSlot(int slot) {
+            this.slot = slot;
+        }
+
+        double carisma, inteligencia, tranquilidade, forca, financas, sanidade, felicidade;
+        String ip;
+        int slot;
+
+        public ObjetoEnvio(Player jogador)
+        {
+            carisma = jogador.getCarisma();
+            inteligencia = jogador.getInteligencia();
+            tranquilidade = jogador.getTranquilidade();
+            forca = jogador.getForca();
+            financas = jogador.getFinancas();
+            sanidade = jogador.getSanidade();
+            felicidade = jogador.getFelicidade();
+            slot = slotEnviado;
+            ip = getIPAddress(true);
+        }
+    }
+    public class Registrador extends Thread
+    {
+        ObjetoEnvio obj;
+
+        boolean morta = false;
+        public boolean isMorta()
+        {
+            return morta;
+        }
+
+        public Registrador(ObjetoEnvio obj)
+        {
+            this.obj = obj;
+        }
+
+        @Override
+        public void run() {
+            try {
+                String ip = "http://177.220.18.90:3000"; //trocar por ipv4 do pc
+                ClienteWS.postObjeto(obj, Object.class, ip + "/criarJogo");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            morta = true;
         }
     }
 }
