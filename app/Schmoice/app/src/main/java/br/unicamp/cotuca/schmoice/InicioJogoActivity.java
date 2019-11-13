@@ -887,7 +887,7 @@ public class InicioJogoActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                String ip = "http://177.220.18.90:3000"; //trocar por ipv4 do pc
+                String ip = "http://" + ClienteWS.ipMaquina + ":3000"; //trocar por ipv4 do pc
                 ClienteWS.postObjeto(obj, Object.class, ip + "/criarJogo");
             } catch (Exception ex) {
                 ex.printStackTrace();

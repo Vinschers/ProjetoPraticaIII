@@ -18,6 +18,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 public class ClienteWS
 {
+    public static String ipMaquina = "25.91.16.95";
     public static Object getObjeto (Class tipoObjetoRetorno,
                                     String urlWebService,
                                     String... parametros)

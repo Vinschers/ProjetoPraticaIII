@@ -22,35 +22,6 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 //definindo as rotas
 
 
-function Fase(id, niveis, titulo, descricao) {
-  this.id = id;
-  this.niveis = niveis;
-  this.titulo = titulo;
-  this.descricao = descricao;
-}
-
-function Nivel(escolhas, descricao, background, tipo = 0, diff = -1) {
-  this.escolhas = escolhas;
-  this.descricao = descricao;
-  this.background = background;
-  this.terminado = false;
-  this.parentFase = null;
-  this.escolhaFeita = null;
-  this.tipo = tipo; // 0 -> normal; 1-> minigame 1; 2-> minigame 2.
-  this.diff = diff;
-}
-
-function Escolha(nome, paraOndeIr, status, amizades) {
-  this.nome = nome;
-  this.paraOndeIr = paraOndeIr;
-  this.status = status;
-  this.amizades = amizades;
-}
-
-var f = new Fase(0, [[new Nivel([new Escolha("avançar", 0, [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], "Nível padrão", "oi"), new Nivel([], "Minigame 2", "oi", 2, 1),  new Nivel([], "Minigame 1", "oi", 1, 2)], [], []], "Teste", "Entrega parcial do projeto")
-var fases = [f]
-
-
 const rota = express.Router();
 rota.get('/get', (req, res) => {
   	global.conexao.request().query(`select * from Escolha select * from Nivel select * from EscolhaNivel select * from Fase select * from NivelFase`).then(result => {
@@ -101,50 +72,50 @@ rota.post('/addNivel', (req, res) => {
 })
 
 rota.get('/jogos/:ip', (req, res) => {
-  execSQL(`select * from Jogo where ip='${req.params.ip}' order by slot asc`, res);
+  	execSQL(`select * from Jogo where ip='${req.params.ip}' order by slot asc`, res);
 })
 rota.get('/personagensJogo/:id', (req, res) => {
-  execSQL(`select * from JogoPersonagem where idJogo=${req.params.id}`);
+  	execSQL(`select * from JogoPersonagem where idJogo=${req.params.id}`, res);
 })
 rota.post('/criarJogo', (req, res) => {
-  const slot = req.body.slot;
-  const ip = req.body.ip;
-  const tranquilidade = req.body.tranquilidade;
-  const felicidade = req.body.felicidade;
-  const sanidade = req.body.sanidade;
-  const financas = req.body.financas;
-  const inteligencia = req.body.inteligencia;
-  const carisma = req.body.carisma;
-  const forca = req.body.forca;
+	const slot = req.body.slot;
+	const ip = req.body.ip;
+	const tranquilidade = req.body.tranquilidade;
+	const felicidade = req.body.felicidade;
+	const sanidade = req.body.sanidade;
+	const financas = req.body.financas;
+	const inteligencia = req.body.inteligencia;
+	const carisma = req.body.carisma;
+	const forca = req.body.forca;
 
-  execSQL(`CriarJogo_sp ${slot}, '${ip}', ${tranquilidade}, ${felicidade}, ${sanidade}, ${financas}, ${inteligencia}, ${carisma}, ${forca}`, res);
+	execSQL(`CriarJogo_sp ${slot}, '${ip}', ${tranquilidade}, ${felicidade}, ${sanidade}, ${financas}, ${inteligencia}, ${carisma}, ${forca}`, res);
 })
 rota.patch('/atualizarJogo', (req, res) => {
-  const id = req.body.id;
-  const slot = req.body.slot;
-  const acabouDeComecar = req.body.acabouDeComecar ? 1 : 0;
-  const tranquilidade = req.body.tranquilidade;
-  const felicidade = req.body.felicidade;
-  const sanidade = req.body.sanidade;
-  const financas = req.body.financas;
-  const inteligencia = req.body.inteligencia;
-  const carisma = req.body.carisma;
-  const forca = req.body.forca;
-  const caminho = req.body.caminho;
-  const nivelAtual = req.body.nivelAtual;
-  const linhaAtual = req.body.linhaAtual;
+	const id = req.body.id;
+	const slot = req.body.slot;
+	const acabouDeComecar = req.body.acabouDeComecar ? 1 : 0;
+	const tranquilidade = req.body.tranquilidade;
+	const felicidade = req.body.felicidade;
+	const sanidade = req.body.sanidade;
+	const financas = req.body.financas;
+	const inteligencia = req.body.inteligencia;
+	const carisma = req.body.carisma;
+	const forca = req.body.forca;
+	const caminho = req.body.caminho;
+	const nivelAtual = req.body.nivelAtual;
+	const linhaAtual = req.body.linhaAtual;
 
-  const amizades = req.body.amizades;
+	const amizades = req.body.amizades;
 
-  execSQLSemResposta(`update Jogo set slot=${slot}, acabouDeComecar=${acabouDeComecar}, tranquilidade=${tranquilidade}, felicidade=${felicidade}, sanidade=${sanidade}, financas=${financas}, inteligencia=${inteligencia}, carisma=${carisma}, forca=${forca}, caminho='${caminho}, nivelAtual='${nivelAtual}, linhaAtual='${linhaAtual}' where id=${id}`, res);
-  for (var i = 0; i < 6; i++)
-    execSQLSemResposta(`update JogoPersonagem set amizade=${amizades[i]} where idJogo=${id} and idPersonagem=${i}`, res);
+	execSQLSemResposta(`update Jogo set slot=${slot}, acabouDeComecar=${acabouDeComecar}, tranquilidade=${tranquilidade}, felicidade=${felicidade}, sanidade=${sanidade}, financas=${financas}, inteligencia=${inteligencia}, carisma=${carisma}, forca=${forca}, caminho='${caminho}, nivelAtual='${nivelAtual}, linhaAtual='${linhaAtual}' where id=${id}`, res);
+	for (var i = 0; i < 6; i++)
+		execSQLSemResposta(`update JogoPersonagem set amizade=${amizades[i]} where idJogo=${id} and idPersonagem=${i}`, res);
 
-  res.json("Tudo certo :D");
+	res.json("Tudo certo :D");
 })
 rota.delete('/deletarJogo', (req, res) => {
-  const id = req.body.id;
-  execSQL(`DeletarJogo_sp ${id}`, res);
+	const id = req.body.id;
+	execSQL(`DeletarJogo_sp ${id}`, res);
 })
 
 app.use('/', rota);
@@ -157,7 +128,7 @@ function execSQL(sql, resposta) {
 	global.conexao.request()
 				  .query(sql)
 				  .then(resultado => resposta.json(resultado.recordset))
-				  .catch(erro => {console.log(sql); resposta.json(erro);});
+				  .catch(erro => {console.log(erro);});
 }
 function execSQLSemResposta(sql, resposta) {
 	global.conexao.request()

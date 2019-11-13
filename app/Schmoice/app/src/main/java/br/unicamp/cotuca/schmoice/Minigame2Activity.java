@@ -306,9 +306,9 @@ public class Minigame2Activity extends AppCompatActivity {
                         startActivity(getIntent());
                     }
                 })
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onCancel(DialogInterface dialogInterface) {
                         Intent intent = new Intent(Minigame2Activity.this, SavesActivity.class);
                         Bundle params = new Bundle();
                         params.putSerializable("controle", controle);
