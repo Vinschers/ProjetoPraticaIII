@@ -18,8 +18,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 public class ClienteWS
 {
-    private static String[] ips = {"25.91.16.95", "177.220.18.97"};
-    public static String ipMaquina = ips[1];
+    private static String[] ips = {"25.91.16.95", "177.220.18.97", "177.220.18.90"};
     public static Object getObjeto (Class tipoObjetoRetorno,
                                     String urlWebService,
                                     String... parametros)

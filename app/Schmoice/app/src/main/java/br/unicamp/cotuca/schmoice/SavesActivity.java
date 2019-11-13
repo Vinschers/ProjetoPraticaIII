@@ -148,7 +148,42 @@ public class SavesActivity extends AppCompatActivity {
 
     public class PersonagemRecebido
     {
-        int id, idJogo, idPersonagem;
+        int id;
+        int idJogo;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public int getIdJogo() {
+            return idJogo;
+        }
+
+        public void setIdJogo(int idJogo) {
+            this.idJogo = idJogo;
+        }
+
+        public int getIdPersonagem() {
+            return idPersonagem;
+        }
+
+        public void setIdPersonagem(int idPersonagem) {
+            this.idPersonagem = idPersonagem;
+        }
+
+        public double getAmizade() {
+            return amizade;
+        }
+
+        public void setAmizade(double amizade) {
+            this.amizade = amizade;
+        }
+
+        int idPersonagem;
         double amizade;
     }
     public class Consultor extends Thread
@@ -188,6 +223,13 @@ public class SavesActivity extends AppCompatActivity {
                     jogador.setFinancas(jogosRecebidos[i].getFinancas());
                     jogador.setFelicidade(jogosRecebidos[i].getFelicidade());
                     jogador.setCarisma(jogosRecebidos[i].getCarisma());
+
+                    Personagem[] personagens = jogosObtidos[i].getPersonagens();
+
+                    for (int j = 0; j < amigosRecebidos.length; j++)
+                        personagens[j].setAmizade(amigosRecebidos[j].getAmizade());
+
+                    Arvore arvore = jogosObtidos[i].getArvore();
                 }
 
 
