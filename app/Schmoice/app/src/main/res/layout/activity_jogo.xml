@@ -22,18 +22,28 @@
     <RelativeLayout
         android:id="@+id/conteudoFullScreen"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#000">
         <ImageView
             android:id="@+id/imgCenario"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="135dp"
             android:textSize="30dp" />
+        <LinearLayout
+            android:id="@+id/llFundoMinigame2"
+            android:layout_width="match_parent"
+            android:layout_height="125dp"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+        </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/llEscolhas"
             android:layout_width="match_parent"
             android:layout_height="180dp"
             android:background="@color/colorPrimary"

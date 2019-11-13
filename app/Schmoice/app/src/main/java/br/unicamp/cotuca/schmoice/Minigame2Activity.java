@@ -26,15 +26,21 @@ import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.os.PersistableBundle;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -179,7 +185,7 @@ public class Minigame2Activity extends AppCompatActivity {
     }
     //endregion
 
-    LinearLayout llFundoMinigame;
+    LinearLayout llFundoMinigame, llExplicacao;
     ImageView imgCenario, imgViewFundoJogo;
     CanvasMinigame canvas;
     ObjetoMinigame[] objs;
@@ -198,13 +204,13 @@ public class Minigame2Activity extends AppCompatActivity {
         imgViewFundoJogo = (ImageView)findViewById(R.id.imgViewFundoJogo);
         llFundoMinigame = (LinearLayout)findViewById(R.id.llFundoMinigame);
         imgCenario = (ImageView)findViewById(R.id.imgCenario);
+        llExplicacao = (LinearLayout)findViewById(R.id.llExplicacao);
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
         diff = params.getInt("diff");
         controle = (Controle)params.getSerializable("controle");
         jogo = (Jogo)params.getSerializable("jogo");
-        //imgCenario.setImageBitmap(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground());
-        imgCenario.setImageBitmap(getImageByName("oi"));
+        imgCenario.setImageBitmap(getImageByName(jogo.getArvore().getFaseAtual().getNivelAtual().getBackground()));
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
@@ -296,6 +302,7 @@ public class Minigame2Activity extends AppCompatActivity {
         }
         return new ObjetoMinigame(-1, 0);
     }
+
     public void perder() {
         canvas.setFim(true);
         new AlertDialog.Builder(Minigame2Activity.this)

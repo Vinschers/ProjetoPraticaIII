@@ -22,7 +22,8 @@
             <ImageView
                 android:id="@+id/imgCenario"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
             <LinearLayout
                 android:id="@+id/llFundoMinigame"
                 android:layout_width="match_parent"
