@@ -131,3 +131,8 @@ insert into EscolhaNivel values (5, 2)
 insert into NivelFase values(5, 1)
 insert into NivelFase values(6, 1)
 insert into NivelFase values(7, 1)
+
+
+select * from Nivel
+
+update Nivel set background = 'quarto' where idNivel = 5
