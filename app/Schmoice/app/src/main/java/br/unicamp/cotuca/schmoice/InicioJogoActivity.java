@@ -11,6 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.TargetApi;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
@@ -611,6 +612,13 @@ public class InicioJogoActivity extends AppCompatActivity {
                 Registrador reg = new Registrador(obj);
                 reg.start();
                 while (!reg.isMorta()) {}
+
+                Intent intent = new Intent(InicioJogoActivity.this, SavesActivity.class);
+                controle.setEventos(null);
+                Bundle params = new Bundle();
+                params.putSerializable("controle", controle);
+                intent.putExtras(params);
+                startActivity(intent);
             }
         });
 
@@ -887,8 +895,7 @@ public class InicioJogoActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                String ip = "http://" + ClienteWS.ipMaquina + ":3000"; //trocar por ipv4 do pc
-                ClienteWS.postObjeto(obj, Object.class, ip + "/criarJogo");
+                ClienteWS.postObjeto(obj, Object.class, ClienteWS.webService + "/criarJogo");
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

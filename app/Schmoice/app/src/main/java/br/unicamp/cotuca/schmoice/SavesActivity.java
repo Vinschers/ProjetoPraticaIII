@@ -200,18 +200,14 @@ public class SavesActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-
-                //FaseInfo f = (FaseInfo)ClienteWS.getObjeto(FaseInfo.class, "http://177.220.18.90:3000/get");
-                //fases = f.getFases();
                 String ipUsuario = getIPAddress(true); // IP do usuario
-                fases = (Fase[])ClienteWS.getObjeto(Fase[].class, "http://" + ClienteWS.ipMaquina + ":3000/get");
-                //jogosObtidos = new Jogo[3];
-                JogoRecebido[] jogosRecebidos = (JogoRecebido[])ClienteWS.getObjeto(JogoRecebido[].class, "http://" + ClienteWS.ipMaquina + ":3000/jogos/" + ipUsuario);
+                fases = (Fase[])ClienteWS.getObjeto(Fase[].class, ClienteWS.webService + "/get");
+                JogoRecebido[] jogosRecebidos = (JogoRecebido[])ClienteWS.getObjeto(JogoRecebido[].class, ClienteWS.webService + "/jogos/" + ipUsuario);
 
                 jogosObtidos = new Jogo[jogosRecebidos.length];
                 for (int i = 0; i < jogosRecebidos.length; i++)
                 {
-                    PersonagemRecebido[] amigosRecebidos = (PersonagemRecebido[])ClienteWS.getObjeto(PersonagemRecebido[].class, "http://" + ClienteWS.ipMaquina + ":3000/personagensJogo/" + jogosRecebidos[i].getId());
+                    PersonagemRecebido[] amigosRecebidos = (PersonagemRecebido[])ClienteWS.getObjeto(PersonagemRecebido[].class, ClienteWS.webService + "/personagensJogo/" + jogosRecebidos[i].getId());
                     jogosObtidos[i] = new Jogo();
                     jogosObtidos[i].setAcabouDeComecar(false);
 

@@ -19,6 +19,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 public class ClienteWS
 {
     private static String[] ips = {"25.91.16.95", "177.220.18.97", "177.220.18.90"};
+    public static String webService = "https://host-node.herokuapp.com";
     public static Object getObjeto (Class tipoObjetoRetorno,
                                     String urlWebService,
                                     String... parametros)
