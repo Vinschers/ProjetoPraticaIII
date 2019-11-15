@@ -7,15 +7,15 @@ var bodyParser = require('body-parser');
 
 //conexao com BD
 sql.connect(conexaoStr)
-   .then(conexao => global.conexao = conexao)
-   .catch(erro => console.log(erro));
+	.then(conexao => global.conexao = conexao)
+	.catch(erro => console.log(erro));
 
 //acrescentando informacoes de cabecalho para suportar o CORS
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.header("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS, PATCH, DELETE");
-  next();
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	res.header("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS, PATCH, DELETE");
+	next();
 });
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded

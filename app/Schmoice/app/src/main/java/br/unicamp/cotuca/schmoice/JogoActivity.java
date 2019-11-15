@@ -187,6 +187,7 @@ public class JogoActivity extends AppCompatActivity {
 
     CanvasMinigame canvas;
     ObjetoMinigame[] objs;
+    Thread threadMinigame2;
     final float click = 0.30f;
 
     public ObjetoMinigame getObjetoAtual() {
@@ -202,6 +203,9 @@ public class JogoActivity extends AppCompatActivity {
         Uteis.alertar("Você perdeu. Deseja tentar novamente?", "Perdeu", new Runnable() {
             @Override
             public void run() {
+                threadMinigame2.interrupt();
+                canvas = null;
+                objs = null;
                 iniciarNivel();
             }
         }, new Runnable() {
@@ -566,7 +570,7 @@ public class JogoActivity extends AppCompatActivity {
         llFundoMinigame2.removeAllViews();
         llFundoMinigame2.addView(canvas);
 
-        Thread thread = new Thread(new ThreadMinigame2(canvas));
+        threadMinigame2 = new Thread(new ThreadMinigame2(canvas));
 
         controle.setEventos(new Eventos(){
             @Override
@@ -620,13 +624,15 @@ public class JogoActivity extends AppCompatActivity {
             }
         });
 
-        thread.start();
+        threadMinigame2.start();
     }
 
     public void exit()
     {
+        threadMinigame2.interrupt();
         Intent intent = new Intent(JogoActivity.this, SavesActivity.class);
         Bundle params = new Bundle();
+        controle.setEventos(null);
         params.putSerializable("controle", controle);
         intent.putExtras(params);
         startActivity(intent);
