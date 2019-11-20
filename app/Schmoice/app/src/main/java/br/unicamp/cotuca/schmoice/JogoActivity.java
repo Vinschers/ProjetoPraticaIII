@@ -4,37 +4,25 @@ import android.annotation.SuppressLint;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.Image;
-import android.opengl.Visibility;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -171,6 +159,7 @@ public class JogoActivity extends AppCompatActivity {
 
     ImageView imgCenario;
     RelativeLayout conteudoFullScreen;
+    LinearLayout rlPersonagens;
 
     Jogo jogo;
     Nivel nivel;
@@ -198,7 +187,7 @@ public class JogoActivity extends AppCompatActivity {
         return new ObjetoMinigame(-1, 0);
     }
 
-    public void perder() {
+    public void perderMinigame2() {
         canvas.setFim(true);
         Uteis.alertar("Você perdeu. Deseja tentar novamente?", "Perdeu", new Runnable() {
             @Override
@@ -215,13 +204,12 @@ public class JogoActivity extends AppCompatActivity {
             }
         }, JogoActivity.this);
     }
-    public void ganhar() {
+    public void ganharMinigame2() {
         canvas.setFim(true);
         try {
             Thread.sleep(1000);
-            //jogo.getArvore().getFaseAtual().avancarNivel();
-            //iniciarNivel();
-            exit();
+            jogo.getArvore().getFaseAtual().avancarNivel();
+            iniciarNivel();
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -352,7 +340,7 @@ public class JogoActivity extends AppCompatActivity {
                 setX(getX() - v);
             }
             if (getX() < -1 * getWidth() && alpha == 255) {
-                perder();
+                perderMinigame2();
             }
         }
         private int getCorAleatoria() {
@@ -415,7 +403,7 @@ public class JogoActivity extends AppCompatActivity {
                     obj.draw(canvas);
                 }
                 if (objs[objs.length - 1].getX() + objs[objs.length - 1].getWidth() < 0)
-                    ganhar();
+                    ganharMinigame2();
             }
         }
         private void drawPartes(Canvas canvas) {
@@ -463,6 +451,7 @@ public class JogoActivity extends AppCompatActivity {
         llFundoMinigame2   = (LinearLayout)   findViewById(R.id.llFundoMinigame2);
         llEscolhas         = (LinearLayout)   findViewById(R.id.llEscolhas);
         conteudoFullScreen = (RelativeLayout) findViewById(R.id.conteudoFullScreen);
+        rlPersonagens      = (LinearLayout)   findViewById(R.id.rlPersonagens);
 
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
@@ -486,6 +475,29 @@ public class JogoActivity extends AppCompatActivity {
 
     public void iniciarNivel()
     {
+        nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
+
+        if (nivel.isTerminado()) {
+            exit();
+            return;
+        }
+
+        int numPersonagens = nivel.getPersonagens().size();
+
+        for(int i = 0; i < numPersonagens; i++) {
+            ImageView iv = new ImageView(JogoActivity.this);
+
+            iv.setImageBitmap(nivel.getPersonagens().get(i).getBmp());
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.width = 200;
+            if (i != numPersonagens - 1)
+                lp.setMargins(0, 0, 50, 0);
+
+            rlPersonagens.addView(iv);
+            iv.setLayoutParams(lp);
+            iv.requestLayout();
+        }
+
         switch (nivel.getTipo())
         {
             case 0:
@@ -502,6 +514,10 @@ public class JogoActivity extends AppCompatActivity {
                 Uteis.escurecerFundo(imgCenario, 0.35f);
                 llEscolhas.setVisibility(View.GONE);
                 iniciarMinigame2();
+                break;
+
+            case -1:
+                exit();
                 break;
         }
     }
@@ -577,7 +593,7 @@ public class JogoActivity extends AppCompatActivity {
             public void onOK() {
                 ObjetoMinigame obj = getObjetoAtual();
                 if (obj.getTipo() == -1 || obj.getX() + obj.getWidth()/2 > llFundoMinigame2.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
-                    perder();
+                    perderMinigame2();
                 } else {
                     obj.fade();
                 }
@@ -587,7 +603,7 @@ public class JogoActivity extends AppCompatActivity {
             public void onPraEsquerda() {
                 ObjetoMinigame obj = getObjetoAtual();
                 if (obj.getTipo() != 0 || obj.getX() + obj.getWidth()/2 > llFundoMinigame2.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
-                    perder();
+                    perderMinigame2();
                 } else {
                     obj.fade();
                 }
@@ -597,7 +613,7 @@ public class JogoActivity extends AppCompatActivity {
             public void onPraCima() {
                 ObjetoMinigame obj = getObjetoAtual();
                 if (obj.getTipo() != 1 || obj.getX() + obj.getWidth()/2 > llFundoMinigame2.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
-                    perder();
+                    perderMinigame2();
                 } else {
                     obj.fade();
                 }
@@ -607,7 +623,7 @@ public class JogoActivity extends AppCompatActivity {
             public void onPraDireita() {
                 ObjetoMinigame obj = getObjetoAtual();
                 if (obj.getTipo() != 2 || obj.getX() + obj.getWidth()/2 > llFundoMinigame2.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
-                    perder();
+                    perderMinigame2();
                 } else {
                     obj.fade();
                 }
@@ -617,7 +633,7 @@ public class JogoActivity extends AppCompatActivity {
             public void onPraBaixo() {
                 ObjetoMinigame obj = getObjetoAtual();
                 if (obj.getTipo() != 3 || obj.getX() + obj.getWidth()/2 > llFundoMinigame2.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
-                    perder();
+                    perderMinigame2();
                 } else {
                     obj.fade();
                 }
