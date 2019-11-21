@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.5.0/fabric.min.js"></script>
     <title>Gerenciar Jogo</title>
 </head>
 <body>
@@ -20,20 +21,26 @@
         </div>
     </fieldset>
     <fieldset>
-            <legend>Adicionar Nivel</legend>
-            <div>
-                <form action="#">
-                    <label>Descrição: </label> <input type="text" id="descN"><br>
-                    <label>Background: </label> <input type="text" id="backN"><br>
-                    <label>Tipo: </label> <input type="text" id="tipoN"><br>
-                    <label>Dificuldade: </label> <input type="text" id="diffN"><br>
-                    <label>Rota: </label> <input type="text" id="rotaN"><br>
-                    <label>Fase: </label> <select id="faseN"></select><br><br>
-                    <button id="btnAddNivel">Adicionar</button>
-                </form>
-            </div>
-        </fieldset>
+        <legend>Adicionar Nivel</legend>
+        <div>
+            <form action="#">
+                <label>Descrição: </label> <input type="text" id="descN"><br>
+                <label>Background: </label> <input type="text" id="backN"><br>
+                <label>Tipo: </label> <input type="text" id="tipoN"><br>
+                <label>Dificuldade: </label> <input type="text" id="diffN"><br>
+                <label>Rota: </label> <input type="text" id="rotaN"><br>
+                <label>Fase: </label> <select id="faseN"></select><br>
+                <label>Personagens: </label> <input type="text" id="persN"><br><br>
+                <button id="btnAddNivel">Adicionar</button>
+            </form>
+        </div>
+    </fieldset>
+    <br><br><br>
+    <canvas id="c" style="border: 2px solid black;" width="632" height="1126"></canvas>
     <script>
+        var canvas;
+        var ws = 'https://host-node.herokuapp.com'
+        //var ws = 'http://localhost:3000'
         $("document").ready(function() {
             $("#btnAddFase").click(function() {
                 var obj = {
@@ -44,7 +51,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: 'http://localhost:3000/addFase',
+                    url: ws + '/addFase',
                     data: obj,
                     success: function(d) {
                         $("#idF").val('');
@@ -57,35 +64,54 @@
                 })
             });
 
-            $.get('http://localhost:3000/get', res => {
+            $.get(ws + '/get', res => {
                 res.forEach(f => {
                     $("#faseN").append(`<option value="${f.idFase}">${f.titulo}</option>`)
                 });
             });
 
             $("#btnAddNivel").click(function() {
+                var personagens = []
+                canvas.getObjects().forEach(p => {
+                    var src = p.getSrc() + "";
+                    personagens.push({
+                        personagem: src.substring(src.lastIndexOf("/") + 1, src.lastIndexOf(".")),
+                        x: p.left.toFixed(2),
+                        y: p.top.toFixed(2),
+                        width: (p.width * p.scaleX).toFixed(2),
+                        rotation: p.get('angle').toFixed(2)
+                    })
+                });
                 var obj = {
                     descricao: $("#descN").val(),
                     background: $("#backN").val(),
                     tipo: $("#tipoN").val(),
                     diff: $("#diffN").val(),
                     rota: $("#rotaN").val(),
-                    fase: $("#faseN").children("option:selected").val()
+                    fase: $("#faseN").children("option:selected").val(),
+                    personagens: personagens
                 };
 
                 $.ajax({
                 type: 'POST',
-                url: 'http//localhost:3000/addNivel',
+                url: ws + '/addNivel',
                 data: obj,
                 success: function() {
-                    $("#descN").val('');
-                    $("#backN").val('');
-                    $("#tipoN").val('');
-                    $("#diffN").val('');
-                    $("#rotaN").val('');
-                    $("#faseN").val('1');
+                    window.location.reload()
                 }
-            });
+                });
+            })
+            canvas = new fabric.Canvas('c');
+            $("#backN").change(function() {
+                canvas.setBackgroundImage($("#backN").val() + ".png")
+            })
+            $("#persN").change(function() {
+                var imgs = $("#persN").val().split(' ')
+                imgs.forEach(img => {
+                    fabric.Image.fromURL(img + ".png", function(oImg) {
+                        canvas.add(oImg);
+                    });
+                });
             })
         })
     </script>

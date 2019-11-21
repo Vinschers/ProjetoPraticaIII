@@ -13,6 +13,7 @@ import br.unicamp.cotuca.schmoice.Escolha;
 public class Nivel implements Serializable {
     private int idNivel;
     private ArrayList<Escolha> escolhas;
+    private ArrayList<Personagem> personagens;
     private String descricao;
     private String background;
     private boolean terminado;
@@ -37,16 +38,6 @@ public class Nivel implements Serializable {
 
     public void setRota(int rota) {
         this.rota = rota;
-    }
-
-    public Nivel(ArrayList<Escolha> escolhas, String descricao, String background, boolean terminado, Fase parentFase, Escolha escolhaFeita, int tipo) {
-        this.escolhas = escolhas;
-        this.descricao = descricao;
-        this.background = background;
-        this.terminado = terminado;
-        this.parentFase = parentFase;
-        this.escolhaFeita = escolhaFeita;
-        this.tipo = tipo;
     }
 
     public void setIdNivel(int i) {idNivel = i;}
@@ -91,7 +82,15 @@ public class Nivel implements Serializable {
     public int getDiff() {return diff;}
     public void setDiff(int d) {diff = d;}
 
+    public ArrayList<Personagem> getPersonagens() {return personagens;}
+    public void setPersonagens(ArrayList<String> personagens) {
+        for(String p : personagens) {
+            this.personagens.add(new Personagem(p, 0.0));
+        }
+    }
+
     public Nivel() {
+        personagens = new ArrayList<Personagem>();
         escolhas = new ArrayList<Escolha>();
         descricao = null;
         background = null;
@@ -107,6 +106,7 @@ public class Nivel implements Serializable {
         this.parentFase = nivel.parentFase;
         this.escolhaFeita = nivel.escolhaFeita;
         this.tipo = nivel.tipo;
+        this.personagens = nivel.personagens;
     }
 
     public int hashCode() {
