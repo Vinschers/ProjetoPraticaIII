@@ -39,8 +39,26 @@
     <canvas id="c" style="border: 2px solid black;" width="632" height="1126"></canvas>
     <script>
         var canvas;
+        var antPers = [];
         var ws = 'https://host-node.herokuapp.com'
         //var ws = 'http://localhost:3000'
+        function arr_diff (a1, a2) {
+            var a = [], diff = [];
+            for (var i = 0; i < a1.length; i++) {
+                a[a1[i]] = true;
+            }
+            for (var i = 0; i < a2.length; i++) {
+                if (a[a2[i]]) {
+                    delete a[a2[i]];
+                } else {
+                    a[a2[i]] = true;
+                }
+            }
+            for (var k in a) {
+                diff.push(k);
+            }
+            return diff;
+        }
         $("document").ready(function() {
             $("#btnAddFase").click(function() {
                 var obj = {
@@ -54,9 +72,7 @@
                     url: ws + '/addFase',
                     data: obj,
                     success: function(d) {
-                        $("#idF").val('');
-                        $("#titF").val('');
-                        $("#descF").val('');
+                        window.location.reload()
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         console.log(errorThrown)
@@ -105,11 +121,23 @@
             $("#backN").change(function() {
                 canvas.setBackgroundImage($("#backN").val() + ".png")
             })
+            $('input').on('focusin', function(){
+                antPers = $(this).val().split(' ')
+            });
             $("#persN").change(function() {
+                var diff = $(this).val().split(' ').filter(x => x != "" && !antPers.includes(x)).concat(antPers.filter(x => x != "" && !$(this).val().split(' ').includes(x)));
+                console.log(diff)
+                canvas.getObjects().forEach(o => {
+                    var src = o.getSrc()
+                    var p = src.substring(src.lastIndexOf("/") + 1, src.lastIndexOf("."))
+                    if (diff.includes(p))
+                        canvas.remove(o)
+                });
                 var imgs = $("#persN").val().split(' ')
                 imgs.forEach(img => {
                     fabric.Image.fromURL(img + ".png", function(oImg) {
-                        canvas.add(oImg);
+                        if (diff.includes(img))
+                            canvas.add(oImg);
                     });
                 });
             })
