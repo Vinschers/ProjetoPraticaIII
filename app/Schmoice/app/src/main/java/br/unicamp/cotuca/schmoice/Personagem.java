@@ -7,6 +7,51 @@ import java.io.Serializable;
 public class Personagem implements Serializable {
     private String nome;
     private double amizade;
+    private float width;
+    private float scale;
+    private float rotation;
+    private float x;
+    private float y;
+
+    public float getWidth() {
+        return width;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public float getScale() {
+        return scale;
+    }
+
+    public void setScale(float scale) {
+        this.scale = scale;
+    }
+
+    public float getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(float rotation) {
+        this.rotation = rotation;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
 
     public Personagem(String nome, double amizade) {
         this.nome = nome;

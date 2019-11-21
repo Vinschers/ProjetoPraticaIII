@@ -136,8 +136,6 @@ public class SavesActivity extends AppCompatActivity {
                         jogos[i].getArvore().adicionar(fases[0]);
                     }
                 }
-            else
-                jogos[i] = new Jogo();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -176,46 +174,7 @@ public class SavesActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public class PersonagemRecebido
-    {
-        int id;
-        int idJogo;
 
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public int getIdJogo() {
-            return idJogo;
-        }
-
-        public void setIdJogo(int idJogo) {
-            this.idJogo = idJogo;
-        }
-
-        public int getIdPersonagem() {
-            return idPersonagem;
-        }
-
-        public void setIdPersonagem(int idPersonagem) {
-            this.idPersonagem = idPersonagem;
-        }
-
-        public double getAmizade() {
-            return amizade;
-        }
-
-        public void setAmizade(double amizade) {
-            this.amizade = amizade;
-        }
-
-        int idPersonagem;
-        double amizade;
-    }
     public class Consultor extends Thread
     {
         Fase[] fases;
@@ -235,7 +194,8 @@ public class SavesActivity extends AppCompatActivity {
                 JogoRecebido[] jogosRecebidos = (JogoRecebido[])ClienteWS.getObjeto(JogoRecebido[].class, ClienteWS.webService + "/jogos/" + ipUsuario);
 
                 jogosObtidos = new Jogo[3];
-                for (int i = 0; i < jogosRecebidos.length; i++)
+
+                for (int i = 0; jogosRecebidos != null && i < jogosRecebidos.length; i++)
                 {
                     PersonagemRecebido[] amigosRecebidos = (PersonagemRecebido[])ClienteWS.getObjeto(PersonagemRecebido[].class, ClienteWS.webService + "/personagensJogo/" + jogosRecebidos[i].getId());
                     Jogo novoJogo = new Jogo();
@@ -267,8 +227,6 @@ public class SavesActivity extends AppCompatActivity {
 
                     jogosObtidos[jogosRecebidos[i].getSlot() - 1] = novoJogo;
                 }
-
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

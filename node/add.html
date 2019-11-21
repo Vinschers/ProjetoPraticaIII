@@ -40,25 +40,9 @@
     <script>
         var canvas;
         var antPers = [];
-        var ws = 'https://host-node.herokuapp.com'
-        //var ws = 'http://localhost:3000'
-        function arr_diff (a1, a2) {
-            var a = [], diff = [];
-            for (var i = 0; i < a1.length; i++) {
-                a[a1[i]] = true;
-            }
-            for (var i = 0; i < a2.length; i++) {
-                if (a[a2[i]]) {
-                    delete a[a2[i]];
-                } else {
-                    a[a2[i]] = true;
-                }
-            }
-            for (var k in a) {
-                diff.push(k);
-            }
-            return diff;
-        }
+        //var ws = 'http://host-node.herokuapp.com'
+        var ws = 'http://localhost:3000'
+
         $("document").ready(function() {
             $("#btnAddFase").click(function() {
                 var obj = {
@@ -113,7 +97,7 @@
                 url: ws + '/addNivel',
                 data: obj,
                 success: function() {
-                    window.location.reload()
+                    //window.location.reload()
                 }
                 });
             })
@@ -126,7 +110,6 @@
             });
             $("#persN").change(function() {
                 var diff = $(this).val().split(' ').filter(x => x != "" && !antPers.includes(x)).concat(antPers.filter(x => x != "" && !$(this).val().split(' ').includes(x)));
-                console.log(diff)
                 canvas.getObjects().forEach(o => {
                     var src = o.getSrc()
                     var p = src.substring(src.lastIndexOf("/") + 1, src.lastIndexOf("."))

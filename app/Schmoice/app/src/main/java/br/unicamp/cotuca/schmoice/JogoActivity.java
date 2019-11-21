@@ -485,15 +485,18 @@ public class JogoActivity extends AppCompatActivity {
         int numPersonagens = nivel.getPersonagens().size();
 
         for(int i = 0; i < numPersonagens; i++) {
+            Personagem personagem = nivel.getPersonagens().get(i);
             ImageView iv = new ImageView(JogoActivity.this);
 
-            iv.setImageBitmap(nivel.getPersonagens().get(i).getBmp());
+            iv.setImageBitmap(personagem.getBmp());
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.width = 200;
-            if (i != numPersonagens - 1)
-                lp.setMargins(0, 0, 50, 0);
+            lp.width = (int)personagem.getWidth();
+            lp.setMargins((int)personagem.getX(), (int)personagem.getY(), 0, 0);
 
             rlPersonagens.addView(iv);
+            iv.setPivotX(iv.getWidth()/2);
+            iv.setPivotY(iv.getHeight()/2);
+            iv.setRotation(personagem.getRotation());
             iv.setLayoutParams(lp);
             iv.requestLayout();
         }
