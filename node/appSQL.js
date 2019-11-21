@@ -113,8 +113,8 @@ rota.patch('/atualizarJogo', (req, res) => {
 
 	res.json("Tudo certo :D");
 })
-rota.delete('/deletarJogo', (req, res) => {
-	const id = req.body.id;
+rota.delete('/deletarJogo/:id', (req, res) => {
+	const id = req.params.id;
 	execSQL(`DeletarJogo_sp ${id}`, res);
 })
 

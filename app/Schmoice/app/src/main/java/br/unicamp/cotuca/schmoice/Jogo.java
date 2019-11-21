@@ -10,6 +10,7 @@ public class Jogo implements Serializable {
     private Player player;
     private Personagem[] amigos;
     private boolean acabouDeComecar;
+    int id;
 
     public Jogo() {
         arvore = new Arvore();
@@ -35,4 +36,6 @@ public class Jogo implements Serializable {
     public void setAcabouDeComecar(boolean v) {
         acabouDeComecar = v;
     }
+    public int getId() {return  id; }
+    public void setId(int id) {this.id = id; }
 }
