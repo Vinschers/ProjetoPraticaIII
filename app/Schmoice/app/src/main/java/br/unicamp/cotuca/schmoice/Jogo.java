@@ -6,15 +6,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Jogo implements Serializable {
+    public static int qtdAmigos = 6;
     private Arvore arvore;
     private Player player;
     private Personagem[] amigos;
     private boolean acabouDeComecar;
+    int id;
 
     public Jogo() {
         arvore = new Arvore();
         arvore.setJogo(this);
         player = new Player();
+        amigos = new Personagem[qtdAmigos];
+        for (int i = 0; i < qtdAmigos; i++)
+            amigos[i] = new Personagem();
         acabouDeComecar = true;
     }
     public Jogo(Jogo jogo) {
@@ -35,4 +40,6 @@ public class Jogo implements Serializable {
     public void setAcabouDeComecar(boolean v) {
         acabouDeComecar = v;
     }
+    public int getId() {return  id; }
+    public void setId(int id) {this.id = id; }
 }

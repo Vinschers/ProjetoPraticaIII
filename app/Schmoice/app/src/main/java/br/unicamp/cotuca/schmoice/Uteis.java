@@ -89,7 +89,7 @@ public class Uteis {
                 }
             }
         };
-        timer.schedule(taskEverySplitSecond, 1, 55);
+        timer.schedule(taskEverySplitSecond, 1, 150);
     }
     public static class ThreadRedimensionar extends Thread
     {

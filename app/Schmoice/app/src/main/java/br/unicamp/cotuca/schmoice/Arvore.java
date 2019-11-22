@@ -62,6 +62,20 @@ public class Arvore implements Serializable {
                 faseAtual = faseAtual.getEsquerda();
         }
     }
+    public void setFaseAtual(int f)
+    {
+        No aux = raiz;
+        while(true)
+        {
+            if (aux.getFase().getIdFase() < f)
+                aux = aux.getDireita();
+            else if (aux.getFase().getIdFase() > f)
+                aux = aux.getEsquerda();
+            else
+                break;
+        }
+        faseAtual = aux;
+    }
     public Fase getFaseAtual() {
         atualizarFaseAtual();
         return faseAtual.getFase();

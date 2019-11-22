@@ -1,7 +1,9 @@
 package br.unicamp.cotuca.schmoice;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,6 +11,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.security.ConfirmationPrompt;
 import android.view.View;
 import android.widget.Button;
 
@@ -25,6 +28,7 @@ public class SavesActivity extends AppCompatActivity {
     Button[] btns = new Button[maxJogos];
     Controle controle;
     int atual = 0;
+    SavesActivity este = this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +67,30 @@ public class SavesActivity extends AppCompatActivity {
             @Override
             public void onOK() {
                 btns[atual].performClick();
+            }
+
+            @Override
+            public void onCancelar() {
+                if (jogos[atual] != null && !jogos[atual].getAcabouDeComecar())
+                new AlertDialog.Builder(este)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Removendo save")
+                        .setMessage("Tem certeza que deseja remover este save?")
+                        .setPositiveButton("Sim", new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                int id = jogos[atual].getId();
+                                Deletor d = new Deletor(id);
+                                d.start();
+                                while (!d.isMorta());
+                                btns[atual].setText("Novo Jogo");
+                                jogos[atual] = new Jogo();
+                            }
+
+                        })
+                        .setNegativeButton("Não", null)
+                        .show();
             }
         });
         for (int i = 0; i < maxJogos; i++) {
@@ -146,46 +174,7 @@ public class SavesActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public class PersonagemRecebido
-    {
-        int id;
-        int idJogo;
 
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
-        }
-
-        public int getIdJogo() {
-            return idJogo;
-        }
-
-        public void setIdJogo(int idJogo) {
-            this.idJogo = idJogo;
-        }
-
-        public int getIdPersonagem() {
-            return idPersonagem;
-        }
-
-        public void setIdPersonagem(int idPersonagem) {
-            this.idPersonagem = idPersonagem;
-        }
-
-        public double getAmizade() {
-            return amizade;
-        }
-
-        public void setAmizade(double amizade) {
-            this.amizade = amizade;
-        }
-
-        int idPersonagem;
-        double amizade;
-    }
     public class Consultor extends Thread
     {
         Fase[] fases;
@@ -204,14 +193,16 @@ public class SavesActivity extends AppCompatActivity {
                 fases = (Fase[])ClienteWS.getObjeto(Fase[].class, ClienteWS.webService + "/get");
                 JogoRecebido[] jogosRecebidos = (JogoRecebido[])ClienteWS.getObjeto(JogoRecebido[].class, ClienteWS.webService + "/jogos/" + ipUsuario);
 
-                jogosObtidos = new Jogo[jogosRecebidos.length];
-                for (int i = 0; i < jogosRecebidos.length; i++)
+                jogosObtidos = new Jogo[3];
+
+                for (int i = 0; jogosRecebidos != null && i < jogosRecebidos.length; i++)
                 {
                     PersonagemRecebido[] amigosRecebidos = (PersonagemRecebido[])ClienteWS.getObjeto(PersonagemRecebido[].class, ClienteWS.webService + "/personagensJogo/" + jogosRecebidos[i].getId());
-                    jogosObtidos[i] = new Jogo();
-                    jogosObtidos[i].setAcabouDeComecar(false);
+                    Jogo novoJogo = new Jogo();
+                    novoJogo.setId(jogosRecebidos[i].getId());
+                    novoJogo.setAcabouDeComecar(false);
 
-                    Player jogador = jogosObtidos[i].getPlayer();
+                    Player jogador = novoJogo.getPlayer();
                     jogador.setTranquilidade(jogosRecebidos[i].getTranquilidade());
                     jogador.setSanidade(jogosRecebidos[i].getSanidade());
                     jogador.setInteligencia(jogosRecebidos[i].getInteligencia());
@@ -220,15 +211,17 @@ public class SavesActivity extends AppCompatActivity {
                     jogador.setFelicidade(jogosRecebidos[i].getFelicidade());
                     jogador.setCarisma(jogosRecebidos[i].getCarisma());
 
-                    Personagem[] personagens = jogosObtidos[i].getPersonagens();
+                    Personagem[] personagens = novoJogo.getPersonagens();
 
                     for (int j = 0; j < amigosRecebidos.length; j++)
                         personagens[j].setAmizade(amigosRecebidos[j].getAmizade());
 
-                    Arvore arvore = jogosObtidos[i].getArvore();
+                    /*novoJogo.getArvore().setFaseAtual(jogosRecebidos[i].getFaseAtual());
+                    novoJogo.getArvore().getFaseAtual().setNivelAtual(jogosRecebidos[i].getRotaAtual(), jogosRecebidos[i].getRotaAtual());*/
+
+
+                    jogosObtidos[jogosRecebidos[i].getSlot()] = novoJogo;
                 }
-
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -239,6 +232,31 @@ public class SavesActivity extends AppCompatActivity {
             return  fases;
         }
         public  Jogo[] getJogos() {return  jogosObtidos; }
+    }
+
+    public class Deletor extends Thread
+    {
+        int id;
+        boolean morta = false;
+        public Deletor(int id)
+        {
+            this.id = id;
+        }
+
+        @Override
+        public void run() {
+            try {
+                String ipUsuario = getIPAddress(true);
+                ClienteWS.getObjeto(null, ClienteWS.webService + "/delete/" + id);
+            }
+            catch (Exception ex) {ex.printStackTrace();}
+            morta = true;
+        }
+
+        public boolean isMorta()
+        {
+            return morta;
+        }
     }
     public static String getIPAddress(boolean useIPv4) {
         try {

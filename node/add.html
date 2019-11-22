@@ -5,35 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.5.0/fabric.min.js"></script>
     <title>Gerenciar Jogo</title>
 </head>
 <body>
-    <fieldset>
-        <legend>Adicionar fase</legend>
-        <div>
-            <form action="#">
-                <label>ID: </label> <input type="text" id="idF"><br>
-                <label>Titulo: </label> <input type="text" id="titF"><br>
-                <label>Descrição: </label> <input type="text" id="descF"><br><br>
-                <button id="btnAddFase">Adicionar</button>
-            </form>
-        </div>
-    </fieldset>
-    <fieldset>
-            <legend>Adicionar Nivel</legend>
-            <div>
-                <form action="#">
-                    <label>Descrição: </label> <input type="text" id="descN"><br>
-                    <label>Background: </label> <input type="text" id="backN"><br>
-                    <label>Tipo: </label> <input type="text" id="tipoN"><br>
-                    <label>Dificuldade: </label> <input type="text" id="diffN"><br>
-                    <label>Rota: </label> <input type="text" id="rotaN"><br>
-                    <label>Fase: </label> <select id="faseN"></select><br><br>
-                    <button id="btnAddNivel">Adicionar</button>
-                </form>
-            </div>
-        </fieldset>
+    <div id='campos'>
+        <fieldset>
+                <legend>Adicionar fase</legend>
+                <div>
+                    <form action="#">
+                        <label>ID: </label> <input type="text" id="idF"><br>
+                        <label>Titulo: </label> <input type="text" id="titF"><br>
+                        <label>Descrição: </label> <input type="text" id="descF"><br><br>
+                        <button id="btnAddFase">Adicionar</button>
+                    </form>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Adicionar Nivel</legend>
+                <div>
+                    <form action="#">
+                        <label>Descrição: </label> <input type="text" id="descN"><br>
+                        <label>Background: </label> <input type="text" id="backN"><br>
+                        <label>Tipo: </label> <input type="text" id="tipoN"><br>
+                        <label>Dificuldade: </label> <input type="text" id="diffN"><br>
+                        <label>Rota: </label> <input type="text" id="rotaN"><br>
+                        <label>Fase: </label> <select id="faseN"></select><br>
+                        <label>Personagens: </label> <input type="text" id="persN"><br>
+                        <label>Escolhas (nome-player-amizade-paraOndeIr): </label><br>
+                        <input type="text" id="esc1"><input type="text" id="escP1"><input type="text" id="escS1"><input type="text" id="escO1"><br>
+                        <input type="text" id="esc2"><input type="text" id="escP2"><input type="text" id="escS2"><input type="text" id="escO2"><br>
+                        <input type="text" id="esc3"><input type="text" id="escP3"><input type="text" id="escS3"><input type="text" id="escO3"><br>
+                        <input type="text" id="esc4"><input type="text" id="escP4"><input type="text" id="escS4"><input type="text" id="escO4"><br><br>
+                        <button id="btnAddNivel">Adicionar</button>
+                    </form>
+                </div>
+            </fieldset>
+    </div>
+    <div id='canvas'>
+        <canvas id="c" style="border: 2px solid black;" width="632" height="1126"></canvas>
+    </div>
+    <style>
+        #campos {
+            float: left;
+        }
+        #canvas {
+            float: left;
+        }
+    </style>
     <script>
+        var canvas;
+        var antPers = [];
+        //var ws = 'http://host-node.herokuapp.com'
+        var ws = 'http://localhost:3000'
+
         $("document").ready(function() {
             $("#btnAddFase").click(function() {
                 var obj = {
@@ -44,12 +69,10 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: 'http://localhost:3000/addFase',
+                    url: ws + '/addFase',
                     data: obj,
                     success: function(d) {
-                        $("#idF").val('');
-                        $("#titF").val('');
-                        $("#descF").val('');
+                        window.location.reload()
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         console.log(errorThrown)
@@ -57,35 +80,75 @@
                 })
             });
 
-            $.get('http://localhost:3000/get', res => {
+            $.get(ws + '/get', res => {
                 res.forEach(f => {
                     $("#faseN").append(`<option value="${f.idFase}">${f.titulo}</option>`)
                 });
             });
 
             $("#btnAddNivel").click(function() {
+                var personagens = []
+                canvas.getObjects().forEach(p => {
+                    var src = p.getSrc() + "";
+                    personagens.push({
+                        nome: src.substring(src.lastIndexOf("/") + 1, src.lastIndexOf(".")),
+                        x: p.left.toFixed(2),
+                        y: p.top.toFixed(2),
+                        width: (p.width * p.scaleX).toFixed(2),
+                        rotation: p.get('angle').toFixed(2)
+                    })
+                });
+                var escolhas = []
+                for (var i = 1; i <= 4; i++)
+                    if ($('#esc' + i).val() != "")
+                        escolhas.push({
+                            nome: $('#esc' + i).val(),
+                            statusA: $("#escS" + i).val().split(' '),
+                            statusP: $("#escP" + i).val().split(' '),
+                            paraOndeIr: parseInt($("#escO" + i).val())
+                        })
                 var obj = {
                     descricao: $("#descN").val(),
                     background: $("#backN").val(),
                     tipo: $("#tipoN").val(),
                     diff: $("#diffN").val(),
                     rota: $("#rotaN").val(),
-                    fase: $("#faseN").children("option:selected").val()
+                    fase: $("#faseN").children("option:selected").val(),
+                    personagens: personagens,
+                    escolhas: escolhas
                 };
 
                 $.ajax({
                 type: 'POST',
-                url: 'http//localhost:3000/addNivel',
+                url: ws + '/addNivel',
                 data: obj,
                 success: function() {
-                    $("#descN").val('');
-                    $("#backN").val('');
-                    $("#tipoN").val('');
-                    $("#diffN").val('');
-                    $("#rotaN").val('');
-                    $("#faseN").val('1');
+                    //window.location.reload()
                 }
+                });
+            })
+            canvas = new fabric.Canvas('c');
+            $("#backN").change(function() {
+                canvas.setBackgroundImage($("#backN").val() + ".png")
+            })
+            $('input').on('focusin', function(){
+                antPers = $(this).val().split(' ')
             });
+            $("#persN").change(function() {
+                var diff = $(this).val().split(' ').filter(x => x != "" && !antPers.includes(x)).concat(antPers.filter(x => x != "" && !$(this).val().split(' ').includes(x)));
+                canvas.getObjects().forEach(o => {
+                    var src = o.getSrc()
+                    var p = src.substring(src.lastIndexOf("/") + 1, src.lastIndexOf("."))
+                    if (diff.includes(p))
+                        canvas.remove(o)
+                });
+                var imgs = $("#persN").val().split(' ')
+                imgs.forEach(img => {
+                    fabric.Image.fromURL(img + ".png", function(oImg) {
+                        if (diff.includes(img))
+                            canvas.add(oImg);
+                    });
+                });
             })
         })
     </script>
