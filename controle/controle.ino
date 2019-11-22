@@ -5,10 +5,15 @@
 #define pinoX A0
 #define pinoY A1
 
-int pushButton = 2;
+#include "SoftwareSerial.h"
+
+SoftwareSerial bluetooth(10,11);
+
 String atual, anterior;
 void setup() {
   Serial.begin(9600);
+  bluetooth.begin(9600);
+  
   Serial.println("ComunicaÃ§Ã£o iniciada!");
   pinMode(btnOk, INPUT);
   pinMode(btnMenu, INPUT);
@@ -20,6 +25,7 @@ void loop() {
     atual = lerBtns();
     if (!anterior || atual != anterior) {
       Serial.println(atual);
+      bluetooth.println(atual);
       anterior = atual;
     }
     delay(del);
