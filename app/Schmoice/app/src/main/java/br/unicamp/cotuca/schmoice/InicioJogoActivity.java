@@ -570,7 +570,7 @@ public class InicioJogoActivity extends AppCompatActivity {
             public void onOK() {
                 if (resizeLL.isAlive())
                 {
-                    llExplicacao.setVisibility(View.INVISIBLE);
+                    llExplicacao.setVisibility(View.GONE);
                     clarearFundo();
                     resizeLL.matar();
                     clAtributos.setVisibility(View.VISIBLE);
