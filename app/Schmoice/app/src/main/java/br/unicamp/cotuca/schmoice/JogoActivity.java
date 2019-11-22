@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -166,6 +167,7 @@ public class JogoActivity extends AppCompatActivity {
     Controle controle;
 
     //region Variáveis de nivel normal
+    TextView tvDescricao;
     LinearLayout llEscolhas;
     Button[] btnsEscolha;
     ArrayList<Escolha> escolhas;
@@ -444,6 +446,7 @@ public class JogoActivity extends AppCompatActivity {
 
         btnsEscolha        = new Button[4];
         imgCenario         = (ImageView)      findViewById(R.id.imgCenario);
+        tvDescricao        = (TextView)       findViewById(R.id.tvDescricao);
         btnsEscolha[0]     = (Button)         findViewById(R.id.btnEscolha1);
         btnsEscolha[1]     = (Button)         findViewById(R.id.btnEscolha2);
         btnsEscolha[2]     = (Button)         findViewById(R.id.btnEscolha3);
@@ -527,6 +530,8 @@ public class JogoActivity extends AppCompatActivity {
 
     public void iniciarNivelNormal()
     {
+        Uteis.escreverAnimado(tvDescricao, nivel.getDescricao());
+
         for (int i = 0; i < escolhas.size(); i++) {
             final int ind = i;
             btnsEscolha[i].setText(escolhas.get(i).getNome());

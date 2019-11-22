@@ -9,34 +9,50 @@
     <title>Gerenciar Jogo</title>
 </head>
 <body>
-    <fieldset>
-        <legend>Adicionar fase</legend>
-        <div>
-            <form action="#">
-                <label>ID: </label> <input type="text" id="idF"><br>
-                <label>Titulo: </label> <input type="text" id="titF"><br>
-                <label>Descrição: </label> <input type="text" id="descF"><br><br>
-                <button id="btnAddFase">Adicionar</button>
-            </form>
-        </div>
-    </fieldset>
-    <fieldset>
-        <legend>Adicionar Nivel</legend>
-        <div>
-            <form action="#">
-                <label>Descrição: </label> <input type="text" id="descN"><br>
-                <label>Background: </label> <input type="text" id="backN"><br>
-                <label>Tipo: </label> <input type="text" id="tipoN"><br>
-                <label>Dificuldade: </label> <input type="text" id="diffN"><br>
-                <label>Rota: </label> <input type="text" id="rotaN"><br>
-                <label>Fase: </label> <select id="faseN"></select><br>
-                <label>Personagens: </label> <input type="text" id="persN"><br><br>
-                <button id="btnAddNivel">Adicionar</button>
-            </form>
-        </div>
-    </fieldset>
-    <br><br><br>
-    <canvas id="c" style="border: 2px solid black;" width="632" height="1126"></canvas>
+    <div id='campos'>
+        <fieldset>
+                <legend>Adicionar fase</legend>
+                <div>
+                    <form action="#">
+                        <label>ID: </label> <input type="text" id="idF"><br>
+                        <label>Titulo: </label> <input type="text" id="titF"><br>
+                        <label>Descrição: </label> <input type="text" id="descF"><br><br>
+                        <button id="btnAddFase">Adicionar</button>
+                    </form>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Adicionar Nivel</legend>
+                <div>
+                    <form action="#">
+                        <label>Descrição: </label> <input type="text" id="descN"><br>
+                        <label>Background: </label> <input type="text" id="backN"><br>
+                        <label>Tipo: </label> <input type="text" id="tipoN"><br>
+                        <label>Dificuldade: </label> <input type="text" id="diffN"><br>
+                        <label>Rota: </label> <input type="text" id="rotaN"><br>
+                        <label>Fase: </label> <select id="faseN"></select><br>
+                        <label>Personagens: </label> <input type="text" id="persN"><br>
+                        <label>Escolhas (nome-player-amizade-paraOndeIr): </label><br>
+                        <input type="text" id="esc1"><input type="text" id="escP1"><input type="text" id="escS1"><input type="text" id="escO1"><br>
+                        <input type="text" id="esc2"><input type="text" id="escP2"><input type="text" id="escS2"><input type="text" id="escO2"><br>
+                        <input type="text" id="esc3"><input type="text" id="escP3"><input type="text" id="escS3"><input type="text" id="escO3"><br>
+                        <input type="text" id="esc4"><input type="text" id="escP4"><input type="text" id="escS4"><input type="text" id="escO4"><br><br>
+                        <button id="btnAddNivel">Adicionar</button>
+                    </form>
+                </div>
+            </fieldset>
+    </div>
+    <div id='canvas'>
+        <canvas id="c" style="border: 2px solid black;" width="632" height="1126"></canvas>
+    </div>
+    <style>
+        #campos {
+            float: left;
+        }
+        #canvas {
+            float: left;
+        }
+    </style>
     <script>
         var canvas;
         var antPers = [];
@@ -75,13 +91,22 @@
                 canvas.getObjects().forEach(p => {
                     var src = p.getSrc() + "";
                     personagens.push({
-                        personagem: src.substring(src.lastIndexOf("/") + 1, src.lastIndexOf(".")),
+                        nome: src.substring(src.lastIndexOf("/") + 1, src.lastIndexOf(".")),
                         x: p.left.toFixed(2),
                         y: p.top.toFixed(2),
                         width: (p.width * p.scaleX).toFixed(2),
                         rotation: p.get('angle').toFixed(2)
                     })
                 });
+                var escolhas = []
+                for (var i = 1; i <= 4; i++)
+                    if ($('#esc' + i).val() != "")
+                        escolhas.push({
+                            nome: $('#esc' + i).val(),
+                            statusA: $("#escS" + i).val().split(' '),
+                            statusP: $("#escP" + i).val().split(' '),
+                            paraOndeIr: parseInt($("#escO" + i).val())
+                        })
                 var obj = {
                     descricao: $("#descN").val(),
                     background: $("#backN").val(),
@@ -89,7 +114,8 @@
                     diff: $("#diffN").val(),
                     rota: $("#rotaN").val(),
                     fase: $("#faseN").children("option:selected").val(),
-                    personagens: personagens
+                    personagens: personagens,
+                    escolhas: escolhas
                 };
 
                 $.ajax({

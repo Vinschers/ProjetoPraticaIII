@@ -216,16 +216,11 @@ public class SavesActivity extends AppCompatActivity {
                     for (int j = 0; j < amigosRecebidos.length; j++)
                         personagens[j].setAmizade(amigosRecebidos[j].getAmizade());
 
-                    String caminhoRecebido = jogosRecebidos[i].getCaminho();
-                    if (caminhoRecebido != null) {
-                        ArrayList<Integer> caminho = new ArrayList<Integer>();
-                        for (int j = 0; i < caminhoRecebido.length(); j++)
-                            caminho.add(caminhoRecebido.charAt(j) == 'E' ? 0 : 1);
+                    /*novoJogo.getArvore().setFaseAtual(jogosRecebidos[i].getFaseAtual());
+                    novoJogo.getArvore().getFaseAtual().setNivelAtual(jogosRecebidos[i].getRotaAtual(), jogosRecebidos[i].getRotaAtual());*/
 
-                        novoJogo.getArvore().setCaminho(caminho);
-                    }
 
-                    jogosObtidos[jogosRecebidos[i].getSlot() - 1] = novoJogo;
+                    jogosObtidos[jogosRecebidos[i].getSlot()] = novoJogo;
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

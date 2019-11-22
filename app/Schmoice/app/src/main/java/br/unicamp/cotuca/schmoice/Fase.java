@@ -119,8 +119,8 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
     public void setNivelAtual(Nivel n) {
         nivelAtual = n;
     }
-    public void setNivelAtual(int i, int j) {
-        nivelAtual = niveis.get(i).get(j);
+    public void setNivelAtual(int rota, int num) {
+        nivelAtual = niveis.get(rota).get(num);
     }
     public void avancarNivel() {
         if (parteAtual >= niveis.get(rotaAtual).size()) {

@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 public class Escolha implements Serializable {
     private int idEscolha;
-    private final int nAmigos = 10;
     private String nome;
     private int paraOndeIr;
     private double[] statusPlayer;
@@ -56,7 +55,7 @@ public class Escolha implements Serializable {
         nome = "";
         paraOndeIr = 0;
         statusPlayer = new double[7];
-        statusAmizades = new double[nAmigos];
+        statusAmizades = new double[Jogo.qtdAmigos];
     }
     public Escolha(String nome, int paraOndeIr, double[] s, double[] a) {
         this.nome = nome;

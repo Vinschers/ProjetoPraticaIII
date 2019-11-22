@@ -8,7 +8,6 @@ public class Personagem implements Serializable {
     private String nome;
     private double amizade;
     private float width;
-    private float scale;
     private float rotation;
     private float x;
     private float y;
@@ -19,14 +18,6 @@ public class Personagem implements Serializable {
 
     public void setWidth(float width) {
         this.width = width;
-    }
-
-    public float getScale() {
-        return scale;
-    }
-
-    public void setScale(float scale) {
-        this.scale = scale;
     }
 
     public float getRotation() {

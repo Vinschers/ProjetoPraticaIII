@@ -83,10 +83,8 @@ public class Nivel implements Serializable {
     public void setDiff(int d) {diff = d;}
 
     public ArrayList<Personagem> getPersonagens() {return personagens;}
-    public void setPersonagens(ArrayList<String> personagens) {
-        for(String p : personagens) {
-            this.personagens.add(new Personagem(p, 0.0));
-        }
+    public void setPersonagens(ArrayList<Personagem> personagens) {
+        this.personagens = personagens;
     }
 
     public Nivel() {
