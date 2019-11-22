@@ -5,17 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity" >
-
-    <TextView
-        android:id="@+id/tvTitulo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:text="Schmoice"
-        android:textSize="64dp"
-        android:layout_marginTop="80dp">
-    </TextView>
+    tools:context=".MainActivity">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -36,5 +26,11 @@
             android:textSize="32dp"
             android:layout_below="@+id/btnJogar">
         </Button>
+
+        <ImageView
+            android:layout_marginTop="120dp"
+            android:layout_width="fill_parent"
+            android:layout_height="864px"
+            android:background="@drawable/logo_schmoice"/>
     </RelativeLayout>
 </LinearLayout>

@@ -56,9 +56,9 @@ public class Arvore implements Serializable {
         }
         else if (faseAtual.getFase().isTerminada()) {
             long s = Math.round(faseAtual.getFase().getStatus());
-            if (s == 1)
+            if (s == 1 && faseAtual.getDireita() != null)
                 faseAtual = faseAtual.getDireita();
-            else
+            else if (faseAtual.getEsquerda() != null)
                 faseAtual = faseAtual.getEsquerda();
         }
     }
