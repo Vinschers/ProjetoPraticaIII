@@ -1,28 +1,46 @@
-//Include the SoftwareSerial library
+#define del 5
+#define btnOk 2 
+#define btnMenu 5 
+#define btnCancelar 3 
+#define pinoX A0
+#define pinoY A1
+
 #include "SoftwareSerial.h"
 
-//Create a new software  serial
-SoftwareSerial bluetooth(2, 3); //TX, RX (Bluetooth)
+SoftwareSerial bluetooth(10,11);
 
+String atual, anterior;
 void setup() {
-  //Initialize the hardware serial
   Serial.begin(9600);
-  Serial.println(F("Type the AT commands:"));
+  bluetooth.begin(9600);
+  
+  Serial.println("ComunicaÃ§Ã£o iniciada!");
+  pinMode(btnOk, INPUT);
+  pinMode(btnMenu, INPUT);
+  pinMode(btnCancelar, INPUT);
 
-  //Initialize the software serial
-  bluetooth.begin(38400);
 }
 
 void loop() {
-  //Check received a byte from hardware serial
-  if (Serial.available()) {
-    char r = Serial.read(); //Read and save the byte
-    bluetooth.print(r);  //Send the byte to bluetooth by software serial
-    Serial.print(r);  //Echo
-  }
-  //Check received a byte from bluetooth by software serial
-  if (bluetooth.available()) {
-    char r = bluetooth.read(); //Read and save the byte
-    Serial.print(r); //Print the byte to hardware serial
-  }
+    atual = lerBtns();
+    if (!anterior || atual != anterior) {
+      Serial.println(atual);
+      bluetooth.println(atual);
+      anterior = atual;
+    }
+    delay(del);
+}
+
+String lerBtns() {
+  int x = analogRead(pinoX);
+  int y = analogRead(pinoY);
+  
+  int esquerda = y > 800 ? 1 : 0,
+      direita  = y < 200 ? 1 : 0,
+      cima     = x < 200 ? 1 : 0,
+      baixo    = x > 800 ? 1 : 0;
+      
+  String ret = digitalRead(btnOk) + String(" ") + cima + " " + digitalRead(btnMenu) + " " + baixo + " " + direita + " " + digitalRead(btnCancelar) + " " + esquerda;
+  
+  return ret;
 }
