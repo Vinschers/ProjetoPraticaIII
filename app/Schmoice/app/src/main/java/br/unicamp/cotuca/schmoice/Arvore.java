@@ -93,21 +93,22 @@ public class Arvore implements Serializable {
         }
         return atual.getFase();
     }
-    public void adicionar(Fase fase) throws Exception{
-        No atual = raiz;
-        while (atual != null) {
-            if (fase.compareTo(atual.getFase()) > 0) {
-                atual = atual.getDireita();
-            } else if (fase.compareTo(atual.getFase()) < 0) {
-                atual = atual.getEsquerda();
-            } else {
-                throw new Exception("Fase <" + fase.toString() + "> ja existe!");
-            }
-        }
+    public No addRec(No atual, Fase f) {
+        if (atual == null)
+            return new No(f, null, null);
+
+        if (atual.getFase().compareTo(f) > 0)
+            atual.setEsquerda(addRec(atual.getEsquerda(), f));
+        else if (atual.getFase().compareTo(f) < 0)
+            atual.setDireita(addRec(atual.getDireita(), f));
+        else
+            return atual;
+
+        return atual;
+    }
+    public void adicionar(Fase fase) {
         fase.setArvore(this);
-        atual = new No(fase, null, null);
-        if (raiz == null)
-            raiz = atual;
+        raiz = addRec(raiz, fase);
     }
     public void remover(Fase fase) throws Exception {
         No atual = raiz;

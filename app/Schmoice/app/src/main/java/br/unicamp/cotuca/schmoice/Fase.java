@@ -129,6 +129,7 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
             if (nivelAtual.getTipo() == 0) {
                 atualizarStatusPlayer();
                 atualizarAmizadesPlayer();
+                status += nivelAtual.getEscolhaFeita().getStatusFase();
                 rotaAtual = nivelAtual.getEscolhaFeita().getParaOndeIr();
             }
             parteAtual++;

@@ -209,7 +209,7 @@ public class ConnectionThread extends Thread{
         Bundle bundle = new Bundle();
         bundle.putByteArray("data", data);
         message.setData(bundle);
-        JogoActivity.handler.sendMessage(message);
+        //JogoActivity.handler.sendMessage(message);
     }
 
     /*  Método utilizado pela Activity principal para transmitir uma mensagem ao
