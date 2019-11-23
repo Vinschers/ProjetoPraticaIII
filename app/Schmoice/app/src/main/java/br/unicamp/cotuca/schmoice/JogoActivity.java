@@ -241,36 +241,26 @@ public class JogoActivity extends AppCompatActivity {
 
     public void perderMinigame2() {
         canvas.setFim(true);
-        Uteis.alertar("Você perdeu. Deseja tentar novamente?", "Perdeu", new Runnable() {
-            @Override
-            public void run() {
-                threadMinigame2.interrupt();
-                canvas = null;
-                objs = null;
-                btnAvancarMinigame.setVisibility(View.VISIBLE);
-                jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(false);
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                exit();
-            }
-        }, JogoActivity.this);
+        threadMinigame2.interrupt();
+        canvas = null;
+        objs = null;
+        btnAvancarMinigame.setVisibility(View.VISIBLE);
+        jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(false);
+        jogo.getArvore().getFaseAtual().avancarNivel();
     }
     public void ganharMinigame2() {
         canvas.setFim(true);
-        try {
-            Thread.sleep(1000);
-            btnAvancarMinigame.setVisibility(View.VISIBLE);
-            jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(true);
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
+        threadMinigame2.interrupt();
+        canvas = null;
+        objs = null;
+        btnAvancarMinigame.setVisibility(View.VISIBLE);
+        nivel.setTerminado(true);
+        nivel.getParentFase().avancarNivel(nivel.getRotaVitoria());
     }
 
     public class ObjetoMinigame {
-        private int tipo, cor, v, alpha;
+        private int tipo, cor, alpha;
+        private double v;
         private float x, y;
 
         public int getTipo() {
@@ -303,7 +293,7 @@ public class JogoActivity extends AppCompatActivity {
             return 110;
         }
 
-        public ObjetoMinigame(int t, int vel) {
+        public ObjetoMinigame(int t, double vel) {
             tipo = t;
             cor = getCorAleatoria();
             v = vel;
@@ -390,7 +380,7 @@ public class JogoActivity extends AppCompatActivity {
         }
         public void atualizar() {
             if (getX() + getWidth() >= 0) {
-                setX(getX() - v);
+                setX(getX() - (float)v);
             }
             if (getX() < -1 * getWidth() && alpha == 255) {
                 perderMinigame2();
@@ -521,7 +511,6 @@ public class JogoActivity extends AppCompatActivity {
         btnAvancarMinigame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                jogo.getArvore().getFaseAtual().avancarNivel();
                 iniciarNivel();
             }
         });
@@ -731,32 +720,26 @@ public class JogoActivity extends AppCompatActivity {
         TimerJogo tmr = new TimerJogo(tvTempoMinigame1, pbVidaMinigame1, new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(1500);
-                    jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(true);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            btnAvancarMinigame.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
-                catch (InterruptedException ex) {}
+                jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(true);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                    nivel.getParentFase().avancarNivel(nivel.getRotaVitoria());
+                    btnAvancarMinigame.setVisibility(View.VISIBLE);
+                    }
+                });
             }
         }, new Runnable() {
             @Override
             public void run() {
-                try {
-                    Thread.sleep(1500);
-                    jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(false);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            btnAvancarMinigame.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
-                catch (InterruptedException ex) {}
+                jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(false);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                    nivel.getParentFase().avancarNivel();
+                    btnAvancarMinigame.setVisibility(View.VISIBLE);
+                    }
+                });
             }
         });
         tmr.start();
@@ -774,14 +757,20 @@ public class JogoActivity extends AppCompatActivity {
 
         int width = llFundoMinigame2.getMeasuredWidth();
         int height = llFundoMinigame2.getMeasuredHeight();
-        int velocidade = 5 * nivel.getDiff();
+        double diff = (new Random().nextInt(1) + 1.5);
+        if (nivel.getDependenciaStatus() != -1)
+            diff -= jogo.getPlayer().getAttr(nivel.getDependenciaStatus());
 
-        objs = new ObjetoMinigame[10 * nivel.getDiff()];
+        diff *= 2;
 
-        for (int i = 0; i < 10 * nivel.getDiff(); i++) {
+        double velocidade = 5 * diff;
+
+        objs = new ObjetoMinigame[10 * (int)diff];
+
+        for (int i = 0; i < 10 * (int)diff; i++) {
             ObjetoMinigame obj = new ObjetoMinigame(new Random().nextInt(4), velocidade);
 
-            obj.setX(width + i * (450 - 20 * nivel.getDiff()));
+            obj.setX(width + i * (450 - 20 * (float)diff));
             obj.setY((height-110)/2);
 
             objs[i] = obj;

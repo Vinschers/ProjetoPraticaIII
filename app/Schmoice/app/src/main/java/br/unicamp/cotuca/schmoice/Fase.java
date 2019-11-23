@@ -5,7 +5,7 @@ import android.content.Intent;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Fase implements Comparable<Fase>, Cloneable, Serializable {
+public class Fase implements Serializable {
     private int idFase;
     private ArrayList<ArrayList<Nivel>> niveis;
     private String titulo;
@@ -15,36 +15,20 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
     private double status;
     private int parteAtual, rotaAtual = 0;
     private Arvore arvore;
+    private Requerimentos reqs;
+    private ArrayList<Integer> caminhoFase;
 
     public Fase() {
         nivelAtual = null;
         niveis = new ArrayList<ArrayList<Nivel>>();
+        caminhoFase = new ArrayList<Integer>();
         terminada = false;
         status = 0.5;
         arvore = null;
         parteAtual = 0;
+        reqs = new Requerimentos();
     }
-    public Fase(Fase fase) {
-        this.idFase = fase.idFase;
-        this.niveis = fase.niveis;
-        this.titulo = fase.titulo;
-        this.descricao = fase.descricao;
-        this.nivelAtual = fase.nivelAtual;
-        this.terminada = fase.terminada;
-        this.status = fase.status;
-        this.arvore = fase.arvore;
-        this.parteAtual = fase.parteAtual;
-    }
-    public int compareTo(Fase fase) {
-        return this.idFase - fase.idFase;
-    }
-    public Object clone() {
-        Fase f = null;
-        try {
-            f = new Fase(this);
-        } catch (Exception e) {}
-        return f;
-    }
+
     public boolean equals(Object outro) {
         if (outro == this)
             return true;
@@ -123,16 +107,32 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
         nivelAtual = niveis.get(rota).get(num);
     }
     public void avancarNivel() {
+        if (nivelAtual.getEscolhaFeita().getPosImportancia() != -1)
+            arvore.getJogo().getEscolhasImportantes().add(nivelAtual.getEscolhaFeita().getPosImportancia(), nivelAtual.getEscolhaFeita().getImportancia());
+        else
+            arvore.getJogo().getEscolhasImportantes().add(nivelAtual.getEscolhaFeita().getImportancia());
         if (parteAtual >= niveis.get(rotaAtual).size() - 1) {
             terminada = true;
         } else {
             if (nivelAtual.getTipo() == 0) {
                 atualizarStatusPlayer();
-                atualizarAmizadesPlayer();
                 status += nivelAtual.getEscolhaFeita().getStatusFase();
                 rotaAtual = nivelAtual.getEscolhaFeita().getParaOndeIr();
             }
-            parteAtual++;
+            parteAtual += 1 + nivelAtual.getEscolhaFeita().getParaOndeIrNaRota();
+            nivelAtual = niveis.get(rotaAtual).get(parteAtual);
+        }
+    }
+    public void avancarNivel(int rotaNova) {
+        if (nivelAtual.getEscolhaFeita().getPosImportancia() != -1)
+            arvore.getJogo().getEscolhasImportantes().add(nivelAtual.getEscolhaFeita().getPosImportancia(), nivelAtual.getEscolhaFeita().getImportancia());
+        else
+            arvore.getJogo().getEscolhasImportantes().add(nivelAtual.getEscolhaFeita().getImportancia());
+        rotaAtual = rotaNova;
+        if (parteAtual >= niveis.get(rotaAtual).size() - 1) {
+            terminada = true;
+        } else {
+            parteAtual += 1 + nivelAtual.getEscolhaFeita().getParaOndeIrNaRota();
             nivelAtual = niveis.get(rotaAtual).get(parteAtual);
         }
     }
@@ -145,14 +145,6 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
         player.addToInteligencia(nivelAtual.getEscolhaFeita().getStatusPlayer()[4]);
         player.addToCarisma(nivelAtual.getEscolhaFeita().getStatusPlayer()[5]);
         player.addToForca(nivelAtual.getEscolhaFeita().getStatusPlayer()[6]);
-    }
-    public void atualizarAmizadesPlayer() {
-        Jogo jogo = arvore.getJogo();
-        double[] amizades = nivelAtual.getEscolhaFeita().getStatusAmizades();
-        Personagem[] personagens = jogo.getPersonagens();
-        for(int i = 0; personagens != null && i < personagens.length; i++) {
-            personagens[i].addToAmizade(amizades[i]);
-        }
     }
     public boolean isTerminada() {
         return terminada;
@@ -187,4 +179,14 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
 
     public int getIdFase() {return idFase;}
     public void setIdFase(int i) {idFase = i;}
+
+    public void setReqs(Requerimentos reqs) {this.reqs = reqs;}
+    public Requerimentos getReqs() {return reqs;}
+
+    public ArrayList<Integer> getCaminhoFase() {
+        return caminhoFase;
+    }
+    public void setCaminhoFase(String caminhoFase) throws Exception {
+        this.caminhoFase = (ArrayList<Integer>)ClienteWS.fromJson(caminhoFase, ArrayList.class);
+    }
 }

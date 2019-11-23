@@ -28,15 +28,17 @@
                         <label>Descrição: </label> <input type="text" id="descN"><br>
                         <label>Background: </label> <input type="text" id="backN"><br>
                         <label>Tipo: </label> <input type="text" id="tipoN"><br>
-                        <label>Dificuldade: </label> <input type="text" id="diffN"><br>
+                        <label><b>Rota Vitoria</b>: </label> <input type="text" id="diffN"><br>
                         <label>Rota: </label> <input type="text" id="rotaN"><br>
+                        <label>Parte: </label> <input type="text" id="parteN"><br>
+                        <label>Dependencia Status: </label> <input type="text" id="depS"><br>
                         <label>Fase: </label> <select id="faseN"></select><br>
                         <label>Personagens: </label> <input type="text" id="persN"><br>
-                        <label>Escolhas (nome-player-amizade-paraOndeIr-statusFase): </label><br>
-                        <input type="text" id="esc1"><input type="text" id="escP1"><input type="text" id="escS1"><input type="text" id="escO1"><input type="text" id="escF1"><br>
-                        <input type="text" id="esc2"><input type="text" id="escP2"><input type="text" id="escS2"><input type="text" id="escO2"><input type="text" id="escF2"><br>
-                        <input type="text" id="esc3"><input type="text" id="escP3"><input type="text" id="escS3"><input type="text" id="escO3"><input type="text" id="escF3"><br>
-                        <input type="text" id="esc4"><input type="text" id="escP4"><input type="text" id="escS4"><input type="text" id="escO4"><input type="text" id="escF4"><br><br>
+                        <label>Escolhas (nome-player-paraOndeIr-paraOndeIrNaRota-Importancia-posImportancia): </label><br>
+                        <input type="text" id="esc1"><input type="text" id="escP1"><input type="text" id="escO1"><input type="text" id="escPR1"><input type="text" id="escI1"><input type="text" id="escPI1"><br>
+                        <input type="text" id="esc2"><input type="text" id="escP2"><input type="text" id="escO2"><input type="text" id="escPR2"><input type="text" id="escI2"><input type="text" id="escPI2"><br>
+                        <input type="text" id="esc3"><input type="text" id="escP3"><input type="text" id="escO3"><input type="text" id="escPR3"><input type="text" id="escI3"><input type="text" id="escPI3"><br>
+                        <input type="text" id="esc4"><input type="text" id="escP4"><input type="text" id="escO4"><input type="text" id="escPR4"><input type="text" id="escI4"><input type="text" id="escPI4"><br><br>
                         <button id="btnAddNivel">Adicionar</button>
                     </form>
                 </div>
@@ -56,7 +58,7 @@
     <script>
         var canvas;
         var antPers = [];
-        ;;var ws = 'http://host-node.herokuapp.com'
+        //var ws = 'http://host-node.herokuapp.com'
         var ws = 'http://localhost:3000'
 
         $("document").ready(function() {
@@ -103,17 +105,20 @@
                     if ($('#esc' + i).val() != "")
                         escolhas.push({
                             nome: $('#esc' + i).val(),
-                            statusA: $("#escS" + i).val().split(' ').map(Number),
                             statusP: $("#escP" + i).val().split(' ').map(Number),
                             paraOndeIr: parseInt($("#escO" + i).val()),
-                            statusFase: parseInt($("#escF" + i).val())
+                            paraOndeIrNaRota: parseInt($('#escPR' + i).val()),
+                            importancia: parseInt($('#escI' + i).val()),
+                            posImportancia: parseInt($('#escPI' + i).val())
                         })
                 var obj = {
                     descricao: $("#descN").val(),
                     background: $("#backN").val(),
                     tipo: $("#tipoN").val(),
-                    diff: $("#diffN").val(),
+                    rotaVitoria: $("#diffN").val(),
                     rota: $("#rotaN").val(),
+                    parte: parseInt($("#parteN").val()),
+                    dependenciaStatus: parseInt($('#depS').val()),
                     fase: $("#faseN").children("option:selected").val(),
                     personagens: personagens,
                     escolhas: escolhas

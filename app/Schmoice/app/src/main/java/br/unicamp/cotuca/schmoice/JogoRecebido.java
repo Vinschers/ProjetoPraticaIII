@@ -1,5 +1,7 @@
 package br.unicamp.cotuca.schmoice;
 
+import java.util.ArrayList;
+
 public class JogoRecebido {
     public JogoRecebido() {}
     int id;
@@ -52,12 +54,12 @@ public class JogoRecebido {
         this.ip = ip;
     }
 
-    public String getCaminho() {
-        return caminho;
+    public ArrayList<Integer> getCaminho() {
+        return this.caminho;
     }
 
-    public void setCaminho(String caminho) {
-        this.caminho = caminho;
+    public void setCaminho(String caminho) throws Exception {
+        this.caminho = (ArrayList<Integer>)ClienteWS.fromJson(caminho, ArrayList.class);
     }
 
     public boolean isAcabouDeComecar() {
@@ -128,7 +130,8 @@ public class JogoRecebido {
     int faseAtual;
     int parteAtual;
     int rotaAtual;
-    String ip, caminho;
+    String ip;
+    ArrayList<Integer> caminho;
     boolean acabouDeComecar;
     double tranquilidade, felicidade, financas, forca, inteligencia, sanidade, carisma;
 }

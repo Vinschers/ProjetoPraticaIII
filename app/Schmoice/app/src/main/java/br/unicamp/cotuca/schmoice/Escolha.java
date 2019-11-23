@@ -9,6 +9,30 @@ public class Escolha implements Serializable {
     private double[] statusPlayer;
     private double[] statusAmizades;
     private int statusFase;
+    private int importancia;
+    private int posImportancia;
+    private int paraOndeIrNaRota;
+
+    public int getParaOndeIrNaRota() {
+        return paraOndeIrNaRota;
+    }
+    public void setParaOndeIrNaRota(int paraOndeIrNaRota) {
+        this.paraOndeIrNaRota = paraOndeIrNaRota;
+    }
+
+    public int getImportancia() {
+        return importancia;
+    }
+    public void setImportancia(int importancia) {
+        this.importancia = importancia;
+    }
+
+    public int getPosImportancia() {
+        return posImportancia;
+    }
+    public void setPosImportancia(int posImportancia) {
+        this.posImportancia = posImportancia;
+    }
 
     public int getIdEscolha() {return idEscolha;}
     public void setIdEscolha(int i) {idEscolha = i;}
@@ -33,19 +57,6 @@ public class Escolha implements Serializable {
             er.printStackTrace();
         }
     }
-
-    public double[] getStatusAmizades() {
-        return statusAmizades;
-    }
-
-    public void setStatusAmizades(String amizades) {
-        try {
-            this.statusAmizades = (double[])ClienteWS.fromJson(amizades, double[].class);
-        }
-        catch (Exception er) {
-            er.printStackTrace();
-        }
-    }
     public void setParaOndeIr(int paraOndeIr) {
         this.paraOndeIr = paraOndeIr;
     }
@@ -60,12 +71,10 @@ public class Escolha implements Serializable {
         nome = "";
         paraOndeIr = 0;
         statusPlayer = new double[7];
-        statusAmizades = new double[Jogo.qtdAmigos];
     }
-    public Escolha(String nome, int paraOndeIr, double[] s, double[] a) {
+    public Escolha(String nome, int paraOndeIr, double[] s) {
         this.nome = nome;
         this.paraOndeIr = paraOndeIr;
         this.statusPlayer = s;
-        this.statusAmizades = a;
     }
 }

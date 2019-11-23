@@ -216,9 +216,8 @@ public class SavesActivity extends AppCompatActivity {
                     for (int j = 0; j < amigosRecebidos.length; j++)
                         personagens[j].setAmizade(amigosRecebidos[j].getAmizade());
 
-                    /*novoJogo.getArvore().setFaseAtual(jogosRecebidos[i].getFaseAtual());
+                    /*novoJogo.getArvore().setCaminho(jogosRecebidos[i].getCaminho());
                     novoJogo.getArvore().getFaseAtual().setNivelAtual(jogosRecebidos[i].getRotaAtual(), jogosRecebidos[i].getRotaAtual());*/
-
 
                     jogosObtidos[jogosRecebidos[i].getSlot()] = novoJogo;
                 }

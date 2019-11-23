@@ -1,24 +1,22 @@
 package br.unicamp.cotuca.schmoice;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class No implements Serializable {
     private Fase fase;
-    private No esquerda, direita;
+    private ArrayList<No> proxs;
     public No() {
         setFase(null);
-        setEsquerda(null);
-        setDireita(null);
+        proxs = new ArrayList<No>();
     }
     public No(No no) {
         setFase(no.getFase());
-        setEsquerda(no.getEsquerda());
-        setDireita(no.getDireita());
+        setProxs(no.getProxs());
     }
-    public No(Fase fase, No esq, No dir) {
+    public No(Fase fase, ArrayList<No> proxs) {
         this.fase = fase;
-        esquerda = esq;
-        direita = dir;
+        this.proxs = proxs;
     }
 
     public void setFase(Fase fase) {
@@ -27,30 +25,8 @@ public class No implements Serializable {
     public Fase getFase() {
         return fase;
     }
-    public void setEsquerda(No esq) {
-        esquerda = esq;
-    }
-    public No   getEsquerda() {
-        return esquerda;
-    }
-    public void setDireita(No dir) {
-        direita = dir;
-    }
-    public No   getDireita(){
-        return direita;
-    }
-
-    private boolean igual(No no1, No no2) {
-        if ((no1.getFase() == null) != (no2.getFase() == null))
-            return false;
-        if ((no1.getEsquerda() == null) != (no2.getEsquerda() == null))
-            return false;
-        if ((no1.getDireita() == null) != (no2.getDireita() == null))
-            return false;
-        if (no1 == no2)
-            return true;
-        return no1.fase.equals(no2.fase) && igual(no1.getDireita(), no2.getDireita()) && igual(no1.getEsquerda(), no2.getEsquerda());
-    }
+    public void setProxs(ArrayList<No> proxs) {this.proxs = proxs;}
+    public ArrayList<No> getProxs() {return proxs;}
 
     public boolean equals(Object outro) {
         if (outro == this)
@@ -60,22 +36,6 @@ public class No implements Serializable {
         if (outro.getClass() != getClass())
             return false;
         No no = (No)outro;
-        return igual(this, no);
-    }
-
-    public int hashCode() {
-        int ret = 3;
-        ret = ret * 13 + fase.hashCode();
-        return ret;
-    }
-
-    private String toStringAux(No no) {
-        if (no == null)
-            return "";
-        return "(" + toStringAux(no.getEsquerda()) + ")" + no.getFase() + "(" + toStringAux(no.getDireita()) + ")";
-    }
-
-    public String toString() {
-        return "{" + toStringAux(this) + "}";
+        return this.proxs.equals(no.proxs) && this.getFase().equals(no.getFase());
     }
 }

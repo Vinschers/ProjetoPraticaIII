@@ -12,6 +12,7 @@ public class Jogo implements Serializable {
     private Personagem[] amigos;
     private boolean acabouDeComecar;
     int id;
+    private ArrayList<Integer> escolhasImportantes;
 
     public Jogo() {
         arvore = new Arvore();
@@ -21,10 +22,12 @@ public class Jogo implements Serializable {
         for (int i = 0; i < qtdAmigos; i++)
             amigos[i] = new Personagem();
         acabouDeComecar = true;
+        escolhasImportantes = new ArrayList<Integer>();
     }
     public Jogo(Jogo jogo) {
         arvore = jogo.getArvore();
         player = jogo.getPlayer();
+        escolhasImportantes = jogo.getEscolhasImportantes();
     }
 
     public Arvore getArvore() {
@@ -42,4 +45,10 @@ public class Jogo implements Serializable {
     }
     public int getId() {return  id; }
     public void setId(int id) {this.id = id; }
+    public ArrayList<Integer> getEscolhasImportantes() {
+        return escolhasImportantes;
+    }
+    public void setEscolhasImportantes(ArrayList<Integer> escolhasImportantes) {
+        this.escolhasImportantes = escolhasImportantes;
+    }
 }

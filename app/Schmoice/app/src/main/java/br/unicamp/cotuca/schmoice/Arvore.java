@@ -6,8 +6,8 @@ import java.util.ArrayList;
 public class Arvore implements Serializable {
     private No raiz;
     private No faseAtual;
-    private ArrayList<Integer> caminho;
     private Jogo jogo;
+    private ArrayList<Integer> caminho;
 
     public Arvore() {
         raiz = null;
@@ -17,15 +17,8 @@ public class Arvore implements Serializable {
     public Arvore(Arvore arvore) {
         this.raiz = arvore.raiz;
         this.faseAtual = arvore.faseAtual;
-        this.caminho = arvore.caminho;
         faseAtual = raiz;
-        for (int c : caminho) {
-            if (c == 1) {
-                faseAtual = faseAtual.getDireita();
-            } else {
-                faseAtual = faseAtual.getEsquerda();
-            }
-        }
+        caminho = arvore.caminho;
     }
     public boolean equals(Object outra) {
         if (outra == this)
@@ -37,8 +30,6 @@ public class Arvore implements Serializable {
         Arvore a = (Arvore) outra;
         if (!a.raiz.equals(this.raiz))
             return false;
-        if (!a.caminho.equals(this.caminho))
-            return false;
         if (!a.faseAtual.equals(this.faseAtual))
             return false;
         return true;
@@ -47,7 +38,6 @@ public class Arvore implements Serializable {
         int ret = 3;
         ret = ret * 2 + raiz.hashCode();
         ret = ret * 3 + faseAtual.hashCode();
-        ret = ret * 5 + caminho.hashCode();
         return ret;
     }
     public void atualizarFaseAtual() {
@@ -55,90 +45,42 @@ public class Arvore implements Serializable {
             faseAtual = raiz;
         }
         else if (faseAtual.getFase().isTerminada()) {
-            long s = Math.round(faseAtual.getFase().getStatus());
-            if (s == 1 && faseAtual.getDireita() != null)
-                faseAtual = faseAtual.getDireita();
-            else if (faseAtual.getEsquerda() != null)
-                faseAtual = faseAtual.getEsquerda();
+            for(int i = 0; i < faseAtual.getProxs().size(); i++)
+            {
+                if (faseAtual.getProxs().get(i).getFase().getReqs().serve(jogo.getEscolhasImportantes()))
+                {
+                    faseAtual = faseAtual.getProxs().get(i);
+                    caminho.add(i);
+                    break;
+                }
+            }
         }
-    }
-    public void setFaseAtual(int f)
-    {
-        No aux = raiz;
-        while(true)
-        {
-            if (aux.getFase().getIdFase() < f)
-                aux = aux.getDireita();
-            else if (aux.getFase().getIdFase() > f)
-                aux = aux.getEsquerda();
-            else
-                break;
-        }
-        faseAtual = aux;
     }
     public Fase getFaseAtual() {
         atualizarFaseAtual();
         return faseAtual.getFase();
     }
-    public Fase getFase(Fase fase) throws Exception {
-        No atual = raiz;
-        while (!atual.getFase().equals(fase)) {
-            if (fase == null) {
-                throw new Exception("Fase <" + fase.toString() + "> nao existe!!");
-            } else if (fase.compareTo(atual.getFase()) > 0) {
-                atual = atual.getDireita();
-            } else if (fase.compareTo(atual.getFase()) < 0) {
-                atual = atual.getEsquerda();
-            }
-        }
-        return atual.getFase();
-    }
-    public No addRec(No atual, Fase f) {
-        if (atual == null)
-            return new No(f, null, null);
 
-        if (atual.getFase().compareTo(f) > 0)
-            atual.setEsquerda(addRec(atual.getEsquerda(), f));
-        else if (atual.getFase().compareTo(f) < 0)
-            atual.setDireita(addRec(atual.getDireita(), f));
-        else
-            return atual;
-
-        return atual;
-    }
     public void adicionar(Fase fase) {
         fase.setArvore(this);
-        raiz = addRec(raiz, fase);
-    }
-    public void remover(Fase fase) throws Exception {
-        No atual = raiz;
-        while (!atual.getEsquerda().getFase().equals(fase) && !atual.getDireita().getFase().equals(fase)) {
-            if (fase == null) {
-              throw new Exception("Fase <" + fase.toString() + "> nao existe!!");
-            } else if (fase.compareTo(atual.getFase()) > 0) {
-                atual = atual.getDireita();
-            } else if (fase.compareTo(atual.getFase()) < 0) {
-                atual = atual.getEsquerda();
-            }
+        No aux = raiz;
+        for (int i = 0; i < fase.getCaminhoFase().size() - 1; i++) {
+            if (aux.getProxs() == null)
+                aux.setProxs(new ArrayList<No>());
+            if (i >= aux.getProxs().size())
+                for (int j = aux.getProxs().size() - 1; j < i; j++)
+                    aux.getProxs().add(new No(null, null));
+            if (aux.getProxs().get(i) == null)
+                aux.getProxs().add(new No(null, null));
+            aux = aux.getProxs().get(i);
         }
-        if (atual.getEsquerda() == null || atual.getDireita() == null) {
-            if (atual.getEsquerda().getFase().equals(fase)) {
-                atual.setEsquerda(null);
-            } else {
-                atual.setDireita(null);
-            }
-            return;
-        }
-        No aux = atual;
-        while (atual.getDireita().getDireita() != null)
-            atual = atual.getDireita();
-        aux = atual.getDireita();
-        atual.setDireita(null);
+        int ind = fase.getCaminhoFase().get(fase.getCaminhoFase().size() - 1);
+        if (aux.getProxs().get(ind) == null)
+            aux.getProxs().add(new No(fase, null));
+        else
+            aux.getProxs().get(ind).setFase(fase);
     }
-    public void atualizar(Fase fase) throws Exception {
-        remover(fase);
-        adicionar(fase);
-    }
+
     public ArrayList<Integer> getCaminho() {
         return caminho;
     }
@@ -147,24 +89,8 @@ public class Arvore implements Serializable {
         caminho = c;
         faseAtual = raiz;
         for(int i : caminho) {
-            if (i == 0)
-                faseAtual = faseAtual.getEsquerda();
-            else
-                faseAtual = faseAtual.getDireita();
+            faseAtual = faseAtual.getProxs().get(i);
         }
-    }
-    /*public void setCaminho(String s) {
-        caminho = new ArrayList<Integer>();
-        for (char c : s.toCharArray()) {
-            caminho.add((int)c-42);
-        }
-    }*/
-    public void adicionarAoCaminho(int s) {
-        caminho.add(s);
-        if (s == 0)
-            faseAtual = faseAtual.getEsquerda();
-        else
-            faseAtual = faseAtual.getDireita();
     }
     public void setJogo(Jogo j) {
         jogo = j;
