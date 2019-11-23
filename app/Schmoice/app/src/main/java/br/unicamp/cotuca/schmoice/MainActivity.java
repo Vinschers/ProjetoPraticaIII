@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.concurrent.Callable;
 
 public class MainActivity extends AppCompatActivity {
+    TextView tvTitulo;
     Button btnJogar, btnConfig;
     Controle controle;
     Context context;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         try{
             controle = (Controle)params.getSerializable("controle");
         } catch (Exception e) {}
+        tvTitulo = (TextView)findViewById(R.id.tvTitulo);
         btnJogar = (Button)findViewById(R.id.btnJogar);
         btnConfig = (Button)findViewById(R.id.btnConfig);
         context = MainActivity.this;
@@ -60,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
                 Configuracoes();
             }
         });
+        SpannableString content = new SpannableString("Schmoice");
+        content.setSpan(new UnderlineSpan(), 0, 8, 0);
+        tvTitulo.setText(content);
     }
 
     private void Jogar() {

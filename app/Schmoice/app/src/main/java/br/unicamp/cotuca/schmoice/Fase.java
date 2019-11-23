@@ -123,7 +123,7 @@ public class Fase implements Comparable<Fase>, Cloneable, Serializable {
         nivelAtual = niveis.get(rota).get(num);
     }
     public void avancarNivel() {
-        if (parteAtual >= niveis.get(rotaAtual).size() - 1) {
+        if (parteAtual >= niveis.get(rotaAtual).size()) {
             terminada = true;
         } else {
             if (nivelAtual.getTipo() == 0) {

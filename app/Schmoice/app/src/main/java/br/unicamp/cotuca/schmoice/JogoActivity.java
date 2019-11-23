@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -167,54 +166,11 @@ public class JogoActivity extends AppCompatActivity {
     Nivel nivel;
     Controle controle;
 
-    //region Nivel normal
+    //region Variáveis de nivel normal
     TextView tvDescricao;
     LinearLayout llEscolhas;
     Button[] btnsEscolha;
     ArrayList<Escolha> escolhas;
-    //endregion
-
-    //region Minigame 1
-    TextView tvTempoMinigame1;
-    ProgressBar pbVidaMinigame1;
-    LinearLayout llFundoMinigame1;
-
-    class TimerJogo extends Thread {
-
-        TextView tvTimer;
-        ProgressBar pbVida;
-        Runnable onGanhou, onPerdeu;
-
-        public TimerJogo(TextView tvTimer, ProgressBar pbVida, Runnable onGanhou, Runnable onPerdeu) {
-            this.tvTimer = tvTimer;
-            this.pbVida = pbVida;
-            this.onGanhou = onGanhou;
-            this.onPerdeu = onPerdeu;
-        }
-
-        public void run() {
-            try {
-                for (int segundos = 15; segundos >= 0; segundos--)
-                {
-                    Thread.sleep(1000);
-                    tvTimer.setText(segundos + "");
-                    if (pbVida.getProgress() == pbVida.getMax())
-                        break;
-                }
-                if (pbVida.getProgress() == pbVida.getMax()) {
-                    tvTimer.setText("Ganhou!");
-                    onGanhou.run();
-                }
-                else {
-                    tvTimer.setText("Perdeu!");
-                    onPerdeu.run();
-                }
-            }
-            catch (InterruptedException ex) {}
-            catch (Throwable ex) {System.out.println(ex.getMessage());}
-        }
-    }
-
     //endregion
 
     //region Minigame 2
@@ -489,24 +445,26 @@ public class JogoActivity extends AppCompatActivity {
         Uteis.setActivity(JogoActivity.this);
 
         btnsEscolha        = new Button[4];
+        imgCenario         = (ImageView)      findViewById(R.id.imgCenario);
+        tvDescricao        = (TextView)       findViewById(R.id.tvDescricao);
         btnsEscolha[0]     = (Button)         findViewById(R.id.btnEscolha1);
         btnsEscolha[1]     = (Button)         findViewById(R.id.btnEscolha2);
         btnsEscolha[2]     = (Button)         findViewById(R.id.btnEscolha3);
         btnsEscolha[3]     = (Button)         findViewById(R.id.btnEscolha4);
-        tvDescricao        = (TextView)       findViewById(R.id.tvDescricao);
-        tvTempoMinigame1   = (TextView)       findViewById(R.id.tvTempoMinigame1);
-        imgCenario         = (ImageView)      findViewById(R.id.imgCenario);
-        pbVidaMinigame1    = (ProgressBar)    findViewById(R.id.pbVidaMinigame1);
-        llFundoMinigame1   = (LinearLayout)   findViewById(R.id.llFundoMinigame1);
         llFundoMinigame2   = (LinearLayout)   findViewById(R.id.llFundoMinigame2);
         llEscolhas         = (LinearLayout)   findViewById(R.id.llEscolhas);
-        rlPersonagens      = (LinearLayout)   findViewById(R.id.rlPersonagens);
         conteudoFullScreen = (RelativeLayout) findViewById(R.id.conteudoFullScreen);
+        rlPersonagens      = (LinearLayout)   findViewById(R.id.rlPersonagens);
 
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
         jogo = (Jogo)params.getSerializable("jogo");
         controle = (Controle)params.getSerializable("controle");
+
+        nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
+
+        imgCenario.setImageBitmap(Uteis.getImageByName(nivel.getBackground()));
+        escolhas = nivel.getEscolhas();
 
         iniciarFullscreen();
 
@@ -520,45 +478,16 @@ public class JogoActivity extends AppCompatActivity {
 
     public void iniciarNivel()
     {
-        rlPersonagens.removeAllViews();
         nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
-        imgCenario.setImageBitmap(Uteis.getImageByName(nivel.getBackground()));
-        escolhas = nivel.getEscolhas();
 
         if (nivel.isTerminado()) {
             exit();
             return;
         }
 
-        switch (nivel.getTipo())
-        {
-            case 0:
-                Uteis.escurecerFundo(imgCenario, 0.6f);
-                llFundoMinigame1.setVisibility(View.INVISIBLE);
-                iniciarNivelNormal();
-                break;
+        int numPersonagens = nivel.getPersonagens().size();
 
-            case 1:
-                tvDescricao.setVisibility(View.INVISIBLE);
-                llEscolhas.setVisibility(View.INVISIBLE);
-                llFundoMinigame1.setVisibility(View.VISIBLE);
-                iniciarMinigame1();
-                break;
-
-            case 2:
-                Uteis.escurecerFundo(imgCenario, 0.35f);
-                tvDescricao.setVisibility(View.INVISIBLE);
-                llFundoMinigame1.setVisibility(View.INVISIBLE);
-                llEscolhas.setVisibility(View.GONE);
-                iniciarMinigame2();
-                break;
-
-            case -1:
-                exit();
-                break;
-        }
-
-        for(int i = 0; i < nivel.getPersonagens().size(); i++) {
+        for(int i = 0; i < numPersonagens; i++) {
             Personagem personagem = nivel.getPersonagens().get(i);
             ImageView iv = new ImageView(JogoActivity.this);
 
@@ -574,6 +503,29 @@ public class JogoActivity extends AppCompatActivity {
             iv.setLayoutParams(lp);
             iv.requestLayout();
         }
+
+        switch (nivel.getTipo())
+        {
+            case 0:
+                Uteis.escurecerFundo(imgCenario, 0.6f);
+                iniciarNivelNormal();
+                break;
+
+            case 1:
+                llEscolhas.setVisibility(View.GONE);
+                iniciarMinigame1();
+                break;
+
+            case 2:
+                Uteis.escurecerFundo(imgCenario, 0.35f);
+                llEscolhas.setVisibility(View.GONE);
+                iniciarMinigame2();
+                break;
+
+            case -1:
+                exit();
+                break;
+        }
     }
 
     public void iniciarNivelNormal()
@@ -587,12 +539,15 @@ public class JogoActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     nivel.efetuarEscolha(escolhas.get(ind));
+
+                    nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
+
                     iniciarNivel();
                 }
             });
         }
     }
-    /*public void iniciarMinigame1()
+    public void iniciarMinigame1()
     {
         Intent intentMinigame = new Intent(JogoActivity.this, Minigame1Activity.class);
         Bundle pars = new Bundle();
@@ -607,61 +562,6 @@ public class JogoActivity extends AppCompatActivity {
 
         intentMinigame.putExtras(pars);
         startActivity(intentMinigame);
-    }*/
-    public void iniciarMinigame1()
-    {
-        mContentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controle.eventos.onOK();
-            }
-        });
-        controle.setEventos(new Eventos(){
-            @Override
-            public void onOK() {
-                new Handler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!tvTempoMinigame1.getText().equals("Ganhou!") && !tvTempoMinigame1.getText().equals("Perdeu!"))
-                            pbVidaMinigame1.incrementProgressBy(1); // TIRAR DEPOIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    }
-                });
-            }
-        });
-        TimerJogo tmr = new TimerJogo(tvTempoMinigame1, pbVidaMinigame1, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1500);
-                    jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(true);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            jogo.getArvore().getFaseAtual().avancarNivel();
-                            iniciarNivel();
-                        }
-                    });
-                }
-                catch (InterruptedException ex) {}
-            }
-        }, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1500);
-                    jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(false);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            jogo.getArvore().getFaseAtual().avancarNivel();
-                            iniciarNivel();
-                        }
-                    });
-                }
-                catch (InterruptedException ex) {}
-            }
-        });
-        tmr.start();
     }
     public void iniciarMinigame2()
     {
@@ -753,8 +653,7 @@ public class JogoActivity extends AppCompatActivity {
 
     public void exit()
     {
-        if (threadMinigame2 != null)
-            threadMinigame2.interrupt();
+        threadMinigame2.interrupt();
         Intent intent = new Intent(JogoActivity.this, SavesActivity.class);
         Bundle params = new Bundle();
         controle.setEventos(null);
