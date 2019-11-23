@@ -13,9 +13,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -162,6 +166,8 @@ public class JogoActivity extends AppCompatActivity {
     ImageView imgCenario;
     RelativeLayout conteudoFullScreen;
     LinearLayout rlPersonagens;
+    Button btnAvancarMinigame;
+    final int btnsPorLinha = 2;
 
     Jogo jogo;
     Nivel nivel;
@@ -170,8 +176,8 @@ public class JogoActivity extends AppCompatActivity {
     //region Nivel normal
     TextView tvDescricao;
     LinearLayout llEscolhas;
-    Button[] btnsEscolha;
     ArrayList<Escolha> escolhas;
+    int[] btnAtual = new int[btnsPorLinha];
     //endregion
 
     //region Minigame 1
@@ -241,7 +247,8 @@ public class JogoActivity extends AppCompatActivity {
                 threadMinigame2.interrupt();
                 canvas = null;
                 objs = null;
-                iniciarNivel();
+                btnAvancarMinigame.setVisibility(View.VISIBLE);
+                jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(false);
             }
         }, new Runnable() {
             @Override
@@ -254,8 +261,8 @@ public class JogoActivity extends AppCompatActivity {
         canvas.setFim(true);
         try {
             Thread.sleep(1000);
-            jogo.getArvore().getFaseAtual().avancarNivel();
-            iniciarNivel();
+            btnAvancarMinigame.setVisibility(View.VISIBLE);
+            jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(true);
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -483,11 +490,7 @@ public class JogoActivity extends AppCompatActivity {
 
     public void iniciarVariaveis()
     {
-        btnsEscolha        = new Button[4];
-        btnsEscolha[0]     = (Button)         findViewById(R.id.btnEscolha1);
-        btnsEscolha[1]     = (Button)         findViewById(R.id.btnEscolha2);
-        btnsEscolha[2]     = (Button)         findViewById(R.id.btnEscolha3);
-        btnsEscolha[3]     = (Button)         findViewById(R.id.btnEscolha4);
+        btnAvancarMinigame = (Button)         findViewById(R.id.btnAvancarMinigame);
         tvDescricao        = (TextView)       findViewById(R.id.tvDescricao);
         tvTempoMinigame1   = (TextView)       findViewById(R.id.tvTempoMinigame1);
         imgCenario         = (ImageView)      findViewById(R.id.imgCenario);
@@ -514,6 +517,14 @@ public class JogoActivity extends AppCompatActivity {
         iniciarVariaveis();
 
         iniciarFullscreen();
+
+        btnAvancarMinigame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                jogo.getArvore().getFaseAtual().avancarNivel();
+                iniciarNivel();
+            }
+        });
 
         Uteis.setTimeout(new Runnable() {
             @Override
@@ -581,21 +592,121 @@ public class JogoActivity extends AppCompatActivity {
         }
     }
 
-    public void iniciarNivelNormal()
+    public void setupBtns(final ArrayList<Escolha> escolhas)
     {
-        Uteis.escreverAnimado(tvDescricao, nivel.getDescricao());
+        Button btn;
+        LinearLayout ll = null;
 
         for (int i = 0; i < escolhas.size(); i++) {
+            if (i % btnsPorLinha == 0) {
+                if (ll != null)
+                    llEscolhas.addView(ll);
+                ll = new LinearLayout(JogoActivity.this);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                lp.topMargin = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,20f, getResources().getDisplayMetrics());
+                ll.setLayoutParams(lp);
+                ll.setGravity(Gravity.CENTER_HORIZONTAL);
+                ll.setOrientation(LinearLayout.HORIZONTAL);
+            }
             final int ind = i;
-            btnsEscolha[i].setText(escolhas.get(i).getNome());
-            btnsEscolha[i].setOnClickListener(new View.OnClickListener() {
+            btn = new Button(JogoActivity.this);
+            btn.setText(escolhas.get(i).getNome());
+            btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     nivel.efetuarEscolha(escolhas.get(ind));
                     iniciarNivel();
                 }
             });
+            btn.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View view, boolean b) {
+                    btnAtual[0] = ind / 2;
+                    btnAtual[1] = ind % 2;
+                    selecionar(false);
+                }
+            });
+
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.weight = (float)1/btnsPorLinha;
+            btn.setLayoutParams(lp);
+            ll.addView(btn);
         }
+        if (ll != null)
+            llEscolhas.addView(ll);
+        ((LinearLayout)llEscolhas.getChildAt(0)).getChildAt(0).findFocus();
+    }
+
+    private void desselecionar()
+    {
+        for(int i = 0; i < llEscolhas.getChildCount(); i -=- 1)
+        {
+            LinearLayout ll = (LinearLayout)llEscolhas.getChildAt(i);
+            for (int j = 0; j < ll.getChildCount(); j -=- 1)
+            {
+                ll.getChildAt(j).setBackground(null);
+                ll.getChildAt(j).clearFocus();
+            }
+        }
+    }
+
+    public void selecionar(boolean focus)
+    {
+        int y = btnAtual[0], x = btnAtual[1];
+        Button btn = (Button)((LinearLayout)llEscolhas.getChildAt(y)).getChildAt(x);
+
+        if (focus) {
+            desselecionar();
+            btn.findFocus();
+        }
+        ShapeDrawable shapedrawable = new ShapeDrawable();
+        shapedrawable.setShape(new RectShape());
+        shapedrawable.getPaint().setColor(Uteis.corSelecionado);
+        shapedrawable.getPaint().setStrokeWidth(10f);
+        shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
+        btn.setBackground(shapedrawable);
+    }
+
+    public void iniciarNivelNormal()
+    {
+        Uteis.escreverAnimado(tvDescricao, nivel.getDescricao());
+        setupBtns(escolhas);
+        controle.setEventos(new Eventos(){
+            @Override
+            public void onPraCima() {
+                btnAtual[0]--;
+                if (btnAtual[0] < 0)
+                    btnAtual[0] = nivel.getEscolhas().size() - 1;
+                selecionar(true);
+            }
+
+            @Override
+            public void onPraBaixo() {
+                btnAtual[0]++;
+                if (btnAtual[0] > nivel.getEscolhas().size() - 1)
+                    btnAtual[0] = 0;
+                selecionar(true);
+            }
+
+            @Override
+            public void onPraEsquerda() {
+                btnAtual[1]--;
+                if (btnAtual[1] < 0)
+                    btnAtual[1] = ((LinearLayout)llEscolhas.getChildAt(btnAtual[0])).getChildCount() - 1;
+                selecionar(true);
+            }
+
+            @Override
+            public void onPraDireita() {
+                btnAtual[1]++;
+                if (btnAtual[1] > ((LinearLayout)llEscolhas.getChildAt(btnAtual[0])).getChildCount() - 1)
+                    btnAtual[1] = 0;
+                selecionar(true);
+            }
+        });
+
+        btnAtual[0] = btnAtual[1] = 0;
+        selecionar(true);
     }
     public void iniciarMinigame1()
     {
@@ -626,8 +737,7 @@ public class JogoActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            jogo.getArvore().getFaseAtual().avancarNivel();
-                            iniciarNivel();
+                            btnAvancarMinigame.setVisibility(View.VISIBLE);
                         }
                     });
                 }
@@ -642,8 +752,7 @@ public class JogoActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            jogo.getArvore().getFaseAtual().avancarNivel();
-                            iniciarNivel();
+                            btnAvancarMinigame.setVisibility(View.VISIBLE);
                         }
                     });
                 }
