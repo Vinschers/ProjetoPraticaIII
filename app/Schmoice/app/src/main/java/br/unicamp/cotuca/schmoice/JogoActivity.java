@@ -481,8 +481,13 @@ public class JogoActivity extends AppCompatActivity {
     }
     //endregion
 
-    public void iniciarVariaveis()
-    {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_jogo);
+
+        Uteis.setActivity(JogoActivity.this);
+
         btnsEscolha        = new Button[4];
         btnsEscolha[0]     = (Button)         findViewById(R.id.btnEscolha1);
         btnsEscolha[1]     = (Button)         findViewById(R.id.btnEscolha2);
@@ -502,16 +507,6 @@ public class JogoActivity extends AppCompatActivity {
         Bundle params = intent.getExtras();
         jogo = (Jogo)params.getSerializable("jogo");
         controle = (Controle)params.getSerializable("controle");
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_jogo);
-
-        Uteis.setActivity(JogoActivity.this);
-
-        iniciarVariaveis();
 
         iniciarFullscreen();
 
@@ -597,6 +592,22 @@ public class JogoActivity extends AppCompatActivity {
             });
         }
     }
+    /*public void iniciarMinigame1()
+    {
+        Intent intentMinigame = new Intent(JogoActivity.this, Minigame1Activity.class);
+        Bundle pars = new Bundle();
+
+        pars.putSerializable("controle", controle);
+        pars.putSerializable("jogo", jogo);
+        String img = jogo.getArvore().getFaseAtual().getNivelAtual().getBackground();
+        int ids = Uteis.getImageIdByName(img);
+        pars.putInt("cenario", ids);
+        pars.putInt("personagem", ids);
+        pars.putInt("diff", jogo.getArvore().getFaseAtual().getNivelAtual().getDiff());
+
+        intentMinigame.putExtras(pars);
+        startActivity(intentMinigame);
+    }*/
     public void iniciarMinigame1()
     {
         mContentView.setOnClickListener(new View.OnClickListener() {

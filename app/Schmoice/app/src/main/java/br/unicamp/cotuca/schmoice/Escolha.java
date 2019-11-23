@@ -8,7 +8,6 @@ public class Escolha implements Serializable {
     private int paraOndeIr;
     private double[] statusPlayer;
     private double[] statusAmizades;
-    private int statusFase;
 
     public int getIdEscolha() {return idEscolha;}
     public void setIdEscolha(int i) {idEscolha = i;}
@@ -52,10 +51,6 @@ public class Escolha implements Serializable {
     public int getParaOndeIr() {
         return paraOndeIr;
     }
-
-    public void setStatusFase(int sf) {statusFase = sf;}
-    public int getStatusFase() {return statusFase;}
-
     public Escolha() {
         nome = "";
         paraOndeIr = 0;

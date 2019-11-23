@@ -133,7 +133,7 @@ public class SavesActivity extends AppCompatActivity {
                             for (Nivel n : arr) {
                                 n.setParentFase(f);
                             }
-                        jogos[i].getArvore().adicionar(f);
+                        jogos[i].getArvore().adicionar(fases[0]);
                     }
                 }
         } catch (Exception e) {
