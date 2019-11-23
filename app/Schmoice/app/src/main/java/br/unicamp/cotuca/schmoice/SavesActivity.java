@@ -151,7 +151,7 @@ public class SavesActivity extends AppCompatActivity {
             btns[atual].findFocus();
         ShapeDrawable shapedrawable = new ShapeDrawable();
         shapedrawable.setShape(new RectShape());
-        shapedrawable.getPaint().setColor(Uteis.corSelecionado);
+        shapedrawable.getPaint().setColor(Color.RED);
         shapedrawable.getPaint().setStrokeWidth(10f);
         shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
         btns[atual].setBackground(shapedrawable);

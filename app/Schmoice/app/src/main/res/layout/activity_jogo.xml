@@ -22,8 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="550dp"
             android:orientation="horizontal"
-            android:gravity="center_horizontal" >
-        </LinearLayout>
+            android:gravity="center_horizontal" />
 
         <TextView
             android:id="@+id/tvDescricao"
@@ -70,25 +69,14 @@
             android:orientation="horizontal">
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btnAvancarMinigame"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="Continuar"
-            android:textSize="30dp"
-            android:layout_marginTop="500dp"
-            android:layout_centerHorizontal="true"
-            android:visibility="invisible"/>
-
         <LinearLayout
             android:id="@+id/llEscolhas"
             android:layout_width="match_parent"
             android:layout_height="180dp"
+            android:layout_gravity="bottom"
             android:layout_alignParentBottom="true"
             android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:alpha="0.5"> <!--
+            android:alpha="0.5">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -102,7 +90,6 @@
                     android:layout_marginHorizontal="5dp"
                     android:layout_weight="0.5"
                     android:height="70dp"/>
-
                 <Button
                     android:id="@+id/btnEscolha2"
                     android:layout_width="wrap_content"
@@ -111,7 +98,6 @@
                     android:layout_weight="0.5"
                     android:height="70dp"/>
             </LinearLayout>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -131,7 +117,7 @@
                     android:layout_marginHorizontal="5dp"
                     android:layout_weight="0.5"
                     android:height="70dp"/>
-            </LinearLayout> -->
+            </LinearLayout>
 
         </LinearLayout>
     </RelativeLayout>

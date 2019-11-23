@@ -29,8 +29,6 @@ import java.util.concurrent.Callable;
 public class Uteis {
     public static Activity activity;
 
-    public static int corSelecionado = Color.BLUE;
-
     public static void setActivity(Activity a) {activity = a;}
 
     private static final Uteis ourInstance = new Uteis();
