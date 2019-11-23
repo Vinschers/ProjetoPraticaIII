@@ -56,8 +56,8 @@
     <script>
         var canvas;
         var antPers = [];
-        //var ws = 'http://host-node.herokuapp.com'
-        var ws = 'http://localhost:3000'
+        var ws = 'http://host-node.herokuapp.com'
+        //var ws = 'http://localhost:3000'
 
         $("document").ready(function() {
             $("#btnAddFase").click(function() {
@@ -92,10 +92,10 @@
                     var src = p.getSrc() + "";
                     personagens.push({
                         nome: src.substring(src.lastIndexOf("/") + 1, src.lastIndexOf(".")),
-                        x: p.left.toFixed(2),
-                        y: p.top.toFixed(2),
-                        width: (p.width * p.scaleX).toFixed(2),
-                        rotation: p.get('angle').toFixed(2)
+                        x: parseFloat(p.left).toFixed(2),
+                        y: parseFloat(p.top).toFixed(2),
+                        width: parseFloat((p.width * p.scaleX)).toFixed(2),
+                        rotation: parseFloat(p.get('angle')).toFixed(2)
                     })
                 });
                 var escolhas = []
@@ -103,8 +103,8 @@
                     if ($('#esc' + i).val() != "")
                         escolhas.push({
                             nome: $('#esc' + i).val(),
-                            statusA: $("#escS" + i).val().split(' '),
-                            statusP: $("#escP" + i).val().split(' '),
+                            statusA: $("#escS" + i).val().split(' ').map(Number),
+                            statusP: $("#escP" + i).val().split(' ').map(Number),
                             paraOndeIr: parseInt($("#escO" + i).val())
                         })
                 var obj = {
