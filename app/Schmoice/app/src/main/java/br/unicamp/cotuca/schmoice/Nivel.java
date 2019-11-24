@@ -20,9 +20,17 @@ public class Nivel implements Serializable {
     private Fase parentFase;
     private Escolha escolhaFeita;
     private int tipo; // 0 -> normal; 1 -> minigame 1; 2 -> minigame 2.
-    private int diff;
+    private int rotaVitoria;
     private int parte;
     private int rota;
+    private int dependenciaStatus;
+
+    public int getDependenciaStatus() {
+        return dependenciaStatus;
+    }
+    public void setDependenciaStatus(int dependenciaStatus) {
+        this.dependenciaStatus = dependenciaStatus;
+    }
 
     public int getParte() {
         return parte;
@@ -79,8 +87,8 @@ public class Nivel implements Serializable {
     public int getTipo() {return  tipo;}
     public void setTipo(int tipo) {this.tipo = tipo;}
 
-    public int getDiff() {return diff;}
-    public void setDiff(int d) {diff = d;}
+    public int getRotaVitoria() {return rotaVitoria;}
+    public void setRotaVitoria(int r) {rotaVitoria = r;}
 
     public ArrayList<Personagem> getPersonagens() {return personagens;}
     public void setPersonagens(ArrayList<Personagem> personagens) {

@@ -132,7 +132,8 @@ public class SavesActivity extends AppCompatActivity {
                     for (Fase f : fases) {
                         for (ArrayList<Nivel> arr : f.getNiveis())
                             for (Nivel n : arr) {
-                                n.setParentFase(f);
+                                if (n != null)
+                                    n.setParentFase(f);
                             }
                         jogos[i].getArvore().adicionar(f);
                     }
@@ -203,6 +204,7 @@ public class SavesActivity extends AppCompatActivity {
                     Jogo novoJogo = new Jogo();
                     novoJogo.setId(jogosRecebidos[i].getId());
                     novoJogo.setAcabouDeComecar(false);
+                    novoJogo.setEscolhasImportantes(jogosRecebidos[i].getEscolhasImportantes());
 
                     Player jogador = novoJogo.getPlayer();
                     jogador.setTranquilidade(jogosRecebidos[i].getTranquilidade());
@@ -213,14 +215,8 @@ public class SavesActivity extends AppCompatActivity {
                     jogador.setFelicidade(jogosRecebidos[i].getFelicidade());
                     jogador.setCarisma(jogosRecebidos[i].getCarisma());
 
-                    Personagem[] personagens = novoJogo.getPersonagens();
-
-                    for (int j = 0; j < amigosRecebidos.length; j++)
-                        personagens[j].setAmizade(amigosRecebidos[j].getAmizade());
-
-                    /*novoJogo.getArvore().setFaseAtual(jogosRecebidos[i].getFaseAtual());
+                    /*novoJogo.getArvore().setCaminho(jogosRecebidos[i].getCaminho());
                     novoJogo.getArvore().getFaseAtual().setNivelAtual(jogosRecebidos[i].getRotaAtual(), jogosRecebidos[i].getRotaAtual());*/
-
 
                     jogosObtidos[jogosRecebidos[i].getSlot()] = novoJogo;
                 }

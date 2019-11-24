@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.util.TypedValue;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
@@ -64,34 +66,62 @@ public class Uteis {
         });
         colorAnimation.start();
     }
-    public static void escreverAnimado(final TextView tv, final String s)
-    {
-        final int[] i = new int[1];
-        i[0] = 0;
-        final int length = s.length();
-        final Handler handler = new Handler()
-        {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                char c= s.charAt(i[0]);
-                Log.d("Strange",""+c);
-                tv.append(String.valueOf(c));
-                i[0]++;
-            }
-        };
 
-        final Timer timer = new Timer();
-        TimerTask taskEverySplitSecond = new TimerTask() {
+
+    public static void escreverAnimado(final TextView tv, final TextView c, final String s, final Controle controle, final Activity act, final Runnable onFim)
+    {
+        String[] palavras = s.split("(?<= )");
+        final ArrayList<String> partes = new ArrayList<String>();
+        String parteAtual = "";
+        int letterCount = 0;
+        for (String palavra : palavras) {
+            letterCount += palavra.length();
+            if (letterCount > 60) {
+                partes.add(parteAtual);
+                parteAtual = "";
+                letterCount = 0;
+            }
+            parteAtual += palavra;
+        }
+        partes.add(parteAtual);
+
+        final int[] i = new int[1];
+        i[0] = -1;
+
+        final ThreadEscreverTv[] runs = new ThreadEscreverTv[partes.size()];
+        for (int ind = 0; ind < partes.size(); ind -=- 1) {
+            runs[ind] = new ThreadEscreverTv(tv, partes.get(ind), ind, onFim, partes, act, c);
+        }
+
+        final Runnable avancar = new Runnable() {
             @Override
             public void run() {
-                handler.sendEmptyMessage(0);
-                if (i[0] == length - 1) {
-                    timer.cancel();
+                if (i[0] > -1 && !runs[i[0]].getMorto())
+                {
+                    runs[i[0]].setMorto(true);
+                    tv.setText(partes.get(i[0]));
+                }
+                else {
+                    runs[++i[0]].start();
                 }
             }
         };
-        timer.schedule(taskEverySplitSecond, 1, 150);
+
+        controle.setEventos(new Eventos(){
+            @Override
+            public void onOK() {
+                avancar.run();
+            }
+        });
+
+        avancar.run();
+
+        tv.setOnClickListener(new View.OnClickListener() {      //TIRAR DEPOIS
+            @Override
+            public void onClick(View view) {
+                controle.eventos.onOK();
+            }
+        });
     }
     public static class ThreadRedimensionar extends Thread
     {

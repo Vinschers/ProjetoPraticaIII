@@ -98,4 +98,26 @@ public class Player implements Serializable {
     public void addToForca(double val) {
         forca += val;
     }
+
+    public double getAttr(int i)
+    {
+        switch (i)
+        {
+            case 0:
+                return tranquilidade;
+            case 1:
+                return sanidade;
+            case 2:
+                return inteligencia;
+            case 3:
+                return forca;
+            case 4:
+                return financas;
+            case 5:
+                return felicidade;
+            case 6:
+                return carisma;
+        }
+        return 0;
+    }
 }
