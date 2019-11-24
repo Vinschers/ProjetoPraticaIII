@@ -10,7 +10,7 @@ import android.widget.EditText;
 
 public class ConfigActivity extends AppCompatActivity {
     Controle controle;
-    EditText edtIP, edtPorta;
+    EditText edtAdress;
     Button btnConectar, btnDesconectar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,20 +19,21 @@ public class ConfigActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
         controle = (Controle)params.getSerializable("controle");
-        edtIP = (EditText)findViewById(R.id.edtIP);
-        edtIP.setText(controle.getServerIp());
-        edtPorta = (EditText)findViewById(R.id.edtPorta);
-        edtPorta.setText(controle.getServerPort() + "");
+        edtAdress = (EditText)findViewById(R.id.edtAddress);
+        edtAdress.setText(Controle.macAdress);
         btnConectar = (Button)findViewById(R.id.btnConectar);
         btnDesconectar = (Button)findViewById(R.id.btnDesconectar);
         btnConectar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (controle.conectar()) {
+                if (controle.conectar(false)) {
                     Intent intent = new Intent(ConfigActivity.this, MainActivity.class);
                     Bundle params = new Bundle();
                     params.putSerializable("controle", controle);
                     intent.putExtras(params);
+
+                    controle.desconectar(false);
+
                     startActivity(intent);
                 }
             }
@@ -40,7 +41,7 @@ public class ConfigActivity extends AppCompatActivity {
         btnDesconectar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                controle.desconectar();
+                controle.desconectar(false);
             }
         });
     }

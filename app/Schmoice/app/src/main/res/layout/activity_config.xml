@@ -19,41 +19,28 @@
         android:layout_height="wrap_content"
         android:layout_margin="25dp"
         android:orientation="horizontal">
+
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="IP:"
-            android:textSize="40dp"
-            android:layout_weight="1"/>
+            android:layout_width="713dp"
+            android:layout_height="76dp"
+            android:layout_weight="1"
+            android:text="Address:"
+            android:textSize="36sp" />
+
         <EditText
-            android:id="@+id/edtIP"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/edtAddress"
+            android:layout_width="361dp"
+            android:layout_height="136dp"
             android:layout_weight="0.25"
-            android:hint="000.000.0.00"
-            android:textSize="40dp"
-            android:textAlignment="textEnd"/>
+            android:hint="00:00:00000"
+            android:textAlignment="textEnd"
+            android:textSize="36sp" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="25dp"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Porta:"
-            android:textSize="40dp"
-            android:layout_weight="0.75"/>
-        <EditText
-            android:id="@+id/edtPorta"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:hint="00"
-            android:textSize="40dp"
-            android:textAlignment="textEnd"/>
-    </LinearLayout>
+        android:orientation="horizontal"/>
     <Button
         android:id="@+id/btnConectar"
         android:layout_width="match_parent"

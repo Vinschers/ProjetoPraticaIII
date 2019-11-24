@@ -24,6 +24,7 @@ public class ConnectionThread extends Thread{
     boolean server;
     boolean running = false;
     boolean isConnected = false;
+    Controle controle;
 
     /*  Este construtor prepara o dispositivo para atuar como servidor.
      */
@@ -36,10 +37,11 @@ public class ConnectionThread extends Thread{
         Tem como argumento uma string contendo o endereço MAC do dispositivo
     Bluetooth para o qual deve ser solicitada uma conexão.
      */
-    public ConnectionThread(String btDevAddress) {
+    public ConnectionThread(String btDevAddress, Controle controle) {
 
         this.server = false;
         this.btDevAddress = btDevAddress;
+        this.controle = controle;
     }
 
     /*  O método run() contem as instruções que serão efetivamente realizadas
@@ -196,7 +198,7 @@ public class ConnectionThread extends Thread{
                 this.isConnected = false;
             }
         }
-
+        this.isConnected = false;
     }
 
     /*  Utiliza um handler para enviar um byte array à Activity principal.
@@ -205,11 +207,32 @@ public class ConnectionThread extends Thread{
      */
     private void toMainActivity(byte[] data) {
 
-        Message message = new Message();
-        Bundle bundle = new Bundle();
-        bundle.putByteArray("data", data);
-        message.setData(bundle);
-        //JogoActivity.handler.sendMessage(message);
+        String msg = new String(data);
+
+        if (msg != null) {
+            String[] btns = msg.split(" ");
+            if (btns[0].equals("1")) {
+                controle.eventos.onOK();
+            }
+            if (btns[1].equals("1")) {
+                controle.eventos.onPraCima();
+            }
+            if (btns[2].equals("1")) {
+                controle.eventos.onMenu();
+            }
+            if (btns[3].equals("1")) {
+                controle.eventos.onPraBaixo();
+            }
+            if (btns[4].equals("1")) {
+                controle.eventos.onPraDireita();
+            }
+            if (btns[5].equals("1")) {
+                controle.eventos.onCancelar();
+            }
+            if (btns[6].equals("1")) {
+                controle.eventos.onPraEsquerda();
+            }
+        }
     }
 
     /*  Método utilizado pela Activity principal para transmitir uma mensagem ao

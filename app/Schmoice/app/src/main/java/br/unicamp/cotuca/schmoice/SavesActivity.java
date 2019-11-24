@@ -41,6 +41,7 @@ public class SavesActivity extends AppCompatActivity {
         Bundle params = intent.getExtras();
         controle = (Controle)params.getSerializable("controle");
         selecionar(false);
+        controle.conectar(false);
         controle.setEventos(new Eventos(){
             @Override
             public void onPraBaixo() {
@@ -166,6 +167,7 @@ public class SavesActivity extends AppCompatActivity {
         Bundle params = new Bundle();
         intent.putExtras(params);
         controle.setEventos(null);
+        controle.desconectar(false);
 
         params.putSerializable("controle", controle);
         params.putSerializable("jogo", jogos[ind]);

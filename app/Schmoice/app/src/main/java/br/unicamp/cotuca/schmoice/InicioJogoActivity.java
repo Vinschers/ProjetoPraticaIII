@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.TargetApi;
+import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -455,6 +456,7 @@ public class InicioJogoActivity extends AppCompatActivity {
     {
         final Button[] botoes = {btnTM, btnTP, btnFeM, btnFeP, btnSM, btnSP, btnCM, btnCP, btnFoM, btnFoP, btnFiM, btnFiP, btnIM, btnIP, btnFinalizar};
 
+        controle.conectar(false);
         controle.setEventos(new Eventos(){
             @Override
             public void onPraBaixo() {
