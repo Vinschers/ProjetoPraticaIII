@@ -71,12 +71,15 @@ public class Uteis {
     public static void escreverAnimado(final TextView tv, final TextView c, final String s, final Controle controle, final Activity act, final Runnable onFim)
     {
         String[] palavras = s.split("(?<= )");
+
         final ArrayList<String> partes = new ArrayList<String>();
         String parteAtual = "";
         int letterCount = 0;
+
         for (String palavra : palavras) {
             letterCount += palavra.length();
-            if (letterCount > 60) {
+
+            if (letterCount > 64) {
                 partes.add(parteAtual);
                 parteAtual = "";
                 letterCount = 0;
@@ -90,7 +93,7 @@ public class Uteis {
 
         final ThreadEscreverTv[] runs = new ThreadEscreverTv[partes.size()];
         for (int ind = 0; ind < partes.size(); ind -=- 1) {
-            runs[ind] = new ThreadEscreverTv(tv, partes.get(ind), ind, onFim, partes, act, c);
+            runs[ind] = new ThreadEscreverTv(tv, partes.get(ind), ind, partes.size(), act, c);
         }
 
         final Runnable avancar = new Runnable() {
@@ -102,7 +105,11 @@ public class Uteis {
                     tv.setText(partes.get(i[0]));
                 }
                 else {
-                    runs[++i[0]].start();
+                    try {
+                        runs[++i[0]].start();
+                    } catch (IndexOutOfBoundsException ex) {
+                        onFim.run();
+                    }
                 }
             }
         };

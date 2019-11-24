@@ -2,6 +2,7 @@ package br.unicamp.cotuca.schmoice;
 
 import android.annotation.SuppressLint;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,9 +11,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.media.Image;
@@ -23,12 +27,14 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -166,6 +172,7 @@ public class JogoActivity extends AppCompatActivity {
     ImageView imgCenario;
     RelativeLayout conteudoFullScreen;
     LinearLayout rlPersonagens;
+    FrameLayout llTopo;
     Button btnAvancarMinigame;
     final int btnsPorLinha = 2;
 
@@ -481,16 +488,34 @@ public class JogoActivity extends AppCompatActivity {
     public void iniciarVariaveis()
     {
         btnAvancarMinigame = (Button)         findViewById(R.id.btnAvancarMinigame);
-        tvDescricao        = (TextView)       findViewById(R.id.tvDescricao);
-        tvContinuarDesc    = (TextView)       findViewById(R.id.tvContinuarDesc);
         tvTempoMinigame1   = (TextView)       findViewById(R.id.tvTempoMinigame1);
         imgCenario         = (ImageView)      findViewById(R.id.imgCenario);
+        llTopo             = (FrameLayout)    findViewById(R.id.llTopo);
         pbVidaMinigame1    = (ProgressBar)    findViewById(R.id.pbVidaMinigame1);
         llFundoMinigame1   = (LinearLayout)   findViewById(R.id.llFundoMinigame1);
         llFundoMinigame2   = (LinearLayout)   findViewById(R.id.llFundoMinigame2);
-        llEscolhas         = (LinearLayout)   findViewById(R.id.llEscolhas);
         rlPersonagens      = (LinearLayout)   findViewById(R.id.rlPersonagens);
         conteudoFullScreen = (RelativeLayout) findViewById(R.id.conteudoFullScreen);
+
+        tvDescricao = new TextView(JogoActivity.this);
+        tvDescricao.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        tvDescricao.setTypeface(Typeface.create("monospace", Typeface.BOLD));
+        tvDescricao.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 30);
+        tvDescricao.setGravity(Gravity.CENTER_HORIZONTAL);
+
+        tvContinuarDesc = new TextView(JogoActivity.this);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        lp.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+        tvContinuarDesc.setLayoutParams(lp);
+        tvContinuarDesc.setTypeface(Typeface.create("monospace", Typeface.NORMAL));
+        tvContinuarDesc.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+        tvContinuarDesc.setText("(OK) Continuar");
+        tvContinuarDesc.setVisibility(View.INVISIBLE);
+
+        llEscolhas = new LinearLayout(JogoActivity.this);
+        llEscolhas.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        llEscolhas.setOrientation(LinearLayout.VERTICAL);
+        llEscolhas.setGravity(Gravity.CENTER_HORIZONTAL);
 
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
@@ -527,8 +552,7 @@ public class JogoActivity extends AppCompatActivity {
     public void iniciarNivel()
     {
         rlPersonagens.removeAllViews();
-        llEscolhas.removeAllViews();
-        tvDescricao.setText("");
+        llTopo.removeAllViews();
 
         nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
         imgCenario.setImageBitmap(Uteis.getImageByName(nivel.getBackground()));
@@ -543,22 +567,19 @@ public class JogoActivity extends AppCompatActivity {
         {
             case 0:
                 Uteis.escurecerFundo(imgCenario, 0.6f);
-                llFundoMinigame1.setVisibility(View.INVISIBLE);
+                llTopo.addView(tvDescricao);
+                llTopo.addView(tvContinuarDesc);
                 iniciarNivelNormal();
                 break;
 
             case 1:
-                tvDescricao.setVisibility(View.INVISIBLE);
-                llEscolhas.setVisibility(View.INVISIBLE);
-                llFundoMinigame1.setVisibility(View.VISIBLE);
+                llTopo.addView(llFundoMinigame1);
                 iniciarMinigame1();
                 break;
 
             case 2:
                 Uteis.escurecerFundo(imgCenario, 0.35f);
-                tvDescricao.setVisibility(View.INVISIBLE);
-                llFundoMinigame1.setVisibility(View.INVISIBLE);
-                llEscolhas.setVisibility(View.GONE);
+                llTopo.addView(llFundoMinigame2);
                 iniciarMinigame2();
                 break;
 
@@ -570,6 +591,9 @@ public class JogoActivity extends AppCompatActivity {
         for(int i = 0; i < nivel.getPersonagens().size(); i++) {
             Personagem personagem = nivel.getPersonagens().get(i);
             ImageView iv = new ImageView(JogoActivity.this);
+
+            personagem.setX((personagem.getX() / 632) * conteudoFullScreen.getWidth());
+            personagem.setY((personagem.getY() / 1126) * conteudoFullScreen.getHeight());
 
             iv.setImageBitmap(personagem.getBmp());
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -604,7 +628,7 @@ public class JogoActivity extends AppCompatActivity {
             final int ind = i;
             btn = new Button(JogoActivity.this);
             btn.setText(escolhas.get(i).getNome());
-            btn.setBackgroundColor(Color.argb(0.5f, 255, 255, 255));
+            btn.setBackgroundColor(Color.argb(1, 255, 255, 255));
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -667,6 +691,9 @@ public class JogoActivity extends AppCompatActivity {
         Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), controle, JogoActivity.this, new Runnable() {
             @Override
             public void run() {
+                llTopo.removeAllViews();
+                llTopo.addView(llEscolhas);
+
                 setupBtns(escolhas);
                 controle.setEventos(new Eventos(){
                     @Override

@@ -25,62 +25,49 @@
             android:gravity="center_horizontal" >
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvDescricao"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:background="#80FFFFFF"
-            android:fontFamily="monospace"
-            android:gravity="center_horizontal"
-            android:textSize="30dp"
-            android:textStyle="bold" />
-        <TextView
-            android:id="@+id/tvContinuarDesc"
-            android:layout_width="120dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="125dp"
-            android:text="(OK) Continuar"
-            android:textSize="17dp"
-            android:layout_alignParentRight="true"
-            android:textAlignment="viewEnd"
-            android:visibility="invisible"/>
-        <LinearLayout
-            android:id="@+id/llFundoMinigame1"
+        <FrameLayout
+            android:id="@+id/llTopo"
             android:layout_width="match_parent"
             android:layout_height="180dp"
-            android:layout_marginTop="20dp"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
-            <TextView
-                android:id="@+id/tvTempoMinigame1"
-                android:layout_width="362dp"
-                android:layout_height="103dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="15"
-                android:textAlignment="center"
-                android:textSize="90sp"
-                android:textStyle="bold"/>
-            <ProgressBar
-                android:id="@+id/pbVidaMinigame1"
-                style="@android:style/Widget.ProgressBar.Horizontal"
-                android:layout_width="330dp"
-                android:layout_height="46dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:max="75"
-                android:progressBackgroundTint="#ffc993"
-                android:progressTint="#AA0000"/>
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/llFundoMinigame2"
-            android:layout_width="match_parent"
-            android:layout_height="125dp"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal">
-        </LinearLayout>
+            android:background="#80FFFFFF"
+            android:gravity="center_horizontal" >
+            <LinearLayout
+                android:id="@+id/llFundoMinigame1"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:orientation="vertical"
+                android:gravity="center_horizontal">
+                <TextView
+                    android:id="@+id/tvTempoMinigame1"
+                    android:layout_width="362dp"
+                    android:layout_height="103dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="15"
+                    android:textAlignment="center"
+                    android:textSize="90sp"
+                    android:textStyle="bold"/>
+                <ProgressBar
+                    android:id="@+id/pbVidaMinigame1"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:layout_width="330dp"
+                    android:layout_height="46dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:max="75"
+                    android:progressBackgroundTint="#ffc993"
+                    android:progressTint="#AA0000"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/llFundoMinigame2"
+                android:layout_width="match_parent"
+                android:layout_height="125dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+            </LinearLayout>
+        </FrameLayout>
 
         <Button
             android:id="@+id/btnAvancarMinigame"
@@ -91,15 +78,7 @@
             android:textSize="30dp"
             android:layout_marginTop="500dp"
             android:layout_centerHorizontal="true"
-            android:visibility="invisible"/>
-
-        <LinearLayout
-            android:id="@+id/llEscolhas"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_alignParentBottom="true"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"> <!--
+            android:visibility="invisible"/><!--
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -143,8 +122,6 @@
                     android:layout_weight="0.5"
                     android:height="70dp"/>
             </LinearLayout> -->
-
-        </LinearLayout>
     </RelativeLayout>
 
     <!-- This FrameLayout insets its children based on system windows using

@@ -13,10 +13,8 @@ import java.util.TimerTask;
 public class ThreadEscreverTv extends Thread {
     final TextView tv;
     final String s;
-    final int indA;
-    final Runnable onFim;
+    final int indA, size;
     final boolean[] morto = new boolean[1];
-    final ArrayList<String> partes;
     final Activity act;
     final TextView c;
 
@@ -26,16 +24,13 @@ public class ThreadEscreverTv extends Thread {
         if (b)
         {
             Timer timer = new Timer();
-            if (indA == partes.size() - 1)
-                onFim.run();
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     act.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (indA < partes.size() - 1)
-                                c.setVisibility(View.VISIBLE);
+                            c.setVisibility(View.VISIBLE);
                         }
                     });
                 }
@@ -43,14 +38,13 @@ public class ThreadEscreverTv extends Thread {
         }
     }
 
-    public ThreadEscreverTv(TextView tv, String s, int ind, Runnable f, ArrayList<String> p, Activity a, TextView t)
+    public ThreadEscreverTv(TextView tv, String s, int ind, int p, Activity a, TextView t)
     {
         this.tv = tv;
         this.s = s;
-        onFim = f;
         indA = ind;
         morto[0] = false;
-        partes = p;
+        size = p;
         act = a;
         c = t;
     }
@@ -104,16 +98,13 @@ public class ThreadEscreverTv extends Thread {
                         if (!morto[0]) {
                             morto[0] = true;
                             Timer timer = new Timer();
-                            if (indA == partes.size() - 1)
-                                onFim.run();
                             timer.schedule(new TimerTask() {
                                 @Override
                                 public void run() {
                                     act.runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            if (indA < partes.size() - 1)
-                                                c.setVisibility(View.VISIBLE);
+                                            c.setVisibility(View.VISIBLE);
                                         }
                                     });
                                 }
