@@ -62,6 +62,14 @@ public class JogoRecebido {
         this.caminho = (ArrayList<Integer>)ClienteWS.fromJson(caminho, ArrayList.class);
     }
 
+    public ArrayList<Integer> getEscolhasImportantes() {
+        return escolhasImportantes;
+    }
+
+    public void setEscolhasImportantes(String escolhasImportantes) throws Exception {
+        this.escolhasImportantes = (ArrayList<Integer>)ClienteWS.fromJson(escolhasImportantes, ArrayList.class);
+    }
+
     public boolean isAcabouDeComecar() {
         return acabouDeComecar;
     }
@@ -132,6 +140,7 @@ public class JogoRecebido {
     int rotaAtual;
     String ip;
     ArrayList<Integer> caminho;
+    ArrayList<Integer> escolhasImportantes;
     boolean acabouDeComecar;
     double tranquilidade, felicidade, financas, forca, inteligencia, sanidade, carisma;
 }

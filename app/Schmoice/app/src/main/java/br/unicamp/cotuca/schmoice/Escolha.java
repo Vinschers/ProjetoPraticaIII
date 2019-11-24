@@ -7,7 +7,6 @@ public class Escolha implements Serializable {
     private String nome;
     private int paraOndeIr;
     private double[] statusPlayer;
-    private double[] statusAmizades;
     private int statusFase;
     private int importancia;
     private int posImportancia;

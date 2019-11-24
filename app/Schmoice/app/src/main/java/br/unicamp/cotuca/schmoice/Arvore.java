@@ -74,11 +74,15 @@ public class Arvore implements Serializable {
                 aux.getProxs().add(new No(null, null));
             aux = aux.getProxs().get(i);
         }
-        int ind = fase.getCaminhoFase().get(fase.getCaminhoFase().size() - 1);
-        if (aux.getProxs().get(ind) == null)
-            aux.getProxs().add(new No(fase, null));
-        else
-            aux.getProxs().get(ind).setFase(fase);
+        try {
+            int ind = fase.getCaminhoFase().get(fase.getCaminhoFase().size() - 1);
+            if (aux.getProxs().get(ind) == null)
+                aux.getProxs().add(new No(fase, null));
+            else
+                aux.getProxs().get(ind).setFase(fase);
+        } catch (Exception e) {
+            raiz = new No(fase, null);
+        }
     }
 
     public ArrayList<Integer> getCaminho() {
