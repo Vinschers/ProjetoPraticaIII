@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rlTranquilidade"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <View
+            android:id="@+id/swipeable_view"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorAccent"/>
+    </RelativeLayout><!--<![CDATA[<br />]]><![CDATA[<br />]]>
+    <RelativeLayout
+        android:id="@+id/rlFelicidade"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+        <View
+            android:id="@+id/swipeable_view"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorAccent"/>
+    </RelativeLayout><![CDATA[<br />]]><![CDATA[<br />]]>
+    <RelativeLayout
+        android:id="@+id/rlSanidade"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+        <View
+            android:id="@+id/swipeable_view"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorAccent"/>
+    </RelativeLayout><![CDATA[<br />]]><![CDATA[<br />]]>
+    <RelativeLayout
+        android:id="@+id/rlFinancas"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+        <View
+            android:id="@+id/swipeable_view"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorAccent"/>
+    </RelativeLayout><![CDATA[<br />]]><![CDATA[<br />]]>
+    <RelativeLayout
+        android:id="@+id/rlInteligencia"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+        <View
+            android:id="@+id/swipeable_view"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorAccent"/>
+    </RelativeLayout><![CDATA[<br />]]><![CDATA[<br />]]>
+    <RelativeLayout
+        android:id="@+id/rlCarisma"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+        <View
+            android:id="@+id/swipeable_view"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorAccent"/>
+    </RelativeLayout><![CDATA[<br />]]><![CDATA[<br />]]>
+    <RelativeLayout
+        android:id="@+id/rlForca"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+        <View
+            android:id="@+id/swipeable_view"
+            android:layout_width="?attr/actionBarSize"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorAccent"/>
+    </RelativeLayout><![CDATA[<br />]]><![CDATA[<br />]]>-->
+
+    <Button
+        android:id="@+id/btnContinuar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Continuar"
+        android:textSize="25dp"
+        android:layout_gravity="center_horizontal"/>
+
+</LinearLayout>

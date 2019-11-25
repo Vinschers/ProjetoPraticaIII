@@ -43,8 +43,9 @@ public class Arvore implements Serializable {
     public void atualizarFaseAtual() {
         if (faseAtual == null) {
             faseAtual = raiz;
+            faseAtual.getFase().setPlayerAntigo(jogo.getPlayer());
         }
-        else if (faseAtual.getFase().isTerminada()) {
+        if (faseAtual.getFase().isTerminada()) {
             for(int i = 0; i < faseAtual.getProxs().size(); i++)
             {
                 if (faseAtual.getProxs().get(i).getFase().getReqs().serve(jogo.getEscolhasImportantes()))
@@ -57,7 +58,10 @@ public class Arvore implements Serializable {
         }
     }
     public Fase getFaseAtual() {
-        atualizarFaseAtual();
+        if (faseAtual == null) {
+            faseAtual = raiz;
+            faseAtual.getFase().setPlayerAntigo(jogo.getPlayer());
+        }
         return faseAtual.getFase();
     }
 
