@@ -19,7 +19,6 @@ import android.widget.Toast;
 import java.util.Set;
 
 public class ConfigActivity extends AppCompatActivity {
-    Controle controle;
     EditText edtAdress;
     Button btnConectar, btnDesconectar;
     boolean tentandoConectar = false;
@@ -29,7 +28,6 @@ public class ConfigActivity extends AppCompatActivity {
         setContentView(R.layout.activity_config);
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
-        controle = (Controle)params.getSerializable("controle");
         edtAdress = (EditText)findViewById(R.id.edtAddress);
         edtAdress.setText(Controle.macAdress);
         btnConectar = (Button)findViewById(R.id.btnConectar);
@@ -42,28 +40,30 @@ public class ConfigActivity extends AppCompatActivity {
                         @Override
                         public void handleMessage(@NonNull Message msg) {
                             if (msg.what == 0) {
-                                Intent intent = new Intent(ConfigActivity.this, MainActivity.class);
-                                Bundle params = new Bundle();
-                                params.putSerializable("controle", controle);
-                                intent.putExtras(params);
+                                if (tentandoConectar) {
+                                    Intent intent = new Intent(ConfigActivity.this, MainActivity.class);
 
-                                controle.desconectar(false);
+                                    Toast.makeText(ConfigActivity.this, "Conexão estabelecida", Toast.LENGTH_SHORT).show();
 
-                                startActivity(intent);
-                            } else
+                                    startActivity(intent);
+                                }
+
+                                //startActivity(intent);
+                            }
+                            else
                                 Toast.makeText(ConfigActivity.this, "Erro na conexão com o Bluetooth", Toast.LENGTH_SHORT).show();
                             tentandoConectar = false;
                         }
                     };
                     tentandoConectar = true;
-                    controle.conectar(handlerConexao);
+                    Uteis.controle.conectar(handlerConexao);
                 }
             }
         });
         btnDesconectar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                controle.desconectar(false);
+                Uteis.controle.desconectar(false);
             }
         });
     }

@@ -1,5 +1,6 @@
 package br.unicamp.cotuca.schmoice;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
@@ -7,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -22,10 +24,13 @@ import android.graphics.drawable.shapes.RectShape;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -175,10 +180,10 @@ public class JogoActivity extends AppCompatActivity {
     FrameLayout llTopo;
     Button btnAvancarMinigame;
     final int btnsPorLinha = 2;
+    boolean teste = false;
 
     Jogo jogo;
     Nivel nivel;
-    Controle controle;
 
     //region Nivel normal
     TextView tvDescricao, tvContinuarDesc;
@@ -438,7 +443,7 @@ public class JogoActivity extends AppCompatActivity {
         @Override
         public void setOnClickListener(@Nullable OnClickListener l) {
             super.setOnClickListener(l);
-            controle.eventos.onOK();
+            Uteis.controle.eventos.onOK();
         }
 
         @Override
@@ -520,8 +525,103 @@ public class JogoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
         jogo = (Jogo)params.getSerializable("jogo");
-        controle = (Controle)params.getSerializable("controle");
-        controle.conectar();
+    }
+
+    public void atualizarFase()
+    {
+        Fase atual = jogo.getFaseAtual();
+        jogo.getArvore().atualizarFaseAtual();
+        Fase nova = jogo.getArvore().getFaseAtual();
+
+        //if (!atual.equals(nova))
+        if (teste)
+        {
+            final Player pAnt = atual.getPlayerAntigo();
+            final Player pNovo = jogo.getPlayer();
+
+            final Dialog dialog = new Dialog(JogoActivity.this);
+            View view = getLayoutInflater().inflate(R.layout.status_dialog, null);
+            dialog.setContentView(view);
+
+            ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.pb0);
+            ObjectAnimator progressAnimator = ObjectAnimator.ofInt(mProgressBar, "progress", 100000, 0);
+            progressAnimator.setDuration(30000);
+            progressAnimator.setInterpolator(new LinearInterpolator());
+            progressAnimator.start();
+
+            /*final SwipeCoordinator scCarisma = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlCarisma), SwipeDirection.LEFT_TO_RIGHT);
+            scCarisma.setThreshold((float)pAnt.getCarisma());
+
+            final SwipeCoordinator scFelicidade = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlFelicidade), SwipeDirection.LEFT_TO_RIGHT);
+            scFelicidade.setThreshold((float)pAnt.getFelicidade());
+
+            final SwipeCoordinator scFinancas = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlFinancas), SwipeDirection.LEFT_TO_RIGHT);
+            scFinancas.setThreshold((float)pAnt.getFinancas());
+
+            final SwipeCoordinator scForca = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlForca), SwipeDirection.LEFT_TO_RIGHT);
+            scForca.setThreshold((float)pAnt.getForca());
+
+            final SwipeCoordinator scInteligencia = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlInteligencia), SwipeDirection.LEFT_TO_RIGHT);
+            scInteligencia.setThreshold((float)pAnt.getInteligencia());
+
+            final SwipeCoordinator scSanidade = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlSanidade), SwipeDirection.LEFT_TO_RIGHT);
+            scSanidade.setThreshold((float)pAnt.getSanidade());
+
+            final SwipeCoordinator scTranquilidade = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlTranquilidade), SwipeDirection.LEFT_TO_RIGHT);
+            scTranquilidade.setThreshold((float)pAnt.getTranquilidade());*/
+
+            final Handler handler = new Handler()
+            {
+                @Override
+                public void handleMessage(@NonNull Message msg) {
+                    super.handleMessage(msg);
+                    if (msg.what != 0)
+                        return;
+
+                    /*scCarisma.setVariancePercentage((float)(pNovo.getCarisma() - pAnt.getCarisma()));
+                    scFelicidade.setVariancePercentage((float)(pNovo.getCarisma() - pAnt.getCarisma()));
+                    scFinancas.setVariancePercentage((float)(pNovo.getFinancas() - pAnt.getFinancas()));
+                    scForca.setVariancePercentage((float)(pNovo.getForca() - pAnt.getForca()));
+                    scInteligencia.setVariancePercentage((float)(pNovo.getInteligencia() - pAnt.getInteligencia()));
+                    scSanidade.setVariancePercentage((float)(pNovo.getSanidade() - pAnt.getSanidade()));
+                    scTranquilidade.setVariancePercentage((float)(pNovo.getTranquilidade() - pAnt.getTranquilidade()));*/
+
+                    /*scCarisma.setVariancePercentage(0.4f);
+                    scFelicidade.setVariancePercentage(0.4f);
+                    scFinancas.setVariancePercentage(0.4f);
+                    scForca.setVariancePercentage(0.4f);
+                    scInteligencia.setVariancePercentage(0.4f);
+                    scSanidade.setVariancePercentage(0.4f);
+                    scTranquilidade.setVariancePercentage(0.4f);*/
+                }
+            };
+
+            jogo.getArvore().getFaseAtual().setPlayerAntigo(pNovo);
+
+            Uteis.setTimeout(new Runnable() {
+                @Override
+                public void run() {
+                    JogoActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            handler.sendEmptyMessage(0);
+                        }
+                    });
+                }
+            }, 500);
+
+            Button dialogButton = (Button) dialog.findViewById(R.id.btnContinuar);
+
+            dialogButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                    hide();
+                }
+            });
+
+            dialog.show();
+        }
     }
 
     @Override
@@ -554,6 +654,9 @@ public class JogoActivity extends AppCompatActivity {
     {
         rlPersonagens.removeAllViews();
         llTopo.removeAllViews();
+
+        atualizarFase();
+        //teste = true;
 
         nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
         imgCenario.setImageBitmap(Uteis.getImageByName(nivel.getBackground()));
@@ -610,6 +713,7 @@ public class JogoActivity extends AppCompatActivity {
         }
     }
 
+    //region botões
     public void setupBtns(final ArrayList<Escolha> escolhas)
     {
         Button btn;
@@ -660,43 +764,63 @@ public class JogoActivity extends AppCompatActivity {
 
     private void desselecionar()
     {
-        for(int i = 0; i < llEscolhas.getChildCount(); i -=- 1)
-        {
-            LinearLayout ll = (LinearLayout)llEscolhas.getChildAt(i);
-            for (int j = 0; j < ll.getChildCount(); j -=- 1)
-            {
-                ll.getChildAt(j).setBackground(null);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i < llEscolhas.getChildCount(); i -=- 1)
+                {
+                    LinearLayout ll = (LinearLayout)llEscolhas.getChildAt(i);
+                    for (int j = 0; j < ll.getChildCount(); j -=- 1)
+                    {
+                        ll.getChildAt(j).setBackground(null);
+                    }
+                }
             }
-        }
+        });
+
     }
 
-    public void selecionar(boolean focus)
+    public void selecionar(final boolean focus)
     {
         desselecionar();
         int y = btnAtual[0], x = btnAtual[1];
-        Button btn = (Button)((LinearLayout)llEscolhas.getChildAt(y)).getChildAt(x);
+        final Button btn = (Button)((LinearLayout)llEscolhas.getChildAt(y)).getChildAt(x);
 
-        if (focus) {
-            btn.findFocus();
-        }
-        ShapeDrawable shapedrawable = new ShapeDrawable();
-        shapedrawable.setShape(new RectShape());
-        shapedrawable.getPaint().setColor(Uteis.corSelecionado);
-        shapedrawable.getPaint().setStrokeWidth(10f);
-        shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
-        btn.setBackground(shapedrawable);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (focus) {
+                    btn.findFocus();
+                }
+                ShapeDrawable shapedrawable = new ShapeDrawable();
+                shapedrawable.setShape(new RectShape());
+                shapedrawable.getPaint().setColor(Uteis.corSelecionado);
+                shapedrawable.getPaint().setStrokeWidth(10f);
+                shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
+                btn.setBackground(shapedrawable);
+            }
+        });
+
     }
+    //endregion
 
     public void iniciarNivelNormal()
     {
-        Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), controle, JogoActivity.this, new Runnable() {
+        Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), Uteis.controle, JogoActivity.this, new Runnable() {
             @Override
             public void run() {
-                llTopo.removeAllViews();
-                llTopo.addView(llEscolhas);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        llTopo.removeAllViews();
+                        llEscolhas.removeAllViews();
+                        llTopo.addView(llEscolhas);
 
-                setupBtns(escolhas);
-                controle.setEventos(new Eventos(){
+                        setupBtns(escolhas);
+                    }
+                });
+
+                Uteis.controle.setEventos(new Eventos(){
                     @Override
                     public void onPraCima() {
                         btnAtual[0]--;
@@ -740,16 +864,16 @@ public class JogoActivity extends AppCompatActivity {
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                controle.eventos.onOK();
+                Uteis.controle.eventos.onOK();
             }
         });
-        controle.setEventos(new Eventos(){
+        Uteis.controle.setEventos(new Eventos(){
             @Override
             public void onOK() {
                 new Handler().post(new Runnable() {
                     @Override
                     public void run() {
-                        if (!tvTempoMinigame1.getText().equals("Ganhou!") && !tvTempoMinigame1.getText().equals("Perdeu!"))
+                        if (!tvTempoMinigame1.getText().equals("Ganhou!") && !tvTempoMinigame1.getText().equals("Perdeu!") && pbVidaMinigame1.getProgress() != pbVidaMinigame1.getMax())
                             pbVidaMinigame1.incrementProgressBy(1); // TIRAR DEPOIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                     }
                 });
@@ -787,7 +911,7 @@ public class JogoActivity extends AppCompatActivity {
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                controle.eventos.onOK();
+                Uteis.controle.eventos.onOK();
             }
         });
 
@@ -821,7 +945,7 @@ public class JogoActivity extends AppCompatActivity {
 
         threadMinigame2 = new Thread(new ThreadMinigame2(canvas));
 
-        controle.setEventos(new Eventos(){
+        Uteis.controle.setEventos(new Eventos(){
             @Override
             public void onOK() {
                 ObjetoMinigame obj = getObjetoAtual();
@@ -881,11 +1005,7 @@ public class JogoActivity extends AppCompatActivity {
         if (threadMinigame2 != null)
             threadMinigame2.interrupt();
         Intent intent = new Intent(JogoActivity.this, SavesActivity.class);
-        Bundle params = new Bundle();
-        controle.setEventos(null);
-        controle.desconectar(false);
-        params.putSerializable("controle", controle);
-        intent.putExtras(params);
+        Uteis.controle.setEventos(null);
         startActivity(intent);
     }
 }

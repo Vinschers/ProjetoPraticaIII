@@ -18,26 +18,20 @@ import java.util.concurrent.Callable;
 
 public class MainActivity extends AppCompatActivity {
     Button btnJogar, btnConfig;
-    Controle controle;
     Context context;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent = getIntent();
-        Bundle params = intent.getExtras();
-        try{
-            controle = (Controle)params.getSerializable("controle");
-        } catch (Exception e) {}
+
         btnJogar = (Button)findViewById(R.id.btnJogar);
         btnConfig = (Button)findViewById(R.id.btnConfig);
         context = MainActivity.this;
         btnJogar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (controle != null && controle.funcionando) {
+                if (Uteis.controle != null && Uteis.controle.funcionando) {
                     Jogar();
                 } else {
                     new AlertDialog.Builder(context)
@@ -64,17 +58,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void Jogar() {
         Intent intent = new Intent(MainActivity.this, SavesActivity.class);
-        Bundle params = new Bundle();
-        params.putSerializable("controle", controle);
-        intent.putExtras(params);
         startActivity(intent);
     }
     private void Configuracoes() {
+        if (Uteis.controle == null)
+            Uteis.controle = new Controle();
+
         Intent intent = new Intent(MainActivity.this, ConfigActivity.class);
-        Bundle params = new Bundle();
-        controle = new Controle();
-        params.putSerializable("controle", controle);
-        intent.putExtras(params);
         startActivity(intent);
     }
 }

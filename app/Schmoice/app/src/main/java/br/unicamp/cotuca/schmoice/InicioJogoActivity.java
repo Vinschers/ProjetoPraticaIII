@@ -129,7 +129,7 @@ public class InicioJogoActivity extends AppCompatActivity {
     }
 
     private void toggle() {
-        controle.eventos.onOK(); // TIRAR DEPOIS!!!!!
+        Uteis.controle.eventos.onOK(); // TIRAR DEPOIS!!!!!
         if (mVisible) {
             hide();
         //} else {
@@ -190,7 +190,6 @@ public class InicioJogoActivity extends AppCompatActivity {
     TextView tvExplicacao, tvTranquilidade, tvFelicidade, tvSanidade, tvCarisma, tvFinancas, tvForca, tvInteligencia, tvRestantes;
     Button btnFinalizar, btnTP, btnTM, btnFeP, btnFeM, btnSP, btnSM, btnCP, btnCM, btnFiP, btnFiM, btnFoP, btnFoM, btnIP, btnIM;
     ThreadRedimensionar resizeLL;
-    Controle controle;
     ConstraintLayout clAtributos;
     Fase[] fases;
 
@@ -443,7 +442,6 @@ public class InicioJogoActivity extends AppCompatActivity {
                         escreverAnimado(tvExplicacao, s);
                     }
                 }, 1000);
-        controle = (Controle) getIntent().getExtras().getSerializable("controle");
         slotEnviado = getIntent().getExtras().getInt("slot", 0);
         fases = (Fase[]) getIntent().getExtras().getSerializable("fases");
 
@@ -458,48 +456,19 @@ public class InicioJogoActivity extends AppCompatActivity {
     {
         final Button[] botoes = {btnTM, btnTP, btnFeM, btnFeP, btnSM, btnSP, btnCM, btnCP, btnFoM, btnFoP, btnFiM, btnFiP, btnIM, btnIP, btnFinalizar};
 
-        controle.conectar();
-        controle.setEventos(new Eventos(){
+        Uteis.controle.setEventos(new Eventos(){
             @Override
             public void onPraBaixo() {
                 desselecionar(botoes[atual], false);
 
-                boolean jaSelecionou = false;
-                int indiceSelecionadoA = atual, indiceSelecionadoB = atual;
-
-                for (int i = atual; i < botoes.length; i += 2)
-                    if (botoes[i].isEnabled())
-                    {
-                        jaSelecionou = true;
-                        indiceSelecionadoA = i;
-                        break;
-                    }
-                for (int i = (atual % 2 == 0 ? 0: 1); i < atual && !jaSelecionou; i+=2)
-                    if (botoes[i].isEnabled()) {
-                        indiceSelecionadoA = i;
-                        break;
-                    }
-
-                jaSelecionou = false;
-
-                for (int i = atual + 1; i < botoes.length; i += 2)
-                    if (botoes[i].isEnabled() && (indiceSelecionadoA < atual || i - atual < indiceSelecionadoA - atual))
-                    {
-                        jaSelecionou = true;
-                        indiceSelecionadoB = i;
-                        break;
-                    }
-                for (int i = (atual % 2 == 0 ? 1: 0); i < botoes.length && !jaSelecionou && indiceSelecionadoA < atual; i += 2)
-                    if (botoes[i].isEnabled() && atual - i < atual - indiceSelecionadoA)
-                    {
-                        jaSelecionou = true;
-                        indiceSelecionadoB = i;
-                        break;
-                    }
-                if (jaSelecionou)
-                    atual = indiceSelecionadoB < atual && btnFinalizar.isEnabled()? botoes.length - 1 : indiceSelecionadoB;
+                if (atual >= botoes.length - 3) {
+                    if (atual == botoes.length - 1 || !btnFinalizar.isEnabled())
+                        atual = atual % 2 == 0 ? 0 : 1;
+                    else
+                        atual = botoes.length - 1;
+                }
                 else
-                    atual = indiceSelecionadoA < atual && btnFinalizar.isEnabled()? botoes.length - 1 : indiceSelecionadoA;
+                    atual += 2;
 
                 selecionar(botoes[atual],false);
             }
@@ -508,42 +477,14 @@ public class InicioJogoActivity extends AppCompatActivity {
             public void onPraCima() {
                 desselecionar(botoes[atual], false);
 
-                boolean jaSelecionou = false;
-                int indiceSelecionadoA = atual, indiceSelecionadoB = atual;
-
-                for (int i = atual; i >= 0; i -= 2)
-                    if (botoes[i].isEnabled())
-                    {
-                        jaSelecionou = true;
-                        indiceSelecionadoA = i;
-                        break;
-                    }
-                for (int i = (atual % 2 == 0 ? botoes.length - 2: botoes.length - 1); i > atual && !jaSelecionou; i -= 2)
-                    if (botoes[i].isEnabled()) {
-                        indiceSelecionadoA = i;
-                        break;
-                    }
-
-                jaSelecionou = false;
-
-                for (int i = atual - 1; i >= 0; i -= 2)
-                    if (botoes[i].isEnabled() && (indiceSelecionadoA > atual || i - atual > indiceSelecionadoA - atual))
-                    {
-                        jaSelecionou = true;
-                        indiceSelecionadoB = i;
-                        break;
-                    }
-                for (int i = (atual % 2 == 0 ? botoes.length - 1: botoes.length - 2); i >= 0 && !jaSelecionou && indiceSelecionadoA > atual; i -= 2)
-                    if (botoes[i].isEnabled() && atual - i > atual - indiceSelecionadoA)
-                    {
-                        jaSelecionou = true;
-                        indiceSelecionadoB = i;
-                        break;
-                    }
-                if (jaSelecionou)
-                    atual = indiceSelecionadoB > atual && btnFinalizar.isEnabled()? botoes.length - 1 : indiceSelecionadoB;
+                if (atual < 2) {
+                    if (btnFinalizar.isEnabled())
+                        atual = botoes.length - 1;
+                    else
+                        atual = botoes.length - 2 - (atual % 2 == 0 ? 1 : 0);
+                }
                 else
-                    atual = indiceSelecionadoA > atual && btnFinalizar.isEnabled()? botoes.length - 1 : indiceSelecionadoA;
+                    atual -= 2;
 
                 selecionar(botoes[atual],false);
             }
@@ -552,12 +493,12 @@ public class InicioJogoActivity extends AppCompatActivity {
             public void onPraEsquerda() {
                 if (atual != botoes.length - 1)
                 {
-                    if (atual % 2 == 1 && botoes[atual - 1].isEnabled())
+                    if (atual % 2 == 1)
                     {
                         desselecionar(botoes[atual], false);
                         selecionar(botoes[--atual], false);
                     }
-                    else if (atual % 2 == 0 && botoes[atual + 1].isEnabled())
+                    else
                     {
                         desselecionar(botoes[atual], false);
                         selecionar(botoes[++atual], false);
@@ -567,20 +508,26 @@ public class InicioJogoActivity extends AppCompatActivity {
 
             @Override
             public void onPraDireita() {
-                controle.eventos.onPraEsquerda();
+                Uteis.controle.eventos.onPraEsquerda();
             }
 
             @Override
             public void onOK() {
-                if (resizeLL.isAlive())
-                {
-                    llExplicacao.setVisibility(View.GONE);
-                    clarearFundo();
-                    resizeLL.matar();
-                    clAtributos.setVisibility(View.VISIBLE);
-                }
-                else if (botoes[atual].isEnabled())
-                    botoes[atual].performClick();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (resizeLL.isAlive())
+                        {
+                            llExplicacao.setVisibility(View.GONE);
+                            clarearFundo();
+                            resizeLL.matar();
+                            clAtributos.setVisibility(View.VISIBLE);
+                        }
+                        else if (botoes[atual].isEnabled())
+                            botoes[atual].performClick();
+                    }
+                });
+
             }
         });
 
@@ -618,10 +565,8 @@ public class InicioJogoActivity extends AppCompatActivity {
                 while (!reg.isMorta()) {}
 
                 Intent intent = new Intent(InicioJogoActivity.this, SavesActivity.class);
-                controle.setEventos(null);
-                controle.desconectar(false);
+                Uteis.controle.setEventos(null);
                 Bundle params = new Bundle();
-                params.putSerializable("controle", controle);
                 params.putSerializable("fases", fases);
                 intent.putExtras(params);
                 startActivity(intent);
@@ -632,20 +577,32 @@ public class InicioJogoActivity extends AppCompatActivity {
     }
 
     Drawable backgroundDefault;
-    public void desselecionar(Button botao, boolean fromFocusChange) {
-        if (!fromFocusChange)
-            botao.clearFocus();
-        botao.setBackground(backgroundDefault);
+    public void desselecionar(final Button botao, final boolean fromFocusChange) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!fromFocusChange)
+                    botao.clearFocus();
+                botao.setBackground(backgroundDefault);
+            }
+        });
+
     }
-    public void selecionar(Button botao, boolean fromFocusChange) {
-        if (!fromFocusChange)
-            botao.findFocus();
-        ShapeDrawable shapedrawable = new ShapeDrawable();
-        shapedrawable.setShape(new RectShape());
-        shapedrawable.getPaint().setColor(Color.RED);
-        shapedrawable.getPaint().setStrokeWidth(10f);
-        shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
-        botao.setBackground(shapedrawable);
+    public void selecionar(final Button botao, final boolean fromFocusChange) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!fromFocusChange)
+                    botao.findFocus();
+                ShapeDrawable shapedrawable = new ShapeDrawable();
+                shapedrawable.setShape(new RectShape());
+                shapedrawable.getPaint().setColor(Color.RED);
+                shapedrawable.getPaint().setStrokeWidth(10f);
+                shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
+                botao.setBackground(shapedrawable);
+            }
+        });
+
     }
 
     private void escurecerFundo() {

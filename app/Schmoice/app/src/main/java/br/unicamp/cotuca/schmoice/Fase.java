@@ -13,6 +13,7 @@ public class Fase implements Serializable {
     private Nivel nivelAtual;
     private boolean terminada;
     private double status;
+    private Player playerAntigo;
     private int parteAtual, rotaAtual = 0;
     private Arvore arvore;
     private Requerimentos reqs;
@@ -193,5 +194,12 @@ public class Fase implements Serializable {
     }
     public void setCaminhoFase(String caminhoFase) throws Exception {
         this.caminhoFase = (ArrayList<Integer>)ClienteWS.fromJson(caminhoFase, ArrayList.class);
+    }
+
+    public Player getPlayerAntigo() {
+        return playerAntigo;
+    }
+    public void setPlayerAntigo(Player playerAntigo) {
+        this.playerAntigo = playerAntigo;
     }
 }

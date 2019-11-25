@@ -421,7 +421,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:enabled="true"
+                android:enabled="false"
                 android:text="Finalizar"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="parent"

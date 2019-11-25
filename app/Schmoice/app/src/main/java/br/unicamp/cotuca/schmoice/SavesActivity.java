@@ -29,7 +29,6 @@ public class SavesActivity extends AppCompatActivity {
 
     Jogo jogos[] = new Jogo[maxJogos];
     Button[] btns = new Button[maxJogos];
-    Controle controle;
     int atual = 0;
     Fase[] fases;
     SavesActivity este = this;
@@ -42,100 +41,14 @@ public class SavesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_saves);
         llCarregando = findViewById(R.id.llCarregando);
         llPrincipal = findViewById(R.id.llPrincipal);
-        jogos = getJogos();
+
         btns[0] = (Button)findViewById(R.id.btnJogo1);
         btns[1] = (Button)findViewById(R.id.btnJogo2);
         btns[2] = (Button)findViewById(R.id.btnJogo3);
 
-        Intent intent = getIntent();
-        Bundle params = intent.getExtras();
-        try {
-            fases = (Fase[]) params.getSerializable("fases");
-        }
-        catch (Exception ex) {fases = null; }
-
-        controle = (Controle)params.getSerializable("controle");
-        selecionar(false);
-        controle.conectar();
-
-        controle.setEventos(new Eventos(){
-            @Override
-            public void onPraBaixo() {
-                desselecionar(false);
-                if (atual < 3) {
-                    atual++;
-                } else {
-                    atual = 0;
-                }
-                selecionar(false);
-            }
-
-            @Override
-            public void onPraCima() {
-                desselecionar(false);
-                if (atual > -1) {
-                    atual--;
-                } else {
-                    atual = 2;
-                }
-                selecionar(false);
-            }
-
-            @Override
-            public void onOK() {
-                btns[atual].performClick();
-            }
-
-            @Override
-            public void onCancelar() {
-                if (jogos[atual] != null && !jogos[atual].getAcabouDeComecar())
-                new AlertDialog.Builder(este)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle("Removendo save")
-                        .setMessage("Tem certeza que deseja remover este save?")
-                        .setPositiveButton("Sim", new DialogInterface.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                int id = jogos[atual].getId();
-                                Deletor d = new Deletor(id);
-                                d.start();
-                                while (!d.isMorta());
-                                btns[atual].setText("Novo Jogo");
-                                jogos[atual] = new Jogo();
-                            }
-
-                        })
-                        .setNegativeButton("Não", null)
-                        .show();
-            }
-        });
-        for (int i = 0; i < maxJogos; i++) {
-            if (jogos[i] == null)
-                btns[i].setText("Novo Jogo");
-            final int index = i;
-            btns[i].setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View view, boolean b) {
-                    desselecionar(true);
-                    atual = index;
-                    selecionar(true);
-                }
-            });
-            btns[i].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (jogos[index] != null)
-                        carregarJogo(index);
-                    else {
-                        jogos[index] = new Jogo();
-                        carregarJogo(index);
-                    }
-                }
-            });
-        }
+        getJogos();
     }
-    public Jogo[] getJogos() {
+    public void getJogos() {
         try {
             final Consultor consultor = new Consultor();
             handlerTerminouDeCarregar = new Handler() {
@@ -148,7 +61,7 @@ public class SavesActivity extends AppCompatActivity {
                                 fases = consultor.getFases();
                             Jogo[] jogosObtidos = consultor.getJogos();
 
-                            for (int i = 0; i < jogosObtidos.length; i++)
+                            for (int i = 0; i < jogosObtidos.length; i++) {
                                 if (jogosObtidos[i] != null) {
                                     jogos[i] = jogosObtidos[i];
                                     for (Fase f : fases) {
@@ -160,8 +73,95 @@ public class SavesActivity extends AppCompatActivity {
                                         jogos[i].getArvore().adicionar(f);
                                     }
                                 }
+                            }
                             llCarregando.setVisibility(View.GONE);
                             llPrincipal.setVisibility(View.VISIBLE);
+                            Intent intent = getIntent();
+                            Bundle params = intent.getExtras();
+                            try {
+                                fases = (Fase[]) params.getSerializable("fases");
+                            }
+                            catch (Exception ex) {fases = null; }
+
+                            selecionar(false);
+
+                            Uteis.controle.setEventos(new Eventos(){
+                                @Override
+                                public void onPraBaixo() {
+                                    atual++;
+                                    if (atual > 2)
+                                        atual = 0;
+                                    selecionar(true);
+                                }
+
+                                @Override
+                                public void onPraCima() {
+                                    atual--;
+                                    if (atual < 0)
+                                        atual = 3;
+                                    selecionar(true);
+                                }
+
+                                @Override
+                                public void onOK() {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                             btns[atual].performClick();
+                                    }});
+                                }
+
+                                @Override
+                                public void onCancelar() {
+                                    if (jogos[atual] != null && !jogos[atual].getAcabouDeComecar())
+                                        new AlertDialog.Builder(este)
+                                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                                .setTitle("Removendo save")
+                                                .setMessage("Tem certeza que deseja remover este save?")
+                                                .setPositiveButton("Sim", new DialogInterface.OnClickListener()
+                                                {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        int id = jogos[atual].getId();
+                                                        Deletor d = new Deletor(id);
+                                                        d.start();
+                                                        while (!d.isMorta());
+                                                        runOnUiThread(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                btns[atual].setText("Novo Jogo");
+                                                        }});
+                                                        jogos[atual] = new Jogo();
+                                                    }
+
+                                                })
+                                                .setNegativeButton("Não", null)
+                                                .show();
+                                }
+                            });
+                            for (int i = 0; i < maxJogos; i++) {
+                                if (jogos[i] == null)
+                                    btns[i].setText("Novo Jogo");
+                                final int index = i;
+                                btns[i].setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                    @Override
+                                    public void onFocusChange(View view, boolean b) {
+                                        atual = index;
+                                        selecionar(false);
+                                    }
+                                });
+                                btns[i].setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        if (jogos[index] != null)
+                                            carregarJogo(index);
+                                        else {
+                                            jogos[index] = new Jogo();
+                                            carregarJogo(index);
+                                        }
+                                    }
+                                });
+                            }
                             break;
                         default:
                             break;
@@ -173,22 +173,32 @@ public class SavesActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return jogos;
     }
-    public void desselecionar(boolean fromFocusChange) {
-        if (!fromFocusChange)
-            btns[atual].clearFocus();
-        btns[atual].setBackground(null);
+    public void desselecionar() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i < btns.length; i++)
+                    btns[i].setBackgroundResource(android.R.drawable.btn_default);
+        }});
     }
-    public void selecionar(boolean fromFocusChange) {
-        if (!fromFocusChange)
-            btns[atual].findFocus();
-        ShapeDrawable shapedrawable = new ShapeDrawable();
-        shapedrawable.setShape(new RectShape());
-        shapedrawable.getPaint().setColor(Uteis.corSelecionado);
-        shapedrawable.getPaint().setStrokeWidth(10f);
-        shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
-        btns[atual].setBackground(shapedrawable);
+    public void selecionar(final boolean focus) {
+        desselecionar();
+        final Button btn = btns[atual];
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (focus)
+                    btn.findFocus();
+
+                ShapeDrawable shapedrawable = new ShapeDrawable();
+                shapedrawable.setShape(new RectShape());
+                shapedrawable.getPaint().setColor(Uteis.corSelecionado);
+                shapedrawable.getPaint().setStrokeWidth(10f);
+                shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
+                btns[atual].setBackground(shapedrawable);
+        }});
     }
 
     public void carregarJogo(int ind) {
@@ -199,10 +209,8 @@ public class SavesActivity extends AppCompatActivity {
             intent = new Intent(SavesActivity.this, JogoActivity.class);
         Bundle params = new Bundle();
         intent.putExtras(params);
-        controle.setEventos(null);
-        controle.desconectar(false);
+        Uteis.controle.setEventos(null);
 
-        params.putSerializable("controle", controle);
         params.putSerializable("jogo", jogos[ind]);
         if (jogos[ind].getAcabouDeComecar())
             params.putSerializable("fases", fases);
@@ -217,7 +225,6 @@ public class SavesActivity extends AppCompatActivity {
     {
         Fase[] fasesObtidas;
         Jogo[] jogosObtidos;
-
 
         @Override
         protected Integer doInBackground(Boolean... obterFases) {
