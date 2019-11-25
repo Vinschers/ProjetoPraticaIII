@@ -29,7 +29,6 @@ public class SavesActivity extends AppCompatActivity {
 
     Jogo jogos[] = new Jogo[maxJogos];
     Button[] btns = new Button[maxJogos];
-    Controle controle;
     int atual = 0;
     Fase[] fases;
     SavesActivity este = this;
@@ -84,11 +83,9 @@ public class SavesActivity extends AppCompatActivity {
                             }
                             catch (Exception ex) {fases = null; }
 
-                            controle = (Controle)params.getSerializable("controle");
                             selecionar(false);
-                            controle.conectar();
 
-                            controle.setEventos(new Eventos(){
+                            Uteis.controle.setEventos(new Eventos(){
                                 @Override
                                 public void onPraBaixo() {
                                     atual++;
@@ -107,7 +104,11 @@ public class SavesActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onOK() {
-                                    btns[atual].performClick();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                             btns[atual].performClick();
+                                    }});
                                 }
 
                                 @Override
@@ -125,7 +126,11 @@ public class SavesActivity extends AppCompatActivity {
                                                         Deletor d = new Deletor(id);
                                                         d.start();
                                                         while (!d.isMorta());
-                                                        btns[atual].setText("Novo Jogo");
+                                                        runOnUiThread(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                btns[atual].setText("Novo Jogo");
+                                                        }});
                                                         jogos[atual] = new Jogo();
                                                     }
 
@@ -170,22 +175,30 @@ public class SavesActivity extends AppCompatActivity {
         }
     }
     public void desselecionar() {
-        for(int i = 0; i < btns.length; i++)
-            btns[i].setBackgroundResource(android.R.drawable.btn_default);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i < btns.length; i++)
+                    btns[i].setBackgroundResource(android.R.drawable.btn_default);
+        }});
     }
-    public void selecionar(boolean focus) {
+    public void selecionar(final boolean focus) {
         desselecionar();
-        Button btn = btns[atual];
+        final Button btn = btns[atual];
 
-        if (focus)
-            btn.findFocus();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (focus)
+                    btn.findFocus();
 
-        ShapeDrawable shapedrawable = new ShapeDrawable();
-        shapedrawable.setShape(new RectShape());
-        shapedrawable.getPaint().setColor(Uteis.corSelecionado);
-        shapedrawable.getPaint().setStrokeWidth(10f);
-        shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
-        btns[atual].setBackground(shapedrawable);
+                ShapeDrawable shapedrawable = new ShapeDrawable();
+                shapedrawable.setShape(new RectShape());
+                shapedrawable.getPaint().setColor(Uteis.corSelecionado);
+                shapedrawable.getPaint().setStrokeWidth(10f);
+                shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
+                btns[atual].setBackground(shapedrawable);
+        }});
     }
 
     public void carregarJogo(int ind) {
@@ -196,10 +209,8 @@ public class SavesActivity extends AppCompatActivity {
             intent = new Intent(SavesActivity.this, JogoActivity.class);
         Bundle params = new Bundle();
         intent.putExtras(params);
-        controle.setEventos(null);
-        controle.desconectar(false);
+        Uteis.controle.setEventos(null);
 
-        params.putSerializable("controle", controle);
         params.putSerializable("jogo", jogos[ind]);
         if (jogos[ind].getAcabouDeComecar())
             params.putSerializable("fases", fases);
@@ -214,7 +225,6 @@ public class SavesActivity extends AppCompatActivity {
     {
         Fase[] fasesObtidas;
         Jogo[] jogosObtidos;
-
 
         @Override
         protected Integer doInBackground(Boolean... obterFases) {
