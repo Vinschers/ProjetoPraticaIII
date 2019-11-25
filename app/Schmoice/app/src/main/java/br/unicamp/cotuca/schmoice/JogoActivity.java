@@ -1,5 +1,6 @@
 package br.unicamp.cotuca.schmoice;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
@@ -29,6 +30,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -40,9 +42,6 @@ import android.widget.TextView;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Random;
-
-import io.victoralbertos.swipe_coordinator.SwipeCoordinator;
-import io.victoralbertos.swipe_coordinator.SwipeDirection;
 
 public class JogoActivity extends AppCompatActivity {
     //region Comandos gerados automaticamente para controle de fullscreen
@@ -544,7 +543,14 @@ public class JogoActivity extends AppCompatActivity {
             final Player pNovo = jogo.getPlayer();
 
             final Dialog dialog = new Dialog(JogoActivity.this);
-            dialog.setContentView(R.layout.status_dialog);
+            View view = getLayoutInflater().inflate(R.layout.status_dialog, null);
+            dialog.setContentView(view);
+
+            ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.pb0);
+            ObjectAnimator progressAnimator = ObjectAnimator.ofInt(mProgressBar, "progress", 100000, 0);
+            progressAnimator.setDuration(30000);
+            progressAnimator.setInterpolator(new LinearInterpolator());
+            progressAnimator.start();
 
             /*final SwipeCoordinator scCarisma = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlCarisma), SwipeDirection.LEFT_TO_RIGHT);
             scCarisma.setThreshold((float)pAnt.getCarisma());
@@ -562,10 +568,10 @@ public class JogoActivity extends AppCompatActivity {
             scInteligencia.setThreshold((float)pAnt.getInteligencia());
 
             final SwipeCoordinator scSanidade = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlSanidade), SwipeDirection.LEFT_TO_RIGHT);
-            scSanidade.setThreshold((float)pAnt.getSanidade());*/
+            scSanidade.setThreshold((float)pAnt.getSanidade());
 
             final SwipeCoordinator scTranquilidade = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlTranquilidade), SwipeDirection.LEFT_TO_RIGHT);
-            scTranquilidade.setThreshold((float)pAnt.getTranquilidade());
+            scTranquilidade.setThreshold((float)pAnt.getTranquilidade());*/
 
             final Handler handler = new Handler()
             {
@@ -588,8 +594,8 @@ public class JogoActivity extends AppCompatActivity {
                     scFinancas.setVariancePercentage(0.4f);
                     scForca.setVariancePercentage(0.4f);
                     scInteligencia.setVariancePercentage(0.4f);
-                    scSanidade.setVariancePercentage(0.4f);*/
-                    scTranquilidade.setVariancePercentage(0.4f);
+                    scSanidade.setVariancePercentage(0.4f);
+                    scTranquilidade.setVariancePercentage(0.4f);*/
                 }
             };
 
