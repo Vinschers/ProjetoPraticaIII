@@ -1,17 +1,28 @@
 package br.unicamp.cotuca.schmoice;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothClass;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.util.Set;
 
 public class ConfigActivity extends AppCompatActivity {
     Controle controle;
     EditText edtAdress;
     Button btnConectar, btnDesconectar;
+    boolean tentandoConectar = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,15 +37,26 @@ public class ConfigActivity extends AppCompatActivity {
         btnConectar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (controle.conectar(false)) {
-                    Intent intent = new Intent(ConfigActivity.this, MainActivity.class);
-                    Bundle params = new Bundle();
-                    params.putSerializable("controle", controle);
-                    intent.putExtras(params);
+                if (!tentandoConectar) {
+                    Handler handlerConexao = new Handler() {
+                        @Override
+                        public void handleMessage(@NonNull Message msg) {
+                            if (msg.what == 0) {
+                                Intent intent = new Intent(ConfigActivity.this, MainActivity.class);
+                                Bundle params = new Bundle();
+                                params.putSerializable("controle", controle);
+                                intent.putExtras(params);
 
-                    controle.desconectar(false);
+                                controle.desconectar(false);
 
-                    startActivity(intent);
+                                startActivity(intent);
+                            } else
+                                Toast.makeText(ConfigActivity.this, "Erro na conexão com o Bluetooth", Toast.LENGTH_SHORT).show();
+                            tentandoConectar = false;
+                        }
+                    };
+                    tentandoConectar = true;
+                    controle.conectar(handlerConexao);
                 }
             }
         });

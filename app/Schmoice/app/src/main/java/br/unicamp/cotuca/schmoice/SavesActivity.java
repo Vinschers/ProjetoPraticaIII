@@ -11,9 +11,12 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.security.ConfirmationPrompt;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -28,20 +31,33 @@ public class SavesActivity extends AppCompatActivity {
     Button[] btns = new Button[maxJogos];
     Controle controle;
     int atual = 0;
+    Fase[] fases;
     SavesActivity este = this;
+    LinearLayout llCarregando, llPrincipal;
+    Handler handlerTerminouDeCarregar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_saves);
+        llCarregando = findViewById(R.id.llCarregando);
+        llPrincipal = findViewById(R.id.llPrincipal);
         jogos = getJogos();
         btns[0] = (Button)findViewById(R.id.btnJogo1);
         btns[1] = (Button)findViewById(R.id.btnJogo2);
         btns[2] = (Button)findViewById(R.id.btnJogo3);
+
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
+        try {
+            fases = (Fase[]) params.getSerializable("fases");
+        }
+        catch (Exception ex) {fases = null; }
+
         controle = (Controle)params.getSerializable("controle");
         selecionar(false);
-        controle.conectar(false);
+        controle.conectar();
+
         controle.setEventos(new Eventos(){
             @Override
             public void onPraBaixo() {
@@ -121,23 +137,39 @@ public class SavesActivity extends AppCompatActivity {
     }
     public Jogo[] getJogos() {
         try {
-            Consultor consultor = new Consultor();
-            consultor.start();
-            while (!consultor.isMorta()) {}
-            Fase[] fases = consultor.getFases();
-            Jogo[] jogosObtidos = consultor.getJogos();
-            for (int i = 0; i < jogosObtidos.length; i++)
-                if (jogosObtidos[i] != null) {
-                    jogos[i] = jogosObtidos[i];
-                    for (Fase f : fases) {
-                        for (ArrayList<Nivel> arr : f.getNiveis())
-                            for (Nivel n : arr) {
-                                if (n != null)
-                                    n.setParentFase(f);
-                            }
-                        jogos[i].getArvore().adicionar(f);
+            final Consultor consultor = new Consultor();
+            handlerTerminouDeCarregar = new Handler() {
+
+                @Override
+                public void handleMessage(Message msg) {
+                    switch (msg.what) {
+                        case 0:
+                            if (fases == null)
+                                fases = consultor.getFases();
+                            Jogo[] jogosObtidos = consultor.getJogos();
+
+                            for (int i = 0; i < jogosObtidos.length; i++)
+                                if (jogosObtidos[i] != null) {
+                                    jogos[i] = jogosObtidos[i];
+                                    for (Fase f : fases) {
+                                        for (ArrayList<Nivel> arr : f.getNiveis())
+                                            for (Nivel n : arr) {
+                                                if (n != null)
+                                                    n.setParentFase(f);
+                                            }
+                                        jogos[i].getArvore().adicionar(f);
+                                    }
+                                }
+                            llCarregando.setVisibility(View.GONE);
+                            llPrincipal.setVisibility(View.VISIBLE);
+                            break;
+                        default:
+                            break;
                     }
                 }
+            };
+
+            consultor.execute(fases == null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,28 +204,28 @@ public class SavesActivity extends AppCompatActivity {
 
         params.putSerializable("controle", controle);
         params.putSerializable("jogo", jogos[ind]);
+        if (jogos[ind].getAcabouDeComecar())
+            params.putSerializable("fases", fases);
+
         params.putInt("slot", ind);
         intent.putExtras(params);
         startActivity(intent);
     }
 
 
-    public class Consultor extends Thread
+    public class Consultor extends AsyncTask<Boolean, Integer, Integer>
     {
-        Fase[] fases;
+        Fase[] fasesObtidas;
         Jogo[] jogosObtidos;
 
-        boolean morta = false;
-        public boolean isMorta()
-        {
-            return morta;
-        }
 
         @Override
-        public void run() {
+        protected Integer doInBackground(Boolean... obterFases) {
             try {
                 String ipUsuario = getIPAddress(true); // IP do usuario
-                fases = (Fase[])ClienteWS.getObjeto(Fase[].class, ClienteWS.webService + "/get");
+
+                if (obterFases[0])
+                    fasesObtidas = (Fase[])ClienteWS.getObjeto(Fase[].class, ClienteWS.webService + "/get");
                 JogoRecebido[] jogosRecebidos = (JogoRecebido[])ClienteWS.getObjeto(JogoRecebido[].class, ClienteWS.webService + "/jogos/" + ipUsuario);
 
                 jogosObtidos = new Jogo[3];
@@ -224,10 +256,26 @@ public class SavesActivity extends AppCompatActivity {
                 ex.printStackTrace();
             }
             morta = true;
+
+            return 0;
         }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            // The results of the above method
+            // Processing the results here
+            handlerTerminouDeCarregar.sendEmptyMessage(0);
+        }
+
+        boolean morta = false;
+        public boolean isMorta()
+        {
+            return morta;
+        }
+
         public Fase[] getFases()
         {
-            return  fases;
+            return  fasesObtidas;
         }
         public  Jogo[] getJogos() {return  jogosObtidos; }
     }

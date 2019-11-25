@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
         btnJogar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (controle != null) {
+                if (controle != null && controle.funcionando) {
                     Jogar();
                 } else {
                     new AlertDialog.Builder(context)

@@ -21,14 +21,20 @@ void setup() {
 
 }
 
+boolean recebeuOkay = false;
+int cont = 0;
 void loop() {
-    atual = lerBtns();
-    if (!anterior || atual != anterior) {
-      Serial.println(atual);
-      bluetooth.println(atual);
-      anterior = atual;
-    }
-    delay(del);
+  atual = lerBtns();
+  if (!anterior || atual != anterior) {
+    Serial.println(atual);
+    bluetooth.println(atual);
+    anterior = atual;
+  }
+  else if (++cont == 100){
+    bluetooth.println("ok");
+    cont = 0;
+  }
+  delay(del);
 }
 
 String lerBtns() {

@@ -18,21 +18,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="25dp"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <TextView
-            android:layout_width="713dp"
+            android:layout_width="match_parent"
             android:layout_height="76dp"
             android:layout_weight="1"
             android:text="Address:"
+            android:textAlignment="center"
             android:textSize="36sp" />
 
         <EditText
             android:id="@+id/edtAddress"
-            android:layout_width="361dp"
-            android:layout_height="136dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="0.25"
-            android:hint="00:00:00000"
+            android:hint="00:00:00:00:00:00"
             android:textAlignment="textEnd"
             android:textSize="36sp" />
     </LinearLayout>

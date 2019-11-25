@@ -117,8 +117,8 @@ public class JogoActivity extends AppCompatActivity {
     private void toggle() {
         if (mVisible) {
             hide();
-        } else {
-            show();
+        //} else {
+        //    show();
         }
     }
 
@@ -496,6 +496,7 @@ public class JogoActivity extends AppCompatActivity {
         Bundle params = intent.getExtras();
         jogo = (Jogo)params.getSerializable("jogo");
         controle = (Controle)params.getSerializable("controle");
+        controle.conectar();
     }
 
     @Override
@@ -855,6 +856,7 @@ public class JogoActivity extends AppCompatActivity {
         Intent intent = new Intent(JogoActivity.this, SavesActivity.class);
         Bundle params = new Bundle();
         controle.setEventos(null);
+        controle.desconectar(false);
         params.putSerializable("controle", controle);
         intent.putExtras(params);
         startActivity(intent);

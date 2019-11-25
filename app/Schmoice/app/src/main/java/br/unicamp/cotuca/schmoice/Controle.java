@@ -17,9 +17,9 @@ import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
 
 public class Controle implements Serializable {
-    public static String macAdress = "18:E5:3935E";
+    public static String macAdress = "00:18:E5:03:93:5E";
     Eventos eventos;
-    int statusFuncionando = 0; // 1 - OK; 2 - ERRO
+    boolean funcionando = false;
     ConnectionThread conexao;
 
     public Controle(Eventos ev) {
@@ -29,14 +29,17 @@ public class Controle implements Serializable {
 
     }
 
-    public boolean conectar(boolean async) {
-        conexao = new ConnectionThread(macAdress, this);
+    public boolean conectar() {
+        conexao = new ConnectionThread(macAdress, this, null);
         conexao.start();
 
-        if (!async)
-            while (statusFuncionando == 0) {}
+        return true;
+    }
+    public boolean conectar(Handler handlerConexao) {
+        conexao = new ConnectionThread(macAdress, this, handlerConexao);
+        conexao.start();
 
-        return statusFuncionando == 1;
+        return true;
     }
     public void desconectar(boolean async) {
         conexao.running = false;

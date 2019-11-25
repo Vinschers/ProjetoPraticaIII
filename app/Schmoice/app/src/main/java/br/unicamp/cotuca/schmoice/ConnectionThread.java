@@ -5,7 +5,9 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +27,7 @@ public class ConnectionThread extends Thread{
     boolean running = false;
     boolean isConnected = false;
     Controle controle;
+    Handler handlerConexao;
 
     /*  Este construtor prepara o dispositivo para atuar como servidor.
      */
@@ -37,11 +40,12 @@ public class ConnectionThread extends Thread{
         Tem como argumento uma string contendo o endereço MAC do dispositivo
     Bluetooth para o qual deve ser solicitada uma conexão.
      */
-    public ConnectionThread(String btDevAddress, Controle controle) {
+    public ConnectionThread(String btDevAddress, Controle controle, Handler handlerConexao) {
 
         this.server = false;
         this.btDevAddress = btDevAddress;
         this.controle = controle;
+        this.handlerConexao = handlerConexao;
     }
 
     /*  O método run() contem as instruções que serão efetivamente realizadas
@@ -183,7 +187,8 @@ public class ConnectionThread extends Thread{
 
                     /*  A mensagem recebida é enviada para a Activity principal.
                      */
-                    toMainActivity(Arrays.copyOfRange(buffer, 0, bytesRead-1));
+                    if (bytesRead > 1)
+                        toMainActivity(Arrays.copyOfRange(buffer, 0, bytesRead-1));
 
                 }
 
@@ -209,7 +214,20 @@ public class ConnectionThread extends Thread{
 
         String msg = new String(data);
 
-        if (msg != null) {
+        if (msg != null && !msg.equals("---N"))
+        {
+            controle.funcionando = true;
+            if (handlerConexao != null)
+                handlerConexao.sendEmptyMessage(0);
+        }
+        else if (msg != null)
+        {
+            controle.funcionando = false;
+            if (handlerConexao != null)
+                handlerConexao.sendEmptyMessage(-1);
+        }
+        if (msg != null && !msg.equals("---N") && !msg.equals("---S") && !msg.equals("ok") && controle.eventos != null) {
+
             String[] btns = msg.split(" ");
             if (btns[0].equals("1")) {
                 controle.eventos.onOK();

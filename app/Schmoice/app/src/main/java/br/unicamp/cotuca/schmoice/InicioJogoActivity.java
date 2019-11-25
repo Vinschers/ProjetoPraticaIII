@@ -132,8 +132,8 @@ public class InicioJogoActivity extends AppCompatActivity {
         controle.eventos.onOK(); // TIRAR DEPOIS!!!!!
         if (mVisible) {
             hide();
-        } else {
-            show();
+        //} else {
+        //    show();
         }
     }
 
@@ -192,6 +192,7 @@ public class InicioJogoActivity extends AppCompatActivity {
     ThreadRedimensionar resizeLL;
     Controle controle;
     ConstraintLayout clAtributos;
+    Fase[] fases;
 
     private void atualizarPositivos(boolean ativar)
     {
@@ -444,6 +445,7 @@ public class InicioJogoActivity extends AppCompatActivity {
                 }, 1000);
         controle = (Controle) getIntent().getExtras().getSerializable("controle");
         slotEnviado = getIntent().getExtras().getInt("slot", 0);
+        fases = (Fase[]) getIntent().getExtras().getSerializable("fases");
 
         resizeLL = new ThreadRedimensionar();
         resizeLL.start();
@@ -456,7 +458,7 @@ public class InicioJogoActivity extends AppCompatActivity {
     {
         final Button[] botoes = {btnTM, btnTP, btnFeM, btnFeP, btnSM, btnSP, btnCM, btnCP, btnFoM, btnFoP, btnFiM, btnFiP, btnIM, btnIP, btnFinalizar};
 
-        controle.conectar(false);
+        controle.conectar();
         controle.setEventos(new Eventos(){
             @Override
             public void onPraBaixo() {
@@ -617,8 +619,10 @@ public class InicioJogoActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(InicioJogoActivity.this, SavesActivity.class);
                 controle.setEventos(null);
+                controle.desconectar(false);
                 Bundle params = new Bundle();
                 params.putSerializable("controle", controle);
+                params.putSerializable("fases", fases);
                 intent.putExtras(params);
                 startActivity(intent);
             }

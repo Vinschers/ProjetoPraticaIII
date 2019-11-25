@@ -4,33 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:backgroundTint="#FFFFFF"
     android:orientation="vertical"
     tools:context=".MainActivity">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_margin="25dp">
+        android:layout_margin="25dp"
+        android:background="#FFFFFF"
+        android:backgroundTint="#FFFFFF"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="fill_parent"
+            android:layout_height="864px"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="120dp"
+            android:background="@drawable/logo_schmoice" />
+
         <Button
             android:id="@+id/btnJogar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/ivLogo"
+            android:layout_marginTop="0dp"
             android:text="jogar"
-            android:textSize="32dp">
-        </Button>
+            android:textSize="32dp"></Button>
+
         <Button
             android:id="@+id/btnConfig"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/btnJogar"
             android:text="Configurar"
-            android:textSize="32dp"
-            android:layout_below="@+id/btnJogar">
-        </Button>
+            android:textSize="32dp"></Button>
 
-        <ImageView
-            android:layout_marginTop="120dp"
-            android:layout_width="fill_parent"
-            android:layout_height="864px"
-            android:background="@drawable/logo_schmoice"/>
     </RelativeLayout>
 </LinearLayout>
