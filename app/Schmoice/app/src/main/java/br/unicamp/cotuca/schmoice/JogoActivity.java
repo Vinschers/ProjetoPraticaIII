@@ -30,7 +30,10 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.Transformation;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -44,7 +47,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class JogoActivity extends AppCompatActivity {
-    //region Comandos gerados automaticamente para controle de fullscreen
+    //region Fullscreen
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -180,7 +183,6 @@ public class JogoActivity extends AppCompatActivity {
     FrameLayout llTopo;
     Button btnAvancarMinigame;
     final int btnsPorLinha = 2;
-    boolean teste = false;
 
     Jogo jogo;
     Nivel nivel;
@@ -490,6 +492,29 @@ public class JogoActivity extends AppCompatActivity {
     }
     //endregion
 
+    //region Extras
+
+    public class ProgressBarAnimation extends Animation {
+        private ProgressBar progressBar;
+        private float from;
+        private float  to;
+
+        public ProgressBarAnimation(ProgressBar progressBar, float from, float to) {
+            super();
+            this.progressBar = progressBar;
+            this.from = from;
+            this.to = to;
+        }
+
+        @Override
+        protected void applyTransformation(float interpolatedTime, Transformation t) {
+            super.applyTransformation(interpolatedTime, t);
+            float value = from + (to - from) * interpolatedTime;
+            progressBar.setProgress((int) value);
+        }
+
+    }
+
     public void iniciarVariaveis()
     {
         btnAvancarMinigame = (Button)         findViewById(R.id.btnAvancarMinigame);
@@ -527,48 +552,31 @@ public class JogoActivity extends AppCompatActivity {
         jogo = (Jogo)params.getSerializable("jogo");
     }
 
-    public void atualizarFase()
+    public void atualizarFase(final Runnable onContinuar)
     {
-        Fase atual = jogo.getFaseAtual();
+        Fase atual = jogo.getArvore().getFaseAtual();
         jogo.getArvore().atualizarFaseAtual();
         Fase nova = jogo.getArvore().getFaseAtual();
 
-        //if (!atual.equals(nova))
-        if (teste)
+        if (!atual.equals(nova))
         {
             final Player pAnt = atual.getPlayerAntigo();
             final Player pNovo = jogo.getPlayer();
+            final String[] attrs = {"tranquilidade", "sanidade", "inteligencia", "forca", "financas", "felicidade", "carisma"};
+            final int maxPb = 10000000;
 
             final Dialog dialog = new Dialog(JogoActivity.this);
-            View view = getLayoutInflater().inflate(R.layout.status_dialog, null);
-            dialog.setContentView(view);
+            dialog.setContentView(R.layout.status_dialog);
 
-            ProgressBar mProgressBar = (ProgressBar) findViewById(R.id.pb0);
-            ObjectAnimator progressAnimator = ObjectAnimator.ofInt(mProgressBar, "progress", 100000, 0);
-            progressAnimator.setDuration(30000);
-            progressAnimator.setInterpolator(new LinearInterpolator());
-            progressAnimator.start();
-
-            /*final SwipeCoordinator scCarisma = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlCarisma), SwipeDirection.LEFT_TO_RIGHT);
-            scCarisma.setThreshold((float)pAnt.getCarisma());
-
-            final SwipeCoordinator scFelicidade = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlFelicidade), SwipeDirection.LEFT_TO_RIGHT);
-            scFelicidade.setThreshold((float)pAnt.getFelicidade());
-
-            final SwipeCoordinator scFinancas = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlFinancas), SwipeDirection.LEFT_TO_RIGHT);
-            scFinancas.setThreshold((float)pAnt.getFinancas());
-
-            final SwipeCoordinator scForca = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlForca), SwipeDirection.LEFT_TO_RIGHT);
-            scForca.setThreshold((float)pAnt.getForca());
-
-            final SwipeCoordinator scInteligencia = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlInteligencia), SwipeDirection.LEFT_TO_RIGHT);
-            scInteligencia.setThreshold((float)pAnt.getInteligencia());
-
-            final SwipeCoordinator scSanidade = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlSanidade), SwipeDirection.LEFT_TO_RIGHT);
-            scSanidade.setThreshold((float)pAnt.getSanidade());
-
-            final SwipeCoordinator scTranquilidade = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlTranquilidade), SwipeDirection.LEFT_TO_RIGHT);
-            scTranquilidade.setThreshold((float)pAnt.getTranquilidade());*/
+            final LinearLayout llBarras = dialog.findViewById(R.id.llBarras);
+            for(int i = 0; i < llBarras.getChildCount() - 1; i++)
+            {
+                LinearLayout ll = (LinearLayout)llBarras.getChildAt(i);
+                ((TextView)ll.getChildAt(0)).setText(String.format("%-13s", attrs[i]));
+                ProgressBar pb = (ProgressBar)ll.getChildAt(1);
+                pb.setMax(maxPb);
+                pb.setProgress((int)(pAnt.getAttr(i) * maxPb));
+            }
 
             final Handler handler = new Handler()
             {
@@ -578,21 +586,16 @@ public class JogoActivity extends AppCompatActivity {
                     if (msg.what != 0)
                         return;
 
-                    /*scCarisma.setVariancePercentage((float)(pNovo.getCarisma() - pAnt.getCarisma()));
-                    scFelicidade.setVariancePercentage((float)(pNovo.getCarisma() - pAnt.getCarisma()));
-                    scFinancas.setVariancePercentage((float)(pNovo.getFinancas() - pAnt.getFinancas()));
-                    scForca.setVariancePercentage((float)(pNovo.getForca() - pAnt.getForca()));
-                    scInteligencia.setVariancePercentage((float)(pNovo.getInteligencia() - pAnt.getInteligencia()));
-                    scSanidade.setVariancePercentage((float)(pNovo.getSanidade() - pAnt.getSanidade()));
-                    scTranquilidade.setVariancePercentage((float)(pNovo.getTranquilidade() - pAnt.getTranquilidade()));*/
+                    for(int i = 0; i < llBarras.getChildCount() - 1; i++)
+                    {
+                        LinearLayout ll = (LinearLayout)llBarras.getChildAt(i);
+                        ProgressBar pb = (ProgressBar)ll.getChildAt(1);
 
-                    /*scCarisma.setVariancePercentage(0.4f);
-                    scFelicidade.setVariancePercentage(0.4f);
-                    scFinancas.setVariancePercentage(0.4f);
-                    scForca.setVariancePercentage(0.4f);
-                    scInteligencia.setVariancePercentage(0.4f);
-                    scSanidade.setVariancePercentage(0.4f);
-                    scTranquilidade.setVariancePercentage(0.4f);*/
+                        ObjectAnimator progressAnimator = ObjectAnimator.ofInt(pb, "progress", pb.getProgress(), (int)(pNovo.getAttr(i) * maxPb));
+                        progressAnimator.setDuration(1000);
+                        progressAnimator.setInterpolator(new LinearInterpolator());
+                        progressAnimator.start();
+                    }
                 }
             };
 
@@ -608,7 +611,7 @@ public class JogoActivity extends AppCompatActivity {
                         }
                     });
                 }
-            }, 500);
+            }, 1500);
 
             Button dialogButton = (Button) dialog.findViewById(R.id.btnContinuar);
 
@@ -617,100 +620,16 @@ public class JogoActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     dialog.dismiss();
                     hide();
+                    onContinuar.run();
                 }
             });
 
             dialog.show();
+            Window window = dialog.getWindow();
+            window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_jogo);
-
-        Uteis.setActivity(JogoActivity.this);
-
-        iniciarVariaveis();
-
-        iniciarFullscreen();
-
-        btnAvancarMinigame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                iniciarNivel();
-            }
-        });
-
-        Uteis.setTimeout(new Runnable() {
-            @Override
-            public void run() {
-                iniciarNivel();
-            }
-        }, 100);
-    }
-
-    public void iniciarNivel()
-    {
-        rlPersonagens.removeAllViews();
-        llTopo.removeAllViews();
-
-        atualizarFase();
-        //teste = true;
-
-        nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
-        imgCenario.setImageBitmap(Uteis.getImageByName(nivel.getBackground()));
-        escolhas = nivel.getEscolhas();
-
-        if (nivel.isTerminado()) {
-            exit();
-            return;
-        }
-
-        switch (nivel.getTipo())
-        {
-            case 0:
-                Uteis.escurecerFundo(imgCenario, 0.6f);
-                llTopo.addView(tvDescricao);
-                llTopo.addView(tvContinuarDesc);
-                iniciarNivelNormal();
-                break;
-
-            case 1:
-                llTopo.addView(llFundoMinigame1);
-                iniciarMinigame1();
-                break;
-
-            case 2:
-                Uteis.escurecerFundo(imgCenario, 0.35f);
-                llTopo.addView(llFundoMinigame2);
-                iniciarMinigame2();
-                break;
-
-            case -1:
-                exit();
-                break;
-        }
-
-        for(int i = 0; i < nivel.getPersonagens().size(); i++) {
-            Personagem personagem = nivel.getPersonagens().get(i);
-            ImageView iv = new ImageView(JogoActivity.this);
-
-            personagem.setX((personagem.getX() / 632) * conteudoFullScreen.getWidth());
-            personagem.setY((personagem.getY() / 1126) * conteudoFullScreen.getHeight());
-
-            iv.setImageBitmap(personagem.getBmp());
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.width = (int)personagem.getWidth();
-            lp.setMargins((int)personagem.getX(), (int)personagem.getY(), 0, 0);
-
-            rlPersonagens.addView(iv);
-            iv.setPivotX(iv.getWidth()/2);
-            iv.setPivotY(iv.getHeight()/2);
-            iv.setRotation(personagem.getRotation());
-            iv.setLayoutParams(lp);
-            iv.requestLayout();
-        }
+        else
+            onContinuar.run();
     }
 
     //region botões
@@ -803,6 +722,100 @@ public class JogoActivity extends AppCompatActivity {
 
     }
     //endregion
+
+    //endregion
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_jogo);
+
+        Uteis.setActivity(JogoActivity.this);
+
+        iniciarVariaveis();
+
+        iniciarFullscreen();
+
+        btnAvancarMinigame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                iniciarNivel();
+            }
+        });
+
+        Uteis.setTimeout(new Runnable() {
+            @Override
+            public void run() {
+                iniciarNivel();
+            }
+        }, 100);
+    }
+
+    //region Inicio de niveis
+    public void iniciarNivel()
+    {
+        rlPersonagens.removeAllViews();
+        llTopo.removeAllViews();
+
+        atualizarFase(new Runnable() {
+            @Override
+            public void run() {
+                nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
+                imgCenario.setImageBitmap(Uteis.getImageByName(nivel.getBackground()));
+                escolhas = nivel.getEscolhas();
+
+                if (nivel.isTerminado()) {
+                    exit();
+                    return;
+                }
+
+                switch (nivel.getTipo())
+                {
+                    case 0:
+                        Uteis.escurecerFundo(imgCenario, 0.6f);
+                        llTopo.addView(tvDescricao);
+                        llTopo.addView(tvContinuarDesc);
+                        iniciarNivelNormal();
+                        break;
+
+                    case 1:
+                        llTopo.addView(llFundoMinigame1);
+                        iniciarMinigame1();
+                        break;
+
+                    case 2:
+                        Uteis.escurecerFundo(imgCenario, 0.35f);
+                        llTopo.addView(llFundoMinigame2);
+                        iniciarMinigame2();
+                        break;
+
+                    case -1:
+                        exit();
+                        break;
+                }
+
+                for(int i = 0; i < nivel.getPersonagens().size(); i++) {
+                    Personagem personagem = nivel.getPersonagens().get(i);
+                    ImageView iv = new ImageView(JogoActivity.this);
+
+                    personagem.setX((personagem.getX() / 632) * conteudoFullScreen.getWidth());
+                    personagem.setY((personagem.getY() / 1126) * conteudoFullScreen.getHeight());
+
+                    iv.setImageBitmap(personagem.getBmp());
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    lp.width = (int)personagem.getWidth();
+                    lp.setMargins((int)personagem.getX(), (int)personagem.getY(), 0, 0);
+
+                    rlPersonagens.addView(iv);
+                    iv.setPivotX(iv.getWidth()/2);
+                    iv.setPivotY(iv.getHeight()/2);
+                    iv.setRotation(personagem.getRotation());
+                    iv.setLayoutParams(lp);
+                    iv.requestLayout();
+                }
+            }
+        });
+    }
 
     public void iniciarNivelNormal()
     {
@@ -999,6 +1012,8 @@ public class JogoActivity extends AppCompatActivity {
 
         threadMinigame2.start();
     }
+
+    //endregion
 
     public void exit()
     {
