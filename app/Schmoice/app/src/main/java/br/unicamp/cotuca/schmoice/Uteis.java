@@ -31,6 +31,8 @@ import java.util.concurrent.Callable;
 public class Uteis {
     public static Activity activity;
 
+    public static Controle controle;
+
     public static int corSelecionado = Color.BLUE;
 
     public static void setActivity(Activity a) {activity = a;}

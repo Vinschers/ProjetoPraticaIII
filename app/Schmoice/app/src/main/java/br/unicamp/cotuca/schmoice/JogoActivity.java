@@ -178,7 +178,6 @@ public class JogoActivity extends AppCompatActivity {
 
     Jogo jogo;
     Nivel nivel;
-    Controle controle;
 
     //region Nivel normal
     TextView tvDescricao, tvContinuarDesc;
@@ -438,7 +437,7 @@ public class JogoActivity extends AppCompatActivity {
         @Override
         public void setOnClickListener(@Nullable OnClickListener l) {
             super.setOnClickListener(l);
-            controle.eventos.onOK();
+            Uteis.controle.eventos.onOK();
         }
 
         @Override
@@ -520,8 +519,6 @@ public class JogoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
         jogo = (Jogo)params.getSerializable("jogo");
-        controle = (Controle)params.getSerializable("controle");
-        controle.conectar();
     }
 
     @Override
@@ -660,43 +657,61 @@ public class JogoActivity extends AppCompatActivity {
 
     private void desselecionar()
     {
-        for(int i = 0; i < llEscolhas.getChildCount(); i -=- 1)
-        {
-            LinearLayout ll = (LinearLayout)llEscolhas.getChildAt(i);
-            for (int j = 0; j < ll.getChildCount(); j -=- 1)
-            {
-                ll.getChildAt(j).setBackground(null);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i = 0; i < llEscolhas.getChildCount(); i -=- 1)
+                {
+                    LinearLayout ll = (LinearLayout)llEscolhas.getChildAt(i);
+                    for (int j = 0; j < ll.getChildCount(); j -=- 1)
+                    {
+                        ll.getChildAt(j).setBackground(null);
+                    }
+                }
             }
-        }
+        });
+
     }
 
-    public void selecionar(boolean focus)
+    public void selecionar(final boolean focus)
     {
         desselecionar();
         int y = btnAtual[0], x = btnAtual[1];
-        Button btn = (Button)((LinearLayout)llEscolhas.getChildAt(y)).getChildAt(x);
+        final Button btn = (Button)((LinearLayout)llEscolhas.getChildAt(y)).getChildAt(x);
 
-        if (focus) {
-            btn.findFocus();
-        }
-        ShapeDrawable shapedrawable = new ShapeDrawable();
-        shapedrawable.setShape(new RectShape());
-        shapedrawable.getPaint().setColor(Uteis.corSelecionado);
-        shapedrawable.getPaint().setStrokeWidth(10f);
-        shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
-        btn.setBackground(shapedrawable);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (focus) {
+                    btn.findFocus();
+                }
+                ShapeDrawable shapedrawable = new ShapeDrawable();
+                shapedrawable.setShape(new RectShape());
+                shapedrawable.getPaint().setColor(Uteis.corSelecionado);
+                shapedrawable.getPaint().setStrokeWidth(10f);
+                shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
+                btn.setBackground(shapedrawable);
+            }
+        });
+
     }
 
     public void iniciarNivelNormal()
     {
-        Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), controle, JogoActivity.this, new Runnable() {
+        Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), Uteis.controle, JogoActivity.this, new Runnable() {
             @Override
             public void run() {
-                llTopo.removeAllViews();
-                llTopo.addView(llEscolhas);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        llTopo.removeAllViews();
+                        llTopo.addView(llEscolhas);
 
-                setupBtns(escolhas);
-                controle.setEventos(new Eventos(){
+                        setupBtns(escolhas);
+                    }
+                });
+
+                Uteis.controle.setEventos(new Eventos(){
                     @Override
                     public void onPraCima() {
                         btnAtual[0]--;
@@ -740,10 +755,10 @@ public class JogoActivity extends AppCompatActivity {
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                controle.eventos.onOK();
+                Uteis.controle.eventos.onOK();
             }
         });
-        controle.setEventos(new Eventos(){
+        Uteis.controle.setEventos(new Eventos(){
             @Override
             public void onOK() {
                 new Handler().post(new Runnable() {
@@ -787,7 +802,7 @@ public class JogoActivity extends AppCompatActivity {
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                controle.eventos.onOK();
+                Uteis.controle.eventos.onOK();
             }
         });
 
@@ -821,7 +836,7 @@ public class JogoActivity extends AppCompatActivity {
 
         threadMinigame2 = new Thread(new ThreadMinigame2(canvas));
 
-        controle.setEventos(new Eventos(){
+        Uteis.controle.setEventos(new Eventos(){
             @Override
             public void onOK() {
                 ObjetoMinigame obj = getObjetoAtual();
@@ -881,11 +896,7 @@ public class JogoActivity extends AppCompatActivity {
         if (threadMinigame2 != null)
             threadMinigame2.interrupt();
         Intent intent = new Intent(JogoActivity.this, SavesActivity.class);
-        Bundle params = new Bundle();
-        controle.setEventos(null);
-        controle.desconectar(false);
-        params.putSerializable("controle", controle);
-        intent.putExtras(params);
+        Uteis.controle.setEventos(null);
         startActivity(intent);
     }
 }
