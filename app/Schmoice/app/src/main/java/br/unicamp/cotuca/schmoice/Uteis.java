@@ -72,6 +72,11 @@ public class Uteis {
 
     public static void escreverAnimado(final TextView tv, final TextView c, final String s, final Controle controle, final Activity act, final Runnable onFim)
     {
+        if (s == null || s.equals(""))
+        {
+            onFim.run();
+            return;
+        }
         String[] palavras = s.split("(?<= )");
 
         final ArrayList<String> partes = new ArrayList<String>();

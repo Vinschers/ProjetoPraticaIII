@@ -752,10 +752,60 @@ public class JogoActivity extends AppCompatActivity {
     }
 
     //region Inicio de niveis
+    public void colocarPersonagens() {
+        for(int i = 0; i < nivel.getPersonagens().size(); i++) {
+            Personagem personagem = nivel.getPersonagens().get(i);
+            ImageView iv = new ImageView(JogoActivity.this);
+
+            personagem.setX((personagem.getX() / 632) * conteudoFullScreen.getWidth());
+            personagem.setY((personagem.getY() / 1126) * conteudoFullScreen.getHeight());
+
+            iv.setImageBitmap(personagem.getBmp());
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.width = (int)personagem.getWidth();
+            lp.setMargins((int)personagem.getX(), (int)personagem.getY(), 0, 0);
+
+            rlPersonagens.addView(iv);
+            iv.setPivotX(iv.getWidth()/2);
+            iv.setPivotY(iv.getHeight()/2);
+            iv.setRotation(personagem.getRotation());
+            iv.setLayoutParams(lp);
+            iv.requestLayout();
+        }
+    }
+
+    public void comecarNivelAtual() {
+        switch (nivel.getTipo())
+        {
+            case 0:
+                Uteis.escurecerFundo(imgCenario, 0.6f);
+                llTopo.addView(llEscolhas);
+                iniciarNivelNormal();
+                break;
+
+            case 1:
+                llTopo.addView(llFundoMinigame1);
+                iniciarMinigame1();
+                break;
+
+            case 2:
+                Uteis.escurecerFundo(imgCenario, 0.35f);
+                llTopo.addView(llFundoMinigame2);
+                iniciarMinigame2();
+                break;
+
+            case -1:
+                exit();
+                break;
+        }
+    }
+
     public void iniciarNivel()
     {
         rlPersonagens.removeAllViews();
         llTopo.removeAllViews();
+        llTopo.addView(tvDescricao);
+        llTopo.addView(tvContinuarDesc);
 
         atualizarFase(new Runnable() {
             @Override
@@ -769,108 +819,66 @@ public class JogoActivity extends AppCompatActivity {
                     return;
                 }
 
-                switch (nivel.getTipo())
-                {
-                    case 0:
-                        Uteis.escurecerFundo(imgCenario, 0.6f);
-                        llTopo.addView(tvDescricao);
-                        llTopo.addView(tvContinuarDesc);
-                        iniciarNivelNormal();
-                        break;
+                Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), Uteis.controle, JogoActivity.this, new Runnable() {
+                    @Override
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                llTopo.removeAllViews();
+                                comecarNivelAtual();
+                            }
+                        });
+                    }
+                });
 
-                    case 1:
-                        llTopo.addView(llFundoMinigame1);
-                        iniciarMinigame1();
-                        break;
-
-                    case 2:
-                        Uteis.escurecerFundo(imgCenario, 0.35f);
-                        llTopo.addView(llFundoMinigame2);
-                        iniciarMinigame2();
-                        break;
-
-                    case -1:
-                        exit();
-                        break;
-                }
-
-                for(int i = 0; i < nivel.getPersonagens().size(); i++) {
-                    Personagem personagem = nivel.getPersonagens().get(i);
-                    ImageView iv = new ImageView(JogoActivity.this);
-
-                    personagem.setX((personagem.getX() / 632) * conteudoFullScreen.getWidth());
-                    personagem.setY((personagem.getY() / 1126) * conteudoFullScreen.getHeight());
-
-                    iv.setImageBitmap(personagem.getBmp());
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    lp.width = (int)personagem.getWidth();
-                    lp.setMargins((int)personagem.getX(), (int)personagem.getY(), 0, 0);
-
-                    rlPersonagens.addView(iv);
-                    iv.setPivotX(iv.getWidth()/2);
-                    iv.setPivotY(iv.getHeight()/2);
-                    iv.setRotation(personagem.getRotation());
-                    iv.setLayoutParams(lp);
-                    iv.requestLayout();
-                }
+                colocarPersonagens();
             }
         });
     }
 
     public void iniciarNivelNormal()
     {
-        Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), Uteis.controle, JogoActivity.this, new Runnable() {
+        llTopo.removeAllViews();
+        llEscolhas.removeAllViews();
+
+        setupBtns(escolhas);
+
+        Uteis.controle.setEventos(new Eventos(){
             @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        llTopo.removeAllViews();
-                        llEscolhas.removeAllViews();
-                        llTopo.addView(llEscolhas);
+            public void onPraCima() {
+                btnAtual[0]--;
+                if (btnAtual[0] < 0)
+                    btnAtual[0] = nivel.getEscolhas().size() - 1;
+                selecionar(true);
+            }
 
-                        setupBtns(escolhas);
-                    }
-                });
+            @Override
+            public void onPraBaixo() {
+                btnAtual[0]++;
+                if (btnAtual[0] > nivel.getEscolhas().size() - 1)
+                    btnAtual[0] = 0;
+                selecionar(true);
+            }
 
-                Uteis.controle.setEventos(new Eventos(){
-                    @Override
-                    public void onPraCima() {
-                        btnAtual[0]--;
-                        if (btnAtual[0] < 0)
-                            btnAtual[0] = nivel.getEscolhas().size() - 1;
-                        selecionar(true);
-                    }
+            @Override
+            public void onPraEsquerda() {
+                btnAtual[1]--;
+                if (btnAtual[1] < 0)
+                    btnAtual[1] = ((LinearLayout)llEscolhas.getChildAt(btnAtual[0])).getChildCount() - 1;
+                selecionar(true);
+            }
 
-                    @Override
-                    public void onPraBaixo() {
-                        btnAtual[0]++;
-                        if (btnAtual[0] > nivel.getEscolhas().size() - 1)
-                            btnAtual[0] = 0;
-                        selecionar(true);
-                    }
-
-                    @Override
-                    public void onPraEsquerda() {
-                        btnAtual[1]--;
-                        if (btnAtual[1] < 0)
-                            btnAtual[1] = ((LinearLayout)llEscolhas.getChildAt(btnAtual[0])).getChildCount() - 1;
-                        selecionar(true);
-                    }
-
-                    @Override
-                    public void onPraDireita() {
-                        btnAtual[1]++;
-                        if (btnAtual[1] > ((LinearLayout)llEscolhas.getChildAt(btnAtual[0])).getChildCount() - 1)
-                            btnAtual[1] = 0;
-                        selecionar(true);
-                    }
-                });
-
-                btnAtual[0] = btnAtual[1] = 0;
+            @Override
+            public void onPraDireita() {
+                btnAtual[1]++;
+                if (btnAtual[1] > ((LinearLayout)llEscolhas.getChildAt(btnAtual[0])).getChildCount() - 1)
+                    btnAtual[1] = 0;
                 selecionar(true);
             }
         });
+        btnAtual[0] = btnAtual[1] = 0;
+        selecionar(true);
     }
     public void iniciarMinigame1()
     {
