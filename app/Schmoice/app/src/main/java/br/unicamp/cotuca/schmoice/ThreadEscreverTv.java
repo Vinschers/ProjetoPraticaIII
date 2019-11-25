@@ -72,6 +72,8 @@ public class ThreadEscreverTv extends Thread {
                             if (!morto[0]) {
                                 tv.append(String.valueOf(c));
                                 i[0]++;
+                            } else {
+                                i[0] = length - 1;
                             }
                         }
                         catch (StringIndexOutOfBoundsException ex) {

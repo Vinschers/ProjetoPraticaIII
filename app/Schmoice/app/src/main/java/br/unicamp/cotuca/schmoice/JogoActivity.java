@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -22,10 +23,12 @@ import android.graphics.drawable.shapes.RectShape;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -37,6 +40,9 @@ import android.widget.TextView;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Random;
+
+import io.victoralbertos.swipe_coordinator.SwipeCoordinator;
+import io.victoralbertos.swipe_coordinator.SwipeDirection;
 
 public class JogoActivity extends AppCompatActivity {
     //region Comandos gerados automaticamente para controle de fullscreen
@@ -175,6 +181,7 @@ public class JogoActivity extends AppCompatActivity {
     FrameLayout llTopo;
     Button btnAvancarMinigame;
     final int btnsPorLinha = 2;
+    boolean teste = false;
 
     Jogo jogo;
     Nivel nivel;
@@ -521,6 +528,96 @@ public class JogoActivity extends AppCompatActivity {
         jogo = (Jogo)params.getSerializable("jogo");
     }
 
+    public void atualizarFase()
+    {
+        Fase atual = jogo.getArvore().getFaseAtual();
+        jogo.getArvore().atualizarFaseAtual();
+        Fase nova = jogo.getArvore().getFaseAtual();
+
+        //if (!atual.equals(nova))
+        if (teste)
+        {
+            final Player pAnt = atual.getPlayerAntigo();
+            final Player pNovo = jogo.getPlayer();
+
+            final Dialog dialog = new Dialog(JogoActivity.this);
+            dialog.setContentView(R.layout.status_dialog);
+
+            /*final SwipeCoordinator scCarisma = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlCarisma), SwipeDirection.LEFT_TO_RIGHT);
+            scCarisma.setThreshold((float)pAnt.getCarisma());
+
+            final SwipeCoordinator scFelicidade = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlFelicidade), SwipeDirection.LEFT_TO_RIGHT);
+            scFelicidade.setThreshold((float)pAnt.getFelicidade());
+
+            final SwipeCoordinator scFinancas = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlFinancas), SwipeDirection.LEFT_TO_RIGHT);
+            scFinancas.setThreshold((float)pAnt.getFinancas());
+
+            final SwipeCoordinator scForca = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlForca), SwipeDirection.LEFT_TO_RIGHT);
+            scForca.setThreshold((float)pAnt.getForca());
+
+            final SwipeCoordinator scInteligencia = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlInteligencia), SwipeDirection.LEFT_TO_RIGHT);
+            scInteligencia.setThreshold((float)pAnt.getInteligencia());
+
+            final SwipeCoordinator scSanidade = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlSanidade), SwipeDirection.LEFT_TO_RIGHT);
+            scSanidade.setThreshold((float)pAnt.getSanidade());*/
+
+            final SwipeCoordinator scTranquilidade = new SwipeCoordinator((ViewGroup) dialog.findViewById(R.id.rlTranquilidade), SwipeDirection.LEFT_TO_RIGHT);
+            scTranquilidade.setThreshold((float)pAnt.getTranquilidade());
+
+            final Handler handler = new Handler()
+            {
+                @Override
+                public void handleMessage(@NonNull Message msg) {
+                    super.handleMessage(msg);
+                    if (msg.what != 0)
+                        return;
+
+                    /*scCarisma.setVariancePercentage((float)(pNovo.getCarisma() - pAnt.getCarisma()));
+                    scFelicidade.setVariancePercentage((float)(pNovo.getCarisma() - pAnt.getCarisma()));
+                    scFinancas.setVariancePercentage((float)(pNovo.getFinancas() - pAnt.getFinancas()));
+                    scForca.setVariancePercentage((float)(pNovo.getForca() - pAnt.getForca()));
+                    scInteligencia.setVariancePercentage((float)(pNovo.getInteligencia() - pAnt.getInteligencia()));
+                    scSanidade.setVariancePercentage((float)(pNovo.getSanidade() - pAnt.getSanidade()));
+                    scTranquilidade.setVariancePercentage((float)(pNovo.getTranquilidade() - pAnt.getTranquilidade()));*/
+
+                    /*scCarisma.setVariancePercentage(0.4f);
+                    scFelicidade.setVariancePercentage(0.4f);
+                    scFinancas.setVariancePercentage(0.4f);
+                    scForca.setVariancePercentage(0.4f);
+                    scInteligencia.setVariancePercentage(0.4f);
+                    scSanidade.setVariancePercentage(0.4f);*/
+                    scTranquilidade.setVariancePercentage(0.4f);
+                }
+            };
+
+            jogo.getArvore().getFaseAtual().setPlayerAntigo(pNovo);
+
+            Uteis.setTimeout(new Runnable() {
+                @Override
+                public void run() {
+                    JogoActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            handler.sendEmptyMessage(0);
+                        }
+                    });
+                }
+            }, 500);
+
+            Button dialogButton = (Button) dialog.findViewById(R.id.btnContinuar);
+
+            dialogButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialog.dismiss();
+                    hide();
+                }
+            });
+
+            dialog.show();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -551,6 +648,9 @@ public class JogoActivity extends AppCompatActivity {
     {
         rlPersonagens.removeAllViews();
         llTopo.removeAllViews();
+
+        atualizarFase();
+        //teste = true;
 
         nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
         imgCenario.setImageBitmap(Uteis.getImageByName(nivel.getBackground()));
@@ -607,6 +707,7 @@ public class JogoActivity extends AppCompatActivity {
         }
     }
 
+    //region botões
     public void setupBtns(final ArrayList<Escolha> escolhas)
     {
         Button btn;
@@ -695,6 +796,7 @@ public class JogoActivity extends AppCompatActivity {
         });
 
     }
+    //endregion
 
     public void iniciarNivelNormal()
     {
@@ -705,6 +807,7 @@ public class JogoActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         llTopo.removeAllViews();
+                        llEscolhas.removeAllViews();
                         llTopo.addView(llEscolhas);
 
                         setupBtns(escolhas);
