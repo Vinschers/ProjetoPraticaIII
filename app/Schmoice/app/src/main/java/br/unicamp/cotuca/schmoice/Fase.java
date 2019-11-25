@@ -142,12 +142,12 @@ public class Fase implements Serializable {
     public void atualizarStatusPlayer() {
         Player player = arvore.getJogo().getPlayer();
         player.addToTranquilidade(nivelAtual.getEscolhaFeita().getStatusPlayer()[0]);
-        player.addToFelicidade(nivelAtual.getEscolhaFeita().getStatusPlayer()[1]);
-        player.addToSanidade(nivelAtual.getEscolhaFeita().getStatusPlayer()[2]);
-        player.addToFinancas(nivelAtual.getEscolhaFeita().getStatusPlayer()[3]);
-        player.addToInteligencia(nivelAtual.getEscolhaFeita().getStatusPlayer()[4]);
-        player.addToCarisma(nivelAtual.getEscolhaFeita().getStatusPlayer()[5]);
-        player.addToForca(nivelAtual.getEscolhaFeita().getStatusPlayer()[6]);
+        player.addToFelicidade(nivelAtual.getEscolhaFeita().getStatusPlayer()[5]);
+        player.addToSanidade(nivelAtual.getEscolhaFeita().getStatusPlayer()[1]);
+        player.addToFinancas(nivelAtual.getEscolhaFeita().getStatusPlayer()[4]);
+        player.addToInteligencia(nivelAtual.getEscolhaFeita().getStatusPlayer()[2]);
+        player.addToCarisma(nivelAtual.getEscolhaFeita().getStatusPlayer()[6]);
+        player.addToForca(nivelAtual.getEscolhaFeita().getStatusPlayer()[3]);
     }
     public boolean isTerminada() {
         return terminada;
