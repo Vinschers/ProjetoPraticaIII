@@ -83,11 +83,9 @@ public class SavesActivity extends AppCompatActivity {
                             }
                             catch (Exception ex) {fases = null; }
 
-                            controle = (Controle)params.getSerializable("controle");
                             selecionar(false);
-                            controle.conectar();
 
-                            controle.setEventos(new Eventos(){
+                            Uteis.controle.setEventos(new Eventos(){
                                 @Override
                                 public void onPraBaixo() {
                                     atual++;
