@@ -155,24 +155,9 @@ public class Nivel implements Serializable {
     }
 
     public String toString() {
-        String s = "";
-        s += "Escolhas: " + escolhas.toString() + "\n";
-        s += "Imagem: " + background.toString();
-        s += padLeft((terminado?"Terminado":""), 10);
+        String s = descricao;
+        s += "\tEscolhas: " + escolhas.toString() + "\n";
         return s;
-    }
-
-    private String padLeft(String inputString, int length) {
-        if (inputString.length() >= length) {
-            return inputString;
-        }
-        StringBuilder sb = new StringBuilder();
-        while (sb.length() < length - inputString.length()) {
-            sb.append(' ');
-        }
-        sb.append(inputString);
-
-        return sb.toString();
     }
 
     public void efetuarEscolha(Escolha e) {

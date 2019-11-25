@@ -152,7 +152,7 @@ public class SavesActivity extends AppCompatActivity {
                                 if (jogosObtidos[i] != null) {
                                     jogos[i] = jogosObtidos[i];
                                     for (Fase f : fases) {
-                                        for (ArrayList<Nivel> arr : f.getNiveis())
+                                        for (Nivel[] arr : f.getNiveis())
                                             for (Nivel n : arr) {
                                                 if (n != null)
                                                     n.setParentFase(f);

@@ -76,4 +76,7 @@ public class Escolha implements Serializable {
         this.paraOndeIr = paraOndeIr;
         this.statusPlayer = s;
     }
+    public String toString() {
+        return nome;
+    }
 }

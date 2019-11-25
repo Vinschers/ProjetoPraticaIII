@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Fase implements Serializable {
     private int idFase;
-    private ArrayList<ArrayList<Nivel>> niveis;
+    private Nivel[][] niveis;
     private String titulo;
     private String descricao;
     private Nivel nivelAtual;
@@ -20,7 +20,7 @@ public class Fase implements Serializable {
 
     public Fase() {
         nivelAtual = null;
-        niveis = new ArrayList<ArrayList<Nivel>>();
+        niveis = new Nivel[10][10];
         caminhoFase = new ArrayList<Integer>();
         terminada = false;
         status = 0.5;
@@ -91,7 +91,7 @@ public class Fase implements Serializable {
     }
     public void atualizarNivelAtual() {
         if (nivelAtual == null)
-            nivelAtual = niveis.get(0).get(0);
+            nivelAtual = niveis[0][0];
         if (nivelAtual.isTerminado()) {
             avancarNivel();
         }
@@ -104,14 +104,17 @@ public class Fase implements Serializable {
         nivelAtual = n;
     }
     public void setNivelAtual(int rota, int num) {
-        nivelAtual = niveis.get(rota).get(num);
+        nivelAtual = niveis[rota][num];
     }
     public void avancarNivel() {
-        if (nivelAtual.getEscolhaFeita().getPosImportancia() != -1)
-            arvore.getJogo().getEscolhasImportantes().add(nivelAtual.getEscolhaFeita().getPosImportancia(), nivelAtual.getEscolhaFeita().getImportancia());
-        else
-            arvore.getJogo().getEscolhasImportantes().add(nivelAtual.getEscolhaFeita().getImportancia());
-        if (parteAtual >= niveis.get(rotaAtual).size() - 1) {
+        if (nivelAtual.getEscolhaFeita().getImportancia() != -1) {
+            if (nivelAtual.getEscolhaFeita().getPosImportancia() != -1)
+                arvore.getJogo().getEscolhasImportantes().add(nivelAtual.getEscolhaFeita().getPosImportancia(), nivelAtual.getEscolhaFeita().getImportancia());
+            else
+                arvore.getJogo().getEscolhasImportantes().add(nivelAtual.getEscolhaFeita().getImportancia());
+        }
+
+        if (parteAtual >= niveis[rotaAtual].length - 1) {
             terminada = true;
         } else {
             if (nivelAtual.getTipo() == 0) {
@@ -120,7 +123,7 @@ public class Fase implements Serializable {
                 rotaAtual = nivelAtual.getEscolhaFeita().getParaOndeIr();
             }
             parteAtual += 1 + nivelAtual.getEscolhaFeita().getParaOndeIrNaRota();
-            nivelAtual = niveis.get(rotaAtual).get(parteAtual);
+            nivelAtual = niveis[rotaAtual][parteAtual];
         }
     }
     public void avancarNivel(int rotaNova) {
@@ -129,11 +132,11 @@ public class Fase implements Serializable {
         else
             arvore.getJogo().getEscolhasImportantes().add(nivelAtual.getEscolhaFeita().getImportancia());
         rotaAtual = rotaNova;
-        if (parteAtual >= niveis.get(rotaAtual).size() - 1) {
+        if (parteAtual >= niveis[rotaAtual].length - 1) {
             terminada = true;
         } else {
             parteAtual += 1 + nivelAtual.getEscolhaFeita().getParaOndeIrNaRota();
-            nivelAtual = niveis.get(rotaAtual).get(parteAtual);
+            nivelAtual = niveis[rotaAtual][parteAtual];
         }
     }
     public void atualizarStatusPlayer() {
@@ -154,7 +157,9 @@ public class Fase implements Serializable {
     }
     public void setId(int id) {this.idFase = id;}
     public void setTitulo(String titulo) {this.titulo = titulo;}
-    public void setNiveis(ArrayList<ArrayList<Nivel>> niveis) {this.niveis = niveis;}
+    public void setNiveis(Nivel[][] niveis) {
+        this.niveis = niveis;
+    }
     public void setDescricao(String descricao) {this.descricao = descricao;}
     public void setTerminada(boolean terminada) {this.terminada = terminada;}
     public void addToStatus(double val) {this.status += val;}
@@ -169,7 +174,7 @@ public class Fase implements Serializable {
         parteAtual = p;
     }
     public int getParteAtual() {return parteAtual;}
-    public ArrayList<ArrayList<Nivel>> getNiveis() {
+    public Nivel[][] getNiveis() {
         return niveis;
     }
     public void setRotaAtual(int r) {
