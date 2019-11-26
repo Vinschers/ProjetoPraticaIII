@@ -214,19 +214,34 @@ public class JogoActivity extends AppCompatActivity {
 
         public void run() {
             try {
-                for (int segundos = 15; segundos >= 0; segundos--)
+                for (final int[] segundos = {15}; segundos[0] >= 0; segundos[0]--)
                 {
                     Thread.sleep(1000);
-                    tvTimer.setText(segundos + "");
-                    if (pbVida.getProgress() == pbVida.getMax())
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tvTimer.setText(segundos[0] + "");
+                        }
+                    });
+                    if (pbVida.getProgress() >= pbVida.getMax())
                         break;
                 }
-                if (pbVida.getProgress() == pbVida.getMax()) {
-                    tvTimer.setText("Ganhou!");
+                if (pbVida.getProgress() >= pbVida.getMax()) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tvTimer.setText("Ganhou!");
+                        }
+                    });
                     onGanhou.run();
                 }
                 else {
-                    tvTimer.setText("Perdeu!");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tvTimer.setText("Perdeu!");
+                        }
+                    });
                     onPerdeu.run();
                 }
             }
@@ -258,7 +273,24 @@ public class JogoActivity extends AppCompatActivity {
         threadMinigame2.interrupt();
         canvas = null;
         objs = null;
-        btnAvancarMinigame.setVisibility(View.VISIBLE);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnAvancarMinigame.setVisibility(View.VISIBLE);
+                Uteis.controle.setEventos(new Eventos() {
+                    @Override
+                    public void onOK() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnAvancarMinigame.performClick();
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
         jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(false);
         jogo.getArvore().getFaseAtual().avancarNivel();
     }
@@ -267,7 +299,24 @@ public class JogoActivity extends AppCompatActivity {
         threadMinigame2.interrupt();
         canvas = null;
         objs = null;
-        btnAvancarMinigame.setVisibility(View.VISIBLE);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnAvancarMinigame.setVisibility(View.VISIBLE);
+                Uteis.controle.setEventos(new Eventos() {
+                    @Override
+                    public void onOK() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnAvancarMinigame.performClick();
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
         nivel.setTerminado(true);
         nivel.getParentFase().avancarNivel(nivel.getRotaVitoria());
     }
@@ -839,7 +888,7 @@ public class JogoActivity extends AppCompatActivity {
 
     public void iniciarNivelNormal()
     {
-        llTopo.removeAllViews();
+        //llTopo.removeAllViews();
         llEscolhas.removeAllViews();
 
         setupBtns(escolhas);
@@ -876,6 +925,18 @@ public class JogoActivity extends AppCompatActivity {
                     btnAtual[1] = 0;
                 selecionar(true);
             }
+
+            @Override
+            public void onOK() {
+                int y = btnAtual[0], x = btnAtual[1];
+                final Button btn = (Button)((LinearLayout)llEscolhas.getChildAt(y)).getChildAt(x);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        btn.performClick();
+                    }
+                });
+            }
         });
         btnAtual[0] = btnAtual[1] = 0;
         selecionar(true);
@@ -891,38 +952,61 @@ public class JogoActivity extends AppCompatActivity {
         Uteis.controle.setEventos(new Eventos(){
             @Override
             public void onOK() {
-                new Handler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!tvTempoMinigame1.getText().equals("Ganhou!") && !tvTempoMinigame1.getText().equals("Perdeu!") && pbVidaMinigame1.getProgress() != pbVidaMinigame1.getMax())
-                            pbVidaMinigame1.incrementProgressBy(1); // TIRAR DEPOIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    }
-                });
+                if (!tvTempoMinigame1.getText().equals("Ganhou!") && !tvTempoMinigame1.getText().equals("Perdeu!") && pbVidaMinigame1.getProgress() < pbVidaMinigame1.getMax())
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pbVidaMinigame1.incrementProgressBy(1);
+                        }
+                    });
             }
         });
         TimerJogo tmr = new TimerJogo(tvTempoMinigame1, pbVidaMinigame1, new Runnable() {
             @Override
             public void run() {
-                jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(true);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                    nivel.getParentFase().avancarNivel(nivel.getRotaVitoria());
-                    btnAvancarMinigame.setVisibility(View.VISIBLE);
+                        btnAvancarMinigame.setVisibility(View.VISIBLE);
+                        Uteis.controle.setEventos(new Eventos() {
+                            @Override
+                            public void onOK() {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        btnAvancarMinigame.performClick();
+                                    }
+                                });
+
+                            }
+                        });
                     }
                 });
+                nivel.setTerminado(true);
+                nivel.getParentFase().avancarNivel(nivel.getRotaVitoria());
             }
         }, new Runnable() {
             @Override
             public void run() {
-                jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(false);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                    nivel.getParentFase().avancarNivel();
-                    btnAvancarMinigame.setVisibility(View.VISIBLE);
+                        btnAvancarMinigame.setVisibility(View.VISIBLE);
+                        Uteis.controle.setEventos(new Eventos() {
+                            @Override
+                            public void onOK() {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        btnAvancarMinigame.performClick();
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
+                nivel.setTerminado(false);
+                nivel.getParentFase().avancarNivel();
             }
         });
         tmr.start();

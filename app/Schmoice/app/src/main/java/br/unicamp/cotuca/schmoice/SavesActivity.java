@@ -98,7 +98,7 @@ public class SavesActivity extends AppCompatActivity {
                                 public void onPraCima() {
                                     atual--;
                                     if (atual < 0)
-                                        atual = 3;
+                                        atual = 2;
                                     selecionar(true);
                                 }
 
