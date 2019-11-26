@@ -108,7 +108,10 @@ public class Fase implements Serializable {
         nivelAtual = niveis[rota][num];
     }
     public void avancarNivel() {
-        if (nivelAtual.getEscolhaFeita().getImportancia() != -1) {
+        if (nivelAtual.getTipo() == 1 || nivelAtual.getTipo() == 2) {
+            arvore.getJogo().getEscolhasImportantes().add(nivelAtual.isTerminado()?1:0);
+        }
+        else if (nivelAtual.getEscolhaFeita().getImportancia() != -1) {
             if (nivelAtual.getEscolhaFeita().getPosImportancia() != -1)
                 arvore.getJogo().getEscolhasImportantes().add(nivelAtual.getEscolhaFeita().getPosImportancia(), nivelAtual.getEscolhaFeita().getImportancia());
             else

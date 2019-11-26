@@ -29,6 +29,7 @@ import java.util.TimerTask;
 import java.util.concurrent.Callable;
 
 public class Uteis {
+    private static boolean[] podeEscrever = {true};
     public static Activity activity;
 
     public static Controle controle;
@@ -70,7 +71,17 @@ public class Uteis {
     }
 
 
-    public static void escreverAnimado(final TextView tv, final TextView c, final String s, final Controle controle, final Activity act, final Runnable onFim)
+    public static void pararEscrever()
+    {
+        podeEscrever[0] = false;
+    }
+
+    public static void continuarEscrever()
+    {
+        podeEscrever[0] = true;
+    }
+
+    public static void escreverAnimado(final TextView tv, final TextView c, final String s, final Activity act, final Runnable onFim, final Runnable menu)
     {
         if (s == null || s.equals(""))
         {
@@ -100,7 +111,7 @@ public class Uteis {
 
         final ThreadEscreverTv[] runs = new ThreadEscreverTv[partes.size()];
         for (int ind = 0; ind < partes.size(); ind -=- 1) {
-            runs[ind] = new ThreadEscreverTv(tv, partes.get(ind), ind, partes.size(), act, c);
+            runs[ind] = new ThreadEscreverTv(tv, partes.get(ind), ind, partes.size(), act, c, podeEscrever);
         }
 
         final Runnable avancar = new Runnable() {
@@ -125,6 +136,11 @@ public class Uteis {
             @Override
             public void onOK() {
                 avancar.run();
+            }
+
+            @Override
+            public void onMenu() {
+                menu.run();
             }
         });
 
@@ -232,7 +248,8 @@ public class Uteis {
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
-                        onNo.run();
+                        if (onNo != null)
+                            onNo.run();
                         break;
                 }
             }

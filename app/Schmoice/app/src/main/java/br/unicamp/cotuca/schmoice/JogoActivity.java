@@ -13,15 +13,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,7 +26,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -42,7 +38,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -198,12 +193,14 @@ public class JogoActivity extends AppCompatActivity {
     TextView tvTempoMinigame1;
     ProgressBar pbVidaMinigame1;
     LinearLayout llFundoMinigame1;
+    TimerJogo timerMinigame1;
 
     class TimerJogo extends Thread {
 
         TextView tvTimer;
         ProgressBar pbVida;
         Runnable onGanhou, onPerdeu;
+        boolean pausado = false;
 
         public TimerJogo(TextView tvTimer, ProgressBar pbVida, Runnable onGanhou, Runnable onPerdeu) {
             this.tvTimer = tvTimer;
@@ -216,10 +213,14 @@ public class JogoActivity extends AppCompatActivity {
             try {
                 for (int segundos = 15; segundos >= 0; segundos--)
                 {
-                    Thread.sleep(1000);
-                    tvTimer.setText(segundos + "");
-                    if (pbVida.getProgress() == pbVida.getMax())
-                        break;
+                    if (pausado)
+                        segundos++;
+                    else {
+                        Thread.sleep(1000);
+                        tvTimer.setText(segundos + "");
+                        if (pbVida.getProgress() == pbVida.getMax())
+                            break;
+                    }
                 }
                 if (pbVida.getProgress() == pbVida.getMax()) {
                     tvTimer.setText("Ganhou!");
@@ -233,6 +234,14 @@ public class JogoActivity extends AppCompatActivity {
             catch (InterruptedException ex) {}
             catch (Throwable ex) {System.out.println(ex.getMessage());}
         }
+        public void pausar()
+        {
+            pausado = true;
+        }
+        public void continuar()
+        {
+            pausado = false;
+        }
     }
 
     //endregion
@@ -242,7 +251,7 @@ public class JogoActivity extends AppCompatActivity {
 
     CanvasMinigame canvas;
     ObjetoMinigame[] objs;
-    Thread threadMinigame2;
+    ThreadMinigame2 threadMinigame2;
     final float click = 0.30f;
 
     public ObjetoMinigame getObjetoAtual() {
@@ -476,8 +485,9 @@ public class JogoActivity extends AppCompatActivity {
         }
     }
 
-    public class ThreadMinigame2 implements Runnable {
+    public class ThreadMinigame2 extends Thread {
         CanvasMinigame canvas;
+        boolean pausado = false;
 
         public ThreadMinigame2(CanvasMinigame canvas)
         {
@@ -486,34 +496,24 @@ public class JogoActivity extends AppCompatActivity {
 
         @Override
         public void run() {
-            while(!canvas.isFim())
-                canvas.invalidate();
+            while(!canvas.isFim()) {
+                if (!pausado)
+                    canvas.invalidate();
+            }
+        }
+
+        public void pausar()
+        {
+            pausado = true;
+        }
+        public void continuar()
+        {
+            pausado = false;
         }
     }
     //endregion
 
     //region Extras
-
-    public class ProgressBarAnimation extends Animation {
-        private ProgressBar progressBar;
-        private float from;
-        private float  to;
-
-        public ProgressBarAnimation(ProgressBar progressBar, float from, float to) {
-            super();
-            this.progressBar = progressBar;
-            this.from = from;
-            this.to = to;
-        }
-
-        @Override
-        protected void applyTransformation(float interpolatedTime, Transformation t) {
-            super.applyTransformation(interpolatedTime, t);
-            float value = from + (to - from) * interpolatedTime;
-            progressBar.setProgress((int) value);
-        }
-
-    }
 
     public void iniciarVariaveis()
     {
@@ -725,32 +725,6 @@ public class JogoActivity extends AppCompatActivity {
 
     //endregion
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_jogo);
-
-        Uteis.setActivity(JogoActivity.this);
-
-        iniciarVariaveis();
-
-        iniciarFullscreen();
-
-        btnAvancarMinigame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                iniciarNivel();
-            }
-        });
-
-        Uteis.setTimeout(new Runnable() {
-            @Override
-            public void run() {
-                iniciarNivel();
-            }
-        }, 100);
-    }
-
     //region Inicio de niveis
     public void colocarPersonagens() {
         for(int i = 0; i < nivel.getPersonagens().size(); i++) {
@@ -819,7 +793,7 @@ public class JogoActivity extends AppCompatActivity {
                     return;
                 }
 
-                Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), Uteis.controle, JogoActivity.this, new Runnable() {
+                Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), JogoActivity.this, new Runnable() {
                     @Override
                     public void run() {
                         runOnUiThread(new Runnable() {
@@ -830,6 +804,11 @@ public class JogoActivity extends AppCompatActivity {
                             }
                         });
                     }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        abrirMenu();
+                    }
                 });
 
                 colocarPersonagens();
@@ -839,7 +818,6 @@ public class JogoActivity extends AppCompatActivity {
 
     public void iniciarNivelNormal()
     {
-        llTopo.removeAllViews();
         llEscolhas.removeAllViews();
 
         setupBtns(escolhas);
@@ -876,6 +854,11 @@ public class JogoActivity extends AppCompatActivity {
                     btnAtual[1] = 0;
                 selecionar(true);
             }
+
+            @Override
+            public void onMenu() {
+                abrirMenu();
+            }
         });
         btnAtual[0] = btnAtual[1] = 0;
         selecionar(true);
@@ -899,16 +882,21 @@ public class JogoActivity extends AppCompatActivity {
                     }
                 });
             }
+
+            @Override
+            public void onMenu() {
+                abrirMenu();
+            }
         });
-        TimerJogo tmr = new TimerJogo(tvTempoMinigame1, pbVidaMinigame1, new Runnable() {
+        timerMinigame1 = new TimerJogo(tvTempoMinigame1, pbVidaMinigame1, new Runnable() {
             @Override
             public void run() {
                 jogo.getArvore().getFaseAtual().getNivelAtual().setTerminado(true);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                    nivel.getParentFase().avancarNivel(nivel.getRotaVitoria());
-                    btnAvancarMinigame.setVisibility(View.VISIBLE);
+                        nivel.getParentFase().avancarNivel(nivel.getRotaVitoria());
+                        btnAvancarMinigame.setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -919,13 +907,13 @@ public class JogoActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                    nivel.getParentFase().avancarNivel();
-                    btnAvancarMinigame.setVisibility(View.VISIBLE);
+                        nivel.getParentFase().avancarNivel();
+                        btnAvancarMinigame.setVisibility(View.VISIBLE);
                     }
                 });
             }
         });
-        tmr.start();
+        timerMinigame1.start();
     }
     public void iniciarMinigame2()
     {
@@ -964,7 +952,7 @@ public class JogoActivity extends AppCompatActivity {
         llFundoMinigame2.removeAllViews();
         llFundoMinigame2.addView(canvas);
 
-        threadMinigame2 = new Thread(new ThreadMinigame2(canvas));
+        threadMinigame2 = new ThreadMinigame2(canvas);
 
         Uteis.controle.setEventos(new Eventos(){
             @Override
@@ -1016,6 +1004,11 @@ public class JogoActivity extends AppCompatActivity {
                     obj.fade();
                 }
             }
+
+            @Override
+            public void onMenu() {
+                abrirMenu();
+            }
         });
 
         threadMinigame2.start();
@@ -1023,12 +1016,205 @@ public class JogoActivity extends AppCompatActivity {
 
     //endregion
 
+    //region Menu
+    int atualMenu;
+    Button[] btnsMenu;
+    public void pararTudo()
+    {
+        switch (nivel.getTipo())
+        {
+            case 0:
+                Uteis.pararEscrever();
+                break;
+
+            case 1:
+                timerMinigame1.pausar();
+                break;
+
+            case 2:
+                threadMinigame2.pausar();
+                break;
+        }
+    }
+
+    public void continuarTudo()
+    {
+        switch (nivel.getTipo())
+        {
+            case 0:
+                Uteis.continuarEscrever();
+                break;
+
+            case 1:
+                timerMinigame1.continuar();
+                break;
+
+            case 2:
+                threadMinigame2.continuar();
+                break;
+        }
+    }
+
+    public void desselecionarMenu()
+    {
+        for (Button btn : btnsMenu) {
+            btn.setBackgroundResource(android.R.drawable.btn_default);
+        }
+    }
+
+    public void selecionarMenu(boolean focus)
+    {
+        desselecionarMenu();
+        if (focus)
+            btnsMenu[atualMenu].findFocus();
+
+        ShapeDrawable shapedrawable = new ShapeDrawable();
+        shapedrawable.setShape(new RectShape());
+        shapedrawable.getPaint().setColor(Uteis.corSelecionado);
+        shapedrawable.getPaint().setStrokeWidth(10f);
+        shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
+        btnsMenu[atualMenu].setBackground(shapedrawable);
+    }
+
+    public void abrirMenu()
+    {
+        final Dialog menu = new Dialog(JogoActivity.this);
+        final Eventos eventos = Uteis.controle.eventos;
+
+        pararTudo();
+
+        Uteis.controle.setEventos(new Eventos() {
+            @Override
+            public void onCancelar() {
+                menu.dismiss();
+                hide();
+                Uteis.controle.setEventos(eventos);
+                continuarTudo();
+            }
+
+            @Override
+            public void onOK() {
+                btnsMenu[atualMenu].performClick();
+            }
+
+            @Override
+            public void onPraCima() {
+                atualMenu++;
+                if (atualMenu > 1)
+                    atualMenu = 0;
+                selecionarMenu(true);
+            }
+
+            @Override
+            public void onPraBaixo() {
+                atualMenu--;
+                if (atualMenu < 0)
+                    atualMenu = 1;
+                selecionarMenu(true);
+            }
+        });
+
+        menu.setContentView(R.layout.menu_dialog);
+
+        atualMenu = 0;
+        btnsMenu = new Button[2];
+        btnsMenu[0] = (Button)menu.findViewById(R.id.btnContinuar);
+        btnsMenu[1] = (Button)menu.findViewById(R.id.btnSair);
+        selecionarMenu(true);
+
+        btnsMenu[0].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uteis.controle.eventos.onCancelar();
+            }
+        });
+        btnsMenu[0].setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                atualMenu = 0;
+                if (b)
+                    selecionarMenu(false);
+            }
+        });
+
+        btnsMenu[1].setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uteis.alertar("Ao sair agora, a fase atual NÃO será salva. Sair mesmo assim?", "ATENÇÃO", new Runnable() {
+                    @Override
+                    public void run() {
+                        exit();
+                    }
+                }, null, JogoActivity.this);
+            }
+        });
+        btnsMenu[1].setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                atualMenu = 1;
+                if (b)
+                    selecionarMenu(false);
+            }
+        });
+
+        menu.show();
+        Window window = menu.getWindow();
+        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+    }
+    //endregion
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        try {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_jogo);
+
+            Uteis.setActivity(JogoActivity.this);
+
+            iniciarVariaveis();
+
+            iniciarFullscreen();
+
+            btnAvancarMinigame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    iniciarNivel();
+                }
+            });
+
+            Uteis.controle.setEventos(new Eventos() {
+                @Override
+                public void onMenu() {
+                    abrirMenu();
+                }
+            });
+
+            Uteis.setTimeout(new Runnable() {
+                @Override
+                public void run() {
+                    iniciarNivel();
+                }
+            }, 100);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            exit();
+        }
+    }
+
     public void exit()
     {
-        if (threadMinigame2 != null)
-            threadMinigame2.interrupt();
-        Intent intent = new Intent(JogoActivity.this, SavesActivity.class);
-        Uteis.controle.setEventos(null);
-        startActivity(intent);
+        Runnable sair = new Runnable() {
+            @Override
+            public void run() {
+                //ClienteWS.postObjeto();           SALVAR
+                if (threadMinigame2 != null)
+                    threadMinigame2.interrupt();
+                Intent intent = new Intent(JogoActivity.this, MainActivity.class);
+                Uteis.controle.setEventos(null);
+                startActivity(intent);
+            }
+        };
+        sair.run();
     }
 }
