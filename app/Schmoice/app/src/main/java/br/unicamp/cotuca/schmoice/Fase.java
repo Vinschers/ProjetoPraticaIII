@@ -108,10 +108,8 @@ public class Fase implements Serializable {
         nivelAtual = niveis[rota][num];
     }
     public void avancarNivel() {
-        if (nivelAtual.getTipo() == 1 || nivelAtual.getTipo() == 2) {
-            arvore.getJogo().getEscolhasImportantes().add(nivelAtual.isTerminado()?1:0);
-        }
-        else if (nivelAtual.getEscolhaFeita().getImportancia() != -1) {
+
+        if (nivelAtual.getTipo() == 0 && nivelAtual.getEscolhaFeita().getImportancia() != -1) {
             if (nivelAtual.getEscolhaFeita().getPosImportancia() != -1)
                 arvore.getJogo().getEscolhasImportantes().add(nivelAtual.getEscolhaFeita().getPosImportancia(), nivelAtual.getEscolhaFeita().getImportancia());
             else
@@ -126,7 +124,13 @@ public class Fase implements Serializable {
                 status += nivelAtual.getEscolhaFeita().getStatusFase();
                 rotaAtual = nivelAtual.getEscolhaFeita().getParaOndeIr();
             }
-            parteAtual += 1 + nivelAtual.getEscolhaFeita().getParaOndeIrNaRota();
+            else
+                rotaAtual = nivelAtual.isTerminado() ? nivelAtual.getRotaVitoria() : nivelAtual.getRota();
+
+            if (nivelAtual.getTipo() == 0)
+                parteAtual += 1 + nivelAtual.getEscolhaFeita().getParaOndeIrNaRota();
+            else
+                parteAtual++;
             nivelAtual = niveis[rotaAtual][parteAtual];
         }
     }
@@ -146,12 +150,12 @@ public class Fase implements Serializable {
     public void atualizarStatusPlayer() {
         Player player = arvore.getJogo().getPlayer();
         player.addToTranquilidade(nivelAtual.getEscolhaFeita().getStatusPlayer()[0]);
-        player.addToFelicidade(nivelAtual.getEscolhaFeita().getStatusPlayer()[5]);
         player.addToSanidade(nivelAtual.getEscolhaFeita().getStatusPlayer()[1]);
-        player.addToFinancas(nivelAtual.getEscolhaFeita().getStatusPlayer()[4]);
         player.addToInteligencia(nivelAtual.getEscolhaFeita().getStatusPlayer()[2]);
-        player.addToCarisma(nivelAtual.getEscolhaFeita().getStatusPlayer()[6]);
         player.addToForca(nivelAtual.getEscolhaFeita().getStatusPlayer()[3]);
+        player.addToFinancas(nivelAtual.getEscolhaFeita().getStatusPlayer()[4]);
+        player.addToFelicidade(nivelAtual.getEscolhaFeita().getStatusPlayer()[5]);
+        player.addToCarisma(nivelAtual.getEscolhaFeita().getStatusPlayer()[6]);
     }
     public boolean isTerminada() {
         return terminada;

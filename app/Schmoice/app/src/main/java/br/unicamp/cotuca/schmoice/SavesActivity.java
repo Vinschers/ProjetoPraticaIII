@@ -114,14 +114,12 @@ public class SavesActivity extends AppCompatActivity {
                                 @Override
                                 public void onCancelar() {
                                     if (jogos[atual] != null && !jogos[atual].getAcabouDeComecar())
-                                        new AlertDialog.Builder(este)
-                                                .setIcon(android.R.drawable.ic_dialog_alert)
-                                                .setTitle("Removendo save")
-                                                .setMessage("Tem certeza que deseja remover este save?")
-                                                .setPositiveButton("Sim", new DialogInterface.OnClickListener()
-                                                {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Uteis.alertar("Tem certeza que deseja remover este save?", "Removendo save", new Runnable() {
                                                     @Override
-                                                    public void onClick(DialogInterface dialog, int which) {
+                                                    public void run() {
                                                         int id = jogos[atual].getId();
                                                         Deletor d = new Deletor(id);
                                                         d.start();
@@ -130,13 +128,12 @@ public class SavesActivity extends AppCompatActivity {
                                                             @Override
                                                             public void run() {
                                                                 btns[atual].setText("Novo Jogo");
-                                                        }});
+                                                            }});
                                                         jogos[atual] = new Jogo();
                                                     }
-
-                                                })
-                                                .setNegativeButton("Não", null)
-                                                .show();
+                                                }, null, este);
+                                            }
+                                        });
                                 }
                             });
                             for (int i = 0; i < maxJogos; i++) {

@@ -46,15 +46,18 @@ public class Arvore implements Serializable {
             faseAtual.getFase().setPlayerAntigo(jogo.getPlayer());
         }
         if (faseAtual.getFase().isTerminada()) {
-            for(int i = 0; i < faseAtual.getProxs().size(); i++)
-            {
-                if (faseAtual.getProxs().get(i).getFase().getReqs().serve(jogo.getEscolhasImportantes()))
+            if (faseAtual.getProxs() == null)
+                faseAtual = null;
+            else
+                for(int i = 0; i < faseAtual.getProxs().size(); i++)
                 {
-                    faseAtual = faseAtual.getProxs().get(i);
-                    caminho.add(i);
-                    break;
+                    if (faseAtual.getProxs().get(i).getFase().getReqs().serve(jogo.getEscolhasImportantes()))
+                    {
+                        faseAtual = faseAtual.getProxs().get(i);
+                        caminho.add(i);
+                        break;
+                    }
                 }
-            }
         }
     }
     public Fase getFaseAtual() {

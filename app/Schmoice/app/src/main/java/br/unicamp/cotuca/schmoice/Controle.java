@@ -19,7 +19,7 @@ import java.util.concurrent.Callable;
 public class Controle implements Serializable {
     public static String macAdress = "00:18:E5:03:93:5E";
     Eventos eventos;
-    boolean funcionando = false;
+    boolean funcionando = true;
     ConnectionThread conexao;
 
     public Controle(Eventos ev) {
@@ -30,24 +30,24 @@ public class Controle implements Serializable {
     }
 
     public boolean conectar() {
-        conexao = new ConnectionThread(macAdress, this, null);
-        conexao.start();
+        //conexao = new ConnectionThread(macAdress, this, null);
+        //conexao.start();
 
         return true;
     }
     public boolean conectar(Handler handlerConexao) {
-        conexao = new ConnectionThread(macAdress, this, handlerConexao);
-        conexao.start();
+        //conexao = new ConnectionThread(macAdress, this, handlerConexao);
+        //conexao.start();
 
         return true;
     }
     public void desconectar(boolean async) {
-        conexao.running = false;
+        //conexao.running = false;
 
-        if (!async)
-            while (conexao.isConnected()) {}
+        //if (!async)
+        //    while (conexao.isConnected()) {}
 
-        conexao = null;
+        //conexao = null;
     }
 
     public void setEventos(Eventos e) {

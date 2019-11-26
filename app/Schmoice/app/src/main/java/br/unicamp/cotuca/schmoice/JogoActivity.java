@@ -37,6 +37,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -223,7 +224,7 @@ public class JogoActivity extends AppCompatActivity {
                                 tvTimer.setText(segundos[0] + "");
                             }
                         });
-                        
+
                         if (pbVida.getProgress() >= pbVida.getMax())
                             break;
                     }
@@ -328,7 +329,7 @@ public class JogoActivity extends AppCompatActivity {
             }
         });
         nivel.setTerminado(true);
-        nivel.getParentFase().avancarNivel(nivel.getRotaVitoria());
+        nivel.getParentFase().avancarNivel();
     }
 
     public class ObjetoMinigame {
@@ -830,6 +831,7 @@ public class JogoActivity extends AppCompatActivity {
         llTopo.removeAllViews();
         llTopo.addView(tvDescricao);
         llTopo.addView(tvContinuarDesc);
+        Uteis.escurecerFundo(conteudoFullScreen, 1f);
 
         atualizarFase(new Runnable() {
             @Override
@@ -877,14 +879,14 @@ public class JogoActivity extends AppCompatActivity {
             public void onPraCima() {
                 btnAtual[0]--;
                 if (btnAtual[0] < 0)
-                    btnAtual[0] = nivel.getEscolhas().size() - 1;
+                    btnAtual[0] = nivel.getEscolhas().size() / 2 - 1;
                 selecionar(true);
             }
 
             @Override
             public void onPraBaixo() {
                 btnAtual[0]++;
-                if (btnAtual[0] > nivel.getEscolhas().size() - 1)
+                if (btnAtual[0] > nivel.getEscolhas().size() / 2 - 1)
                     btnAtual[0] = 0;
                 selecionar(true);
             }
@@ -955,6 +957,8 @@ public class JogoActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        nivel.setTerminado(true);
+                        nivel.getParentFase().avancarNivel();
                         btnAvancarMinigame.setVisibility(View.VISIBLE);
                         Uteis.controle.setEventos(new Eventos() {
                             @Override
@@ -970,8 +974,6 @@ public class JogoActivity extends AppCompatActivity {
                         });
                     }
                 });
-                nivel.setTerminado(true);
-                nivel.getParentFase().avancarNivel(nivel.getRotaVitoria());
             }
         }, new Runnable() {
             @Override
@@ -1041,51 +1043,76 @@ public class JogoActivity extends AppCompatActivity {
         Uteis.controle.setEventos(new Eventos(){
             @Override
             public void onOK() {
-                ObjetoMinigame obj = getObjetoAtual();
+                final ObjetoMinigame obj = getObjetoAtual();
                 if (obj.getTipo() == -1 || obj.getX() + obj.getWidth()/2 > llFundoMinigame2.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
                     perderMinigame2();
                 } else {
-                    obj.fade();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            obj.fade();
+                        }
+                    });
                 }
             }
 
             @Override
             public void onPraEsquerda() {
-                ObjetoMinigame obj = getObjetoAtual();
+                final ObjetoMinigame obj = getObjetoAtual();
                 if (obj.getTipo() != 0 || obj.getX() + obj.getWidth()/2 > llFundoMinigame2.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
                     perderMinigame2();
                 } else {
-                    obj.fade();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            obj.fade();
+                        }
+                    });
                 }
             }
 
             @Override
             public void onPraCima() {
-                ObjetoMinigame obj = getObjetoAtual();
+                final ObjetoMinigame obj = getObjetoAtual();
                 if (obj.getTipo() != 1 || obj.getX() + obj.getWidth()/2 > llFundoMinigame2.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
                     perderMinigame2();
                 } else {
-                    obj.fade();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            obj.fade();
+                        }
+                    });
                 }
             }
 
             @Override
             public void onPraDireita() {
-                ObjetoMinigame obj = getObjetoAtual();
+                final ObjetoMinigame obj = getObjetoAtual();
                 if (obj.getTipo() != 2 || obj.getX() + obj.getWidth()/2 > llFundoMinigame2.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
                     perderMinigame2();
                 } else {
-                    obj.fade();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            obj.fade();
+                        }
+                    });
                 }
             }
 
             @Override
             public void onPraBaixo() {
-                ObjetoMinigame obj = getObjetoAtual();
+                final ObjetoMinigame obj = getObjetoAtual();
                 if (obj.getTipo() != 3 || obj.getX() + obj.getWidth()/2 > llFundoMinigame2.getMeasuredWidth() * click || obj.getX() + obj.getWidth()/2 < 0) {
                     perderMinigame2();
                 } else {
-                    obj.fade();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            obj.fade();
+                        }
+                    });
                 }
             }
 
@@ -1141,109 +1168,135 @@ public class JogoActivity extends AppCompatActivity {
 
     public void desselecionarMenu()
     {
-        for (Button btn : btnsMenu) {
-            btn.setBackgroundResource(android.R.drawable.btn_default);
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (Button btn : btnsMenu) {
+                    btn.setBackgroundResource(android.R.drawable.btn_default);
+                }
+            }
+        });
     }
 
-    public void selecionarMenu(boolean focus)
+    public void selecionarMenu(final boolean focus)
     {
-        desselecionarMenu();
-        if (focus)
-            btnsMenu[atualMenu].findFocus();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                desselecionarMenu();
+                if (focus)
+                    btnsMenu[atualMenu].findFocus();
 
-        ShapeDrawable shapedrawable = new ShapeDrawable();
-        shapedrawable.setShape(new RectShape());
-        shapedrawable.getPaint().setColor(Uteis.corSelecionado);
-        shapedrawable.getPaint().setStrokeWidth(10f);
-        shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
-        btnsMenu[atualMenu].setBackground(shapedrawable);
+                ShapeDrawable shapedrawable = new ShapeDrawable();
+                shapedrawable.setShape(new RectShape());
+                shapedrawable.getPaint().setColor(Uteis.corSelecionado);
+                shapedrawable.getPaint().setStrokeWidth(10f);
+                shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
+                btnsMenu[atualMenu].setBackground(shapedrawable);
+            }
+        });
+
     }
 
     public void abrirMenu()
     {
-        final Dialog menu = new Dialog(JogoActivity.this);
-        final Eventos eventos = Uteis.controle.eventos;
-
-        pararTudo();
-
-        Uteis.controle.setEventos(new Eventos() {
+        runOnUiThread(new Runnable() {
             @Override
-            public void onCancelar() {
-                menu.dismiss();
-                hide();
-                Uteis.controle.setEventos(eventos);
-                continuarTudo();
-            }
+            public void run() {
+                final Dialog menu = new Dialog(JogoActivity.this);
+                final Eventos eventos = Uteis.controle.eventos;
 
-            @Override
-            public void onOK() {
-                btnsMenu[atualMenu].performClick();
-            }
+                pararTudo();
 
-            @Override
-            public void onPraCima() {
-                atualMenu++;
-                if (atualMenu > 1)
-                    atualMenu = 0;
-                selecionarMenu(true);
-            }
-
-            @Override
-            public void onPraBaixo() {
-                atualMenu--;
-                if (atualMenu < 0)
-                    atualMenu = 1;
-                selecionarMenu(true);
-            }
-        });
-
-        menu.setContentView(R.layout.menu_dialog);
-
-        atualMenu = 0;
-        btnsMenu = new Button[2];
-        btnsMenu[0] = (Button)menu.findViewById(R.id.btnContinuar);
-        btnsMenu[1] = (Button)menu.findViewById(R.id.btnSair);
-        selecionarMenu(true);
-
-        btnsMenu[0].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Uteis.controle.eventos.onCancelar();
-            }
-        });
-        btnsMenu[0].setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                atualMenu = 0;
-                if (b)
-                    selecionarMenu(false);
-            }
-        });
-
-        btnsMenu[1].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Uteis.alertar("Ao sair agora, a fase atual NÃO será salva. Sair mesmo assim?", "ATENÇÃO", new Runnable() {
+                Uteis.controle.setEventos(new Eventos() {
                     @Override
-                    public void run() {
-                        exit();
+                    public void onCancelar() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                menu.dismiss();
+                                hide();
+                                Uteis.controle.setEventos(eventos);
+                                continuarTudo();
+                            }
+                        });
                     }
-                }, null, JogoActivity.this);
-            }
-        });
-        btnsMenu[1].setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                atualMenu = 1;
-                if (b)
-                    selecionarMenu(false);
+
+                    @Override
+                    public void onOK() {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                btnsMenu[atualMenu].performClick();
+                            }
+                        });
+                    }
+                    @Override
+                    public void onPraCima() {
+                        atualMenu++;
+                        if (atualMenu > 1)
+                            atualMenu = 0;
+                        selecionarMenu(true);
+                    }
+
+                    @Override
+                    public void onPraBaixo() {
+                        atualMenu--;
+                        if (atualMenu < 0)
+                            atualMenu = 1;
+                        selecionarMenu(true);
+                    }
+                });
+
+                menu.setContentView(R.layout.menu_dialog);
+
+                atualMenu = 0;
+                btnsMenu = new Button[2];
+                btnsMenu[0] = (Button)menu.findViewById(R.id.btnContinuar);
+                btnsMenu[1] = (Button)menu.findViewById(R.id.btnSair);
+                selecionarMenu(true);
+
+                btnsMenu[0].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Uteis.controle.eventos.onCancelar();
+                    }
+                });
+                btnsMenu[0].setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        atualMenu = 0;
+                        if (b)
+                            selecionarMenu(false);
+                    }
+                });
+
+                btnsMenu[1].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Uteis.alertar("Ao sair agora, a fase atual NÃO será salva. Sair mesmo assim?", "ATENÇÃO", new Runnable() {
+                            @Override
+                            public void run() {
+                                exit();
+                            }
+                        }, null, JogoActivity.this);
+                    }
+                });
+                btnsMenu[1].setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean b) {
+                        atualMenu = 1;
+                        if (b)
+                            selecionarMenu(false);
+                    }
+                });
+                menu.show();
+                Window window = menu.getWindow();
+                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             }
         });
 
-        menu.show();
-        Window window = menu.getWindow();
-        window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
     }
     //endregion
 
@@ -1262,6 +1315,7 @@ public class JogoActivity extends AppCompatActivity {
             btnAvancarMinigame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    btnAvancarMinigame.setVisibility(View.INVISIBLE);
                     iniciarNivel();
                 }
             });
@@ -1281,8 +1335,8 @@ public class JogoActivity extends AppCompatActivity {
             }, 100);
 
         } catch (Exception ex) {
-            ex.printStackTrace();
-            exit();
+            Toast.makeText(JogoActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
+           // exit();
         }
     }
 

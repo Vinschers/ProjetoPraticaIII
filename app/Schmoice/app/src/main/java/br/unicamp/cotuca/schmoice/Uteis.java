@@ -117,7 +117,7 @@ public class Uteis {
         final Runnable avancar = new Runnable() {
             @Override
             public void run() {
-                if (i[0] > -1 && !runs[i[0]].getMorto())
+                if (i[0] > -1 && i[0] < partes.size() && !runs[i[0]].getMorto())
                 {
                     runs[i[0]].setMorto(true);
                     activity.runOnUiThread(new Runnable() {
