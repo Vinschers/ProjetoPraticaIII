@@ -120,7 +120,12 @@ public class Uteis {
                 if (i[0] > -1 && !runs[i[0]].getMorto())
                 {
                     runs[i[0]].setMorto(true);
-                    tv.setText(partes.get(i[0]));
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv.setText(partes.get(i[0]));
+                        }
+                    });
                 }
                 else {
                     try {
