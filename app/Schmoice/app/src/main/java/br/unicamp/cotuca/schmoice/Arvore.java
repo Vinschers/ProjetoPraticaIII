@@ -61,10 +61,8 @@ public class Arvore implements Serializable {
         }
     }
     public Fase getFaseAtual() {
-        if (faseAtual == null) {
-            faseAtual = raiz;
-            faseAtual.getFase().setPlayerAntigo(jogo.getPlayer());
-        }
+        if (faseAtual == null)
+            return null;
         return faseAtual.getFase();
     }
 
@@ -89,6 +87,10 @@ public class Arvore implements Serializable {
                 aux.getProxs().get(ind).setFase(fase);
         } catch (Exception e) {
             raiz = new No(fase, null);
+        }
+        if (faseAtual == null) {
+            faseAtual = raiz;
+            faseAtual.getFase().setPlayerAntigo(jogo.getPlayer());
         }
     }
 

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -175,7 +176,7 @@ public class JogoActivity extends AppCompatActivity {
 
     ImageView imgCenario;
     RelativeLayout conteudoFullScreen;
-    LinearLayout rlPersonagens;
+    FrameLayout flPersonagens;
     FrameLayout llTopo;
     Button btnAvancarMinigame;
     final int btnsPorLinha = 2;
@@ -203,11 +204,18 @@ public class JogoActivity extends AppCompatActivity {
         Runnable onGanhou, onPerdeu;
         boolean pausado = false;
 
-        public TimerJogo(TextView tvTimer, ProgressBar pbVida, Runnable onGanhou, Runnable onPerdeu) {
+        public TimerJogo(final TextView tvTimer, final ProgressBar pbVida, Runnable onGanhou, Runnable onPerdeu) {
             this.tvTimer = tvTimer;
             this.pbVida = pbVida;
             this.onGanhou = onGanhou;
             this.onPerdeu = onPerdeu;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvTimer.setText("15");
+                    pbVida.setProgress(0);
+                }
+            });
         }
 
         public void run() {
@@ -461,9 +469,11 @@ public class JogoActivity extends AppCompatActivity {
             }
         }
         private int getCorAleatoria() {
-            Random rnd = new Random();
-            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-            return color;
+            Random random = new Random();
+            float r = 70 + random.nextInt(185);
+            float g = 70 + random.nextInt(185);
+            float b = 70 + random.nextInt(185);
+            return Color.rgb(r, g, b);
         }
         public void fade() {
             new Thread(new Runnable() {
@@ -575,7 +585,7 @@ public class JogoActivity extends AppCompatActivity {
         pbVidaMinigame1    = (ProgressBar)    findViewById(R.id.pbVidaMinigame1);
         llFundoMinigame1   = (LinearLayout)   findViewById(R.id.llFundoMinigame1);
         llFundoMinigame2   = (LinearLayout)   findViewById(R.id.llFundoMinigame2);
-        rlPersonagens      = (LinearLayout)   findViewById(R.id.rlPersonagens);
+        flPersonagens      = (FrameLayout)    findViewById(R.id.flPersonagens);
         conteudoFullScreen = (RelativeLayout) findViewById(R.id.conteudoFullScreen);
 
         tvDescricao = new TextView(JogoActivity.this);
@@ -650,7 +660,8 @@ public class JogoActivity extends AppCompatActivity {
                 }
             };
 
-            jogo.getArvore().getFaseAtual().setPlayerAntigo(pNovo);
+            if (jogo.getArvore().getFaseAtual() != null)
+                jogo.getArvore().getFaseAtual().setPlayerAntigo(pNovo);
 
             Uteis.setTimeout(new Runnable() {
                 @Override
@@ -779,23 +790,31 @@ public class JogoActivity extends AppCompatActivity {
     //region Inicio de niveis
     public void colocarPersonagens() {
         for(int i = 0; i < nivel.getPersonagens().size(); i++) {
-            Personagem personagem = nivel.getPersonagens().get(i);
-            ImageView iv = new ImageView(JogoActivity.this);
+            try{
+                Personagem personagem = nivel.getPersonagens().get(i);
+                ImageView iv = new ImageView(JogoActivity.this);
 
-            personagem.setX((personagem.getX() / 632) * conteudoFullScreen.getWidth());
-            personagem.setY((personagem.getY() / 1126) * conteudoFullScreen.getHeight());
+                personagem.setX((personagem.getX() / 632) * conteudoFullScreen.getWidth());
+                personagem.setY((personagem.getY() / 1126) * conteudoFullScreen.getHeight());
 
-            iv.setImageBitmap(personagem.getBmp());
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.width = (int)personagem.getWidth();
-            lp.setMargins((int)personagem.getX(), (int)personagem.getY(), 0, 0);
+                Bitmap bmp = personagem.getBmp().copy(Bitmap.Config.ARGB_8888,true);
+                iv.setImageBitmap(bmp);
+                FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+                lp.width = (int)personagem.getWidth();
+                lp.gravity = Gravity.TOP;
+                lp.setMargins((int)personagem.getX(), (int)personagem.getY(), 0, 0);
 
-            rlPersonagens.addView(iv);
-            iv.setPivotX(iv.getWidth()/2);
-            iv.setPivotY(iv.getHeight()/2);
-            iv.setRotation(personagem.getRotation());
-            iv.setLayoutParams(lp);
-            iv.requestLayout();
+                iv.setPivotX(iv.getWidth()/2);
+                iv.setPivotY(iv.getHeight()/2);
+                iv.setRotation(personagem.getRotation());
+                iv.setLayoutParams(lp);
+                iv.requestLayout();
+                flPersonagens.addView(iv);
+                iv.bringToFront();
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -827,43 +846,45 @@ public class JogoActivity extends AppCompatActivity {
 
     public void iniciarNivel()
     {
-        rlPersonagens.removeAllViews();
+        flPersonagens.removeAllViews();
         llTopo.removeAllViews();
         llTopo.addView(tvDescricao);
         llTopo.addView(tvContinuarDesc);
-        Uteis.escurecerFundo(conteudoFullScreen, 1f);
+        Uteis.clarearFundo(conteudoFullScreen);
 
         atualizarFase(new Runnable() {
             @Override
             public void run() {
-                nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
-                imgCenario.setImageBitmap(Uteis.getImageByName(nivel.getBackground()));
-                escolhas = nivel.getEscolhas();
+                try {
+                    nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
+                    imgCenario.setImageBitmap(Uteis.getImageByName(nivel.getBackground()));
+                    escolhas = nivel.getEscolhas();
 
-                if (nivel.isTerminado()) {
-                    exit();
-                    return;
-                }
-
-                Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), JogoActivity.this, new Runnable() {
-                    @Override
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                llTopo.removeAllViews();
-                                comecarNivelAtual();
-                            }
-                        });
+                    if (nivel.isTerminado()) {
+                        exit();
+                        return;
                     }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        abrirMenu();
-                    }
-                });
 
-                colocarPersonagens();
+                    Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), JogoActivity.this, new Runnable() {
+                        @Override
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    llTopo.removeAllViews();
+                                    comecarNivelAtual();
+                                }
+                            });
+                        }
+                    }, new Runnable() {
+                        @Override
+                        public void run() {
+                            abrirMenu();
+                        }
+                    });
+
+                    colocarPersonagens();
+                } catch (Exception ex) { exit(); }
             }
         });
     }

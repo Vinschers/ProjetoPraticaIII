@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context=".JogoActivity">
+    tools:context=".JogoActivity"
+    android:keepScreenOn="true">
 
     <RelativeLayout
         android:id="@+id/conteudoFullScreen"
@@ -17,13 +18,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"/>
-        <LinearLayout
-            android:id="@+id/rlPersonagens"
+        <FrameLayout
+            android:id="@+id/flPersonagens"
             android:layout_width="match_parent"
-            android:layout_height="550dp"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal" >
-        </LinearLayout>
+            android:layout_height="match_parent">
+        </FrameLayout>
 
         <FrameLayout
             android:id="@+id/llTopo"

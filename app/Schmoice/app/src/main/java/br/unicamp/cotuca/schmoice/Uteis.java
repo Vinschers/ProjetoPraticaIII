@@ -59,7 +59,7 @@ public class Uteis {
         colorAnimation.start();
     }
     public static void clarearFundo(final View v) {
-        final ValueAnimator colorAnimation = ValueAnimator.ofFloat(v.getAlpha(), 0);
+        final ValueAnimator colorAnimation = ValueAnimator.ofFloat(v.getAlpha(), 0.5f);
         colorAnimation.setDuration(750); // milliseconds
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override

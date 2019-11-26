@@ -17,6 +17,7 @@ import android.security.ConfirmationPrompt;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -243,13 +244,13 @@ public class SavesActivity extends AppCompatActivity {
                     novoJogo.setEscolhasImportantes(jogosRecebidos[i].getEscolhasImportantes());
 
                     Player jogador = novoJogo.getPlayer();
-                    jogador.setTranquilidade(jogosRecebidos[i].getTranquilidade());
+                    /*jogador.setTranquilidade(jogosRecebidos[i].getTranquilidade());
                     jogador.setSanidade(jogosRecebidos[i].getSanidade());
                     jogador.setInteligencia(jogosRecebidos[i].getInteligencia());
                     jogador.setForca(jogosRecebidos[i].getForca());
                     jogador.setFinancas(jogosRecebidos[i].getFinancas());
                     jogador.setFelicidade(jogosRecebidos[i].getFelicidade());
-                    jogador.setCarisma(jogosRecebidos[i].getCarisma());
+                    jogador.setCarisma(jogosRecebidos[i].getCarisma());*/
 
                     /*novoJogo.getArvore().setCaminho(jogosRecebidos[i].getCaminho());
                     novoJogo.getArvore().getFaseAtual().setNivelAtual(jogosRecebidos[i].getRotaAtual(), jogosRecebidos[i].getRotaAtual());*/
@@ -257,6 +258,7 @@ public class SavesActivity extends AppCompatActivity {
                     jogosObtidos[jogosRecebidos[i].getSlot()] = novoJogo;
                 }
             } catch (Exception ex) {
+                Toast.makeText(SavesActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
                 ex.printStackTrace();
             }
             morta = true;
