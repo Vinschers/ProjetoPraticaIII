@@ -30,21 +30,21 @@ public class Controle implements Serializable {
     }
 
     public boolean conectar() {
-        conexao = new ConnectionThread(macAdress, this, null);
-        conexao.start();
+       conexao = new ConnectionThread(macAdress, this, null);
+       conexao.start();
 
         return true;
     }
     public boolean conectar(Handler handlerConexao) {
-        conexao = new ConnectionThread(macAdress, this, handlerConexao);
-        conexao.start();
+       conexao = new ConnectionThread(macAdress, this, handlerConexao);
+       conexao.start();
 
         return true;
     }
     public void desconectar(boolean async) {
-        conexao.running = false;
+       conexao.running = false;
 
-        if (!async)
+       if (!async)
             while (conexao.isConnected()) {}
 
         conexao = null;

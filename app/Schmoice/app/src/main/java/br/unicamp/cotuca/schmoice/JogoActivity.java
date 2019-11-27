@@ -677,24 +677,47 @@ public class JogoActivity extends AppCompatActivity {
                 }
             }, 1500);
 
-            Button dialogButton = (Button) dialog.findViewById(R.id.btnContinuar);
+            dialogButton = (Button) dialog.findViewById(R.id.btnContinuar);
 
             dialogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    dialog.dismiss();
-                    hide();
-                    onContinuar.run();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialog.dismiss();
+                            hide();
+                            onContinuar.run();
+                        }
+                    });
+                }
+            });
+            Uteis.controle.setEventos(new Eventos()
+            {
+                @Override
+                public void onOK() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogButton.performClick();
+                        }
+                    });
                 }
             });
 
-            dialog.show();
-            Window window = dialog.getWindow();
-            window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    dialog.show();
+                    Window window = dialog.getWindow();
+                    window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                }
+            });
         }
         else
             onContinuar.run();
     }
+    Button dialogButton;
 
     //region botões
     public void setupBtns(final ArrayList<Escolha> escolhas)
@@ -841,7 +864,12 @@ public class JogoActivity extends AppCompatActivity {
                 break;
 
             case -1:
-                exit();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        exit();
+                    }
+                });
                 break;
         }
     }
@@ -866,7 +894,12 @@ public class JogoActivity extends AppCompatActivity {
                             escolhas = nivel.getEscolhas();
 
                             if (nivel.isTerminado()) {
-                                exit();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        exit();
+                                    }
+                                });
                                 return;
                             }
 
@@ -891,7 +924,12 @@ public class JogoActivity extends AppCompatActivity {
                             colocarPersonagens();
                         }
                     });
-                } catch (Exception ex) { exit(); }
+                } catch (Exception ex) { runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        exit();
+                    }
+                }); }
             }
         });
     }
@@ -1045,8 +1083,6 @@ public class JogoActivity extends AppCompatActivity {
         double diff = (new Random().nextInt(1) + 1.5);
         if (nivel.getDependenciaStatus() != -1)
             diff -= jogo.getPlayer().getAttr(nivel.getDependenciaStatus());
-
-        diff *= 2;
 
         double velocidade = 5 * diff;
 
@@ -1305,7 +1341,12 @@ public class JogoActivity extends AppCompatActivity {
                         Uteis.alertar("Ao sair agora, a fase atual NÃO será salva. Sair mesmo assim?", "ATENÇÃO", new Runnable() {
                             @Override
                             public void run() {
-                                exit();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        exit();
+                                    }
+                                });
                             }
                         }, null, JogoActivity.this);
                     }
@@ -1364,7 +1405,12 @@ public class JogoActivity extends AppCompatActivity {
 
         } catch (Exception ex) {
             //Toast.makeText(JogoActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
-            exit();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    exit();
+                }
+            });
         }
     }
 
@@ -1375,12 +1421,16 @@ public class JogoActivity extends AppCompatActivity {
             public void run() {
                 ClienteWS.postObjeto(new JogoRecebido(jogo, slotAtual, Uteis.getIPAddress(true)), String.class, ClienteWS.webService + "/atualizarJogo");
 
-                if (threadMinigame2 != null)
-                    threadMinigame2.interrupt();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (threadMinigame2 != null)
+                            threadMinigame2.interrupt();
 
-                Intent intent = new Intent(JogoActivity.this, MainActivity.class);
-                Uteis.controle.setEventos(null);
-                startActivity(intent);
+                        Intent intent = new Intent(JogoActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                });
             }
         };
         final Dialog fim = new Dialog(JogoActivity.this, android.R.style.Theme_Light);
@@ -1390,8 +1440,13 @@ public class JogoActivity extends AppCompatActivity {
         Uteis.controle.setEventos(new Eventos() {
             @Override
             public void onOK() {
-                fim.dismiss();
-                sair.run();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        fim.dismiss();
+                        sair.run();
+                    }
+                });
             }
         });
 
