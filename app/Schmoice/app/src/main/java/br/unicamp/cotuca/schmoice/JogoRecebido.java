@@ -4,7 +4,24 @@ import java.util.ArrayList;
 
 public class JogoRecebido {
     public JogoRecebido() {}
-    int id;
+    public JogoRecebido(Jogo jogo, int slot, String ip)
+    {
+        try
+        {
+            setIp(ip);
+            setId(jogo.getId());
+            setSlot(slot);
+            setCaminho(ClienteWS.toJson(jogo.getArvore().getCaminho()));
+            setEscolhasImportantes(ClienteWS.toJson(jogo.getEscolhasImportantes()));
+            setCarisma(jogo.getPlayer().getCarisma());
+            setFelicidade(jogo.getPlayer().getFelicidade());
+            setFinancas(jogo.getPlayer().getFinancas());
+            setForca(jogo.getPlayer().getForca());
+            setInteligencia(jogo.getPlayer().getInteligencia());
+            setSanidade(jogo.getPlayer().getSanidade());
+            setTranquilidade(jogo.getPlayer().getTranquilidade());
+        } catch (Exception ex) {}
+    }
 
     public int getId() {
         return id;
@@ -20,30 +37,6 @@ public class JogoRecebido {
 
     public void setSlot(int slot) {
         this.slot = slot;
-    }
-
-    public int getFaseAtual() {
-        return faseAtual;
-    }
-
-    public void setFaseAtual(int faseAtual) {
-        this.faseAtual = faseAtual;
-    }
-
-    public int getParteAtual() {
-        return parteAtual;
-    }
-
-    public void setParteAtual(int parteAtual) {
-        this.parteAtual = parteAtual;
-    }
-
-    public int getRotaAtual() {
-        return rotaAtual;
-    }
-
-    public void setRotaAtual(int rotaAtual) {
-        this.rotaAtual = rotaAtual;
     }
 
     public String getIp() {
@@ -68,14 +61,6 @@ public class JogoRecebido {
 
     public void setEscolhasImportantes(String escolhasImportantes) throws Exception {
         this.escolhasImportantes = (ArrayList<Integer>)ClienteWS.fromJson(escolhasImportantes, ArrayList.class);
-    }
-
-    public boolean isAcabouDeComecar() {
-        return acabouDeComecar;
-    }
-
-    public void setAcabouDeComecar(boolean acabouDeComecar) {
-        this.acabouDeComecar = acabouDeComecar;
     }
 
     public double getTranquilidade() {
@@ -134,13 +119,10 @@ public class JogoRecebido {
         this.carisma = carisma;
     }
 
+    int id;
     int slot;
-    int faseAtual;
-    int parteAtual;
-    int rotaAtual;
     String ip;
     ArrayList<Integer> caminho;
     ArrayList<Integer> escolhasImportantes;
-    boolean acabouDeComecar;
     double tranquilidade, felicidade, financas, forca, inteligencia, sanidade, carisma;
 }

@@ -23,7 +23,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
@@ -59,8 +63,8 @@ public class Uteis {
         colorAnimation.start();
     }
     public static void clarearFundo(final View v) {
-        final ValueAnimator colorAnimation = ValueAnimator.ofFloat(v.getAlpha(), 0.5f);
-        colorAnimation.setDuration(750); // milliseconds
+        final ValueAnimator colorAnimation = ValueAnimator.ofFloat(v.getAlpha(), 1.0f);
+        colorAnimation.setDuration(500); // milliseconds
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
@@ -265,5 +269,32 @@ public class Uteis {
                 .setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener)
                 .show();
+    }
+
+    public static String getIPAddress(boolean useIPv4) {
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface intf : interfaces) {
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+                for (InetAddress addr : addrs) {
+                    if (!addr.isLoopbackAddress()) {
+                        String sAddr = addr.getHostAddress();
+                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
+                        boolean isIPv4 = sAddr.indexOf(':')<0;
+
+                        if (useIPv4) {
+                            if (isIPv4)
+                                return sAddr;
+                        } else {
+                            if (!isIPv4) {
+                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
+                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) { } // for now eat exceptions
+        return "";
     }
 }

@@ -180,6 +180,7 @@ public class JogoActivity extends AppCompatActivity {
     FrameLayout llTopo;
     Button btnAvancarMinigame;
     final int btnsPorLinha = 2;
+    int slotAtual;
 
     Jogo jogo;
     Nivel nivel;
@@ -611,6 +612,7 @@ public class JogoActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle params = intent.getExtras();
         jogo = (Jogo)params.getSerializable("jogo");
+        slotAtual = params.getInt("slot");
     }
 
     public void atualizarFase(final Runnable onContinuar)
@@ -850,40 +852,45 @@ public class JogoActivity extends AppCompatActivity {
         llTopo.removeAllViews();
         llTopo.addView(tvDescricao);
         llTopo.addView(tvContinuarDesc);
-        Uteis.clarearFundo(conteudoFullScreen);
+        Uteis.clarearFundo(imgCenario);
 
         atualizarFase(new Runnable() {
             @Override
             public void run() {
                 try {
-                    nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
-                    imgCenario.setImageBitmap(Uteis.getImageByName(nivel.getBackground()));
-                    escolhas = nivel.getEscolhas();
-
-                    if (nivel.isTerminado()) {
-                        exit();
-                        return;
-                    }
-
-                    Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), JogoActivity.this, new Runnable() {
+                    runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            runOnUiThread(new Runnable() {
+                            nivel = jogo.getArvore().getFaseAtual().getNivelAtual();
+                            imgCenario.setImageBitmap(Uteis.getImageByName(nivel.getBackground()));
+                            escolhas = nivel.getEscolhas();
+
+                            if (nivel.isTerminado()) {
+                                exit();
+                                return;
+                            }
+
+                            Uteis.escreverAnimado(tvDescricao, tvContinuarDesc, nivel.getDescricao(), JogoActivity.this, new Runnable() {
                                 @Override
                                 public void run() {
-                                    llTopo.removeAllViews();
-                                    comecarNivelAtual();
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            llTopo.removeAllViews();
+                                            comecarNivelAtual();
+                                        }
+                                    });
+                                }
+                            }, new Runnable() {
+                                @Override
+                                public void run() {
+                                    abrirMenu();
                                 }
                             });
-                        }
-                    }, new Runnable() {
-                        @Override
-                        public void run() {
-                            abrirMenu();
+
+                            colocarPersonagens();
                         }
                     });
-
-                    colocarPersonagens();
                 } catch (Exception ex) { exit(); }
             }
         });
@@ -1356,24 +1363,38 @@ public class JogoActivity extends AppCompatActivity {
             }, 100);
 
         } catch (Exception ex) {
-            Toast.makeText(JogoActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
-           // exit();
+            //Toast.makeText(JogoActivity.this, ex.getMessage(), Toast.LENGTH_LONG).show();
+            exit();
         }
     }
 
     public void exit()
     {
-        Runnable sair = new Runnable() {
+        final Runnable sair = new Runnable() {
             @Override
             public void run() {
-                //ClienteWS.postObjeto();           SALVAR
+                ClienteWS.postObjeto(new JogoRecebido(jogo, slotAtual, Uteis.getIPAddress(true)), String.class, ClienteWS.webService + "/atualizarJogo");
+
                 if (threadMinigame2 != null)
                     threadMinigame2.interrupt();
+
                 Intent intent = new Intent(JogoActivity.this, MainActivity.class);
                 Uteis.controle.setEventos(null);
                 startActivity(intent);
             }
         };
-        sair.run();
+        final Dialog fim = new Dialog(JogoActivity.this, android.R.style.Theme_Light);
+        fim.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        fim.setContentView(R.layout.fim_dialog);
+
+        Uteis.controle.setEventos(new Eventos() {
+            @Override
+            public void onOK() {
+                fim.dismiss();
+                sair.run();
+            }
+        });
+
+        fim.show();
     }
 }

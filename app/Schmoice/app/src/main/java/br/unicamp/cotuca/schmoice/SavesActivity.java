@@ -227,7 +227,7 @@ public class SavesActivity extends AppCompatActivity {
         @Override
         protected Integer doInBackground(Boolean... obterFases) {
             try {
-                String ipUsuario = getIPAddress(true); // IP do usuario
+                String ipUsuario = Uteis.getIPAddress(true); // IP do usuario
 
                 if (obterFases[0])
                     fasesObtidas = (Fase[])ClienteWS.getObjeto(Fase[].class, ClienteWS.webService + "/get");
@@ -244,16 +244,15 @@ public class SavesActivity extends AppCompatActivity {
                     novoJogo.setEscolhasImportantes(jogosRecebidos[i].getEscolhasImportantes());
 
                     Player jogador = novoJogo.getPlayer();
-                    /*jogador.setTranquilidade(jogosRecebidos[i].getTranquilidade());
+                    jogador.setTranquilidade(jogosRecebidos[i].getTranquilidade());
                     jogador.setSanidade(jogosRecebidos[i].getSanidade());
                     jogador.setInteligencia(jogosRecebidos[i].getInteligencia());
                     jogador.setForca(jogosRecebidos[i].getForca());
                     jogador.setFinancas(jogosRecebidos[i].getFinancas());
                     jogador.setFelicidade(jogosRecebidos[i].getFelicidade());
-                    jogador.setCarisma(jogosRecebidos[i].getCarisma());*/
+                    jogador.setCarisma(jogosRecebidos[i].getCarisma());
 
-                    /*novoJogo.getArvore().setCaminho(jogosRecebidos[i].getCaminho());
-                    novoJogo.getArvore().getFaseAtual().setNivelAtual(jogosRecebidos[i].getRotaAtual(), jogosRecebidos[i].getRotaAtual());*/
+                    novoJogo.getArvore().setCaminho(jogosRecebidos[i].getCaminho());
 
                     jogosObtidos[jogosRecebidos[i].getSlot()] = novoJogo;
                 }
@@ -298,7 +297,7 @@ public class SavesActivity extends AppCompatActivity {
         @Override
         public void run() {
             try {
-                String ipUsuario = getIPAddress(true);
+                String ipUsuario = Uteis.getIPAddress(true);
                 ClienteWS.getObjeto(null, ClienteWS.webService + "/delete/" + id);
             }
             catch (Exception ex) {ex.printStackTrace();}
@@ -309,31 +308,5 @@ public class SavesActivity extends AppCompatActivity {
         {
             return morta;
         }
-    }
-    public static String getIPAddress(boolean useIPv4) {
-        try {
-            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface intf : interfaces) {
-                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
-                for (InetAddress addr : addrs) {
-                    if (!addr.isLoopbackAddress()) {
-                        String sAddr = addr.getHostAddress();
-                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-                        boolean isIPv4 = sAddr.indexOf(':')<0;
-
-                        if (useIPv4) {
-                            if (isIPv4)
-                                return sAddr;
-                        } else {
-                            if (!isIPv4) {
-                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
-                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception ignored) { } // for now eat exceptions
-        return "";
     }
 }
